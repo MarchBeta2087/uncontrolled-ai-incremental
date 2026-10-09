@@ -1,0 +1,40 @@
+{
+  "$comment": "《失控 AI 增量》全局可调参数。调平衡 = 改本文件 + 跑回归，不改代码。数值依据 docs/失控AI增量-数值模型-v1.0.md（M1 推演）。",
+  "version": "1.0.0",
+
+  "time": {
+    "startTimestamp": "2028-01-01T00:00:00.000Z",
+    "julianYearSeconds": 31557600,
+    "baseRate": 10000,
+    "rateMultiplierCap": "1e30"
+  },
+
+  "universe": {
+    "massEnergyCap": "1e70",
+    "measureUnit": "J"
+  },
+
+  "growth": {
+    "efoldingYears": 3,
+    "efoldingDecayPerPrestige": 0.5,
+    "initialProduction": 1,
+    "generatorBaseCost": 10,
+    "generatorGrowth": 1.15,
+    "generatorBaseProduction": 1
+  },
+
+  "prestige": {
+    "crystalBase": 2,
+    "exponent": 0.5,
+    "prestigeExponent": 0.5
+  },
+
+  "format": {
+    "yearFullLimit": "1e6",
+    "yearScientificLimit": "1e8"
+  },
+
+  "offline": {
+    "rateDiscount": 1.0
+  }
+}
