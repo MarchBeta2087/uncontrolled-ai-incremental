@@ -187,7 +187,9 @@ function buildShell() {
   expPanel.append(massBig, progress, progressLabel, status, crystalInfo, prestigeBtn);
 
   // 时间晶体升级列表
-  expPanel.append(el('div', 'panel-title', '时间晶体升级'));
+  const upgTitle = el('div', 'panel-title', '时间晶体升级');
+  expPanel.append(upgTitle);
+  refs.upgTitle = upgTitle;
   const upgGrid = el('div', 'tech-grid');
   for (const uid of Upgrades.getUpgradeIds()) {
     const u = Upgrades.getUpgrade(uid);
@@ -566,6 +568,17 @@ function updateExpand() {
   refs.crystalInfo.textContent = ready
     ? `时间晶体：${Num.format(Prestige.getTimeCrystals())}（穿梭将 +${Num.toString(preview)}）`
     : `时间晶体：${Num.format(Prestige.getTimeCrystals())}`;
+
+  // 升级标题：挑战中显示削弱提示
+  if (refs.upgTitle) {
+    const active = Challenges.getActiveChallenge();
+    if (active) {
+      const nerfPct = Num.toString(Num.mul(Challenges.getNerf(), 100));
+      refs.upgTitle.textContent = `时间晶体升级（挑战中削弱至 ${nerfPct}%）`;
+    } else {
+      refs.upgTitle.textContent = '时间晶体升级';
+    }
+  }
 
   // 时间晶体升级卡片
   if (refs.upgGrid) {

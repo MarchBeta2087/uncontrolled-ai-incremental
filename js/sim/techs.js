@@ -90,6 +90,20 @@ export function reset() {
   Time.clearRateMultipliers();
 }
 
+/** 挑战开始：清空技术与技术速率乘子，但保留永久速率乘子（升级/挑战/成就） */
+export function resetRun() {
+  for (const [id, t] of techs) {
+    if (t.owned) {
+      // 只移除该技术贡献的速率乘子，保留永久来源
+      for (const e of t.def.effects ?? []) {
+        if (e.type === 'rate_mult') Time.removeRateMultiplier(id);
+      }
+      t.owned = false;
+    }
+  }
+  Resources.clearMultipliers();
+}
+
 // ---- 存档 ----
 export function serialize() {
   return [...techs.entries()].filter(([, t]) => t.owned).map(([id]) => id);

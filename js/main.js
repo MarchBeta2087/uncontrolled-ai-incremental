@@ -45,6 +45,7 @@ async function bootstrap() {
     Achievements.initAchievements(cfg.achievements);
     Fragments.initFragments(cfg.fragments);
     Challenges.initChallenges(cfg.challenges);
+    Challenges.configureChallenges(cfg.balance);
 
     // 恢复存档（含离线结算）
     restoreSave();

@@ -1,0 +1,114 @@
+// test/smoke.mjs —— CI 冒烟测试
+// 覆盖：配置校验、Num 序列化/格式化、穿梭结算、成本曲线、挑战多目标、成就奖励、升级、存档 roundtrip。
+// 用法：node test/smoke.mjs（失败以非零退出码结束）
+
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+globalThis.MegotaNum = require('../vendor/MegotaNum.js');
+
+let passed = 0;
+let failed = 0;
+function assert(name, cond) {
+  if (cond) {
+    passed++;
+    console.log(`  ✓ ${name}`);
+  } else {
+    failed++;
+    console.error(`  ✗ ${name}`);
+  }
+}
+
+const balance = JSON.parse(fs.readFileSync('config/balance.json', 'utf8'));
+const resourcesCfg = JSON.parse(fs.readFileSync('config/resources.json', 'utf8'));
+const techsCfg = JSON.parse(fs.readFileSync('config/techs.json', 'utf8'));
+const upgradesCfg = JSON.parse(fs.readFileSync('config/upgrades.json', 'utf8'));
+const achCfg = JSON.parse(fs.readFileSync('config/achievements.json', 'utf8'));
+const fragCfg = JSON.parse(fs.readFileSync('config/fragments.json', 'utf8'));
+const chCfg = JSON.parse(fs.readFileSync('config/challenges.json', 'utf8'));
+
+const numMod = await import('../js/core/num.js');
+const timeMod = await import('../js/core/time.js');
+const cfgMod = await import('../js/data/config.js');
+const resMod = await import('../js/sim/resources.js');
+const techMod = await import('../js/sim/techs.js');
+const prestigeMod = await import('../js/sim/prestige.js');
+const upgMod = await import('../js/sim/upgrades.js');
+const achMod = await import('../js/sim/achievements.js');
+const chMod = await import('../js/sim/challenges.js');
+const Num = numMod.Num;
+
+console.log('== 配置校验 ==');
+try {
+  cfgMod.validateConfig({ balance, resources: resourcesCfg, techs: techsCfg, upgrades: upgradesCfg, achievements: achCfg, fragments: fragCfg, challenges: chCfg });
+  assert('配置校验通过', true);
+} catch (e) {
+  assert(`配置校验: ${e.message}`, false);
+}
+
+console.log('== Num 序列化与格式化 ==');
+assert('roundtrip 1e20', Num.eq(Num.fromJSON(Num.toJSON('1e20')), '1e20'));
+assert('roundtrip 1e70', Num.eq(Num.fromJSON(Num.toJSON('1e70')), '1e70'));
+assert('千分位 999999', Num.format(999999) === '999,999');
+assert('科学记数 1e6', Num.format('1e6') === '1.000e6');
+assert('舍入进位 999999999', Num.format(999999999) === '1.000e9');
+
+console.log('== 初始化 ==');
+timeMod.configureTime(balance.time);
+prestigeMod.configurePrestige(balance);
+resMod.initResources(resourcesCfg);
+techMod.initTechs(techsCfg);
+prestigeMod.initPrestige();
+upgMod.initUpgrades(upgradesCfg);
+achMod.initAchievements(achCfg);
+chMod.initChallenges(chCfg);
+chMod.configureChallenges(balance);
+
+console.log('== 穿梭结算 ==');
+resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
+techMod.load(techsCfg.techs.map((t) => t.id));
+prestigeMod.load({ timeCrystals: Num.toJSON('0'), prestigeCount: 0 });
+assert('首次穿梭结算 2 晶体', Num.eq(prestigeMod.calculateCrystals(), 2));
+
+console.log('== 成本曲线与 MAX ==');
+resMod.initResources(resourcesCfg);
+resMod.load({ resources: { funds: Num.toJSON('100') }, generators: {} });
+assert('investment 成本 15', Num.eq(resMod.buyCost('investment', 1), 15));
+assert('MAX investment 可买 5', Num.eq(resMod.maxAffordable('investment'), 5));
+
+console.log('== 挑战多目标 + 削弱 ==');
+prestigeMod.load({ timeCrystals: Num.toJSON('5'), prestigeCount: 1 });
+upgMod.buyUpgrade('causal_residue_1'); // 全产出 ×2
+const beforeNerf = resMod.getGlobalMultiplier();
+chMod.startChallenge('challenge_no_investment');
+assert('挑战中永久乘子保留(削弱)', Num.eq(resMod.getGlobalMultiplier(), beforeNerf));
+// 挑战中产出削弱：1 节点 ×10 baseProd × 全局2 × nerf0.25
+resMod.load({ resources: {}, generators: { compute_node: Num.toJSON('1') } });
+const prod = resMod.getProductionPerSecond('compute');
+assert('挑战中产出削弱 10×2×0.25=5', Num.eq(prod, 5));
+// 目标推进
+resMod.load({ resources: { mass_energy: Num.toJSON('1e12') }, generators: {} });
+chMod.checkProgress();
+assert('目标1 完成', chMod.goalsDoneCount('challenge_no_investment') === 1);
+resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
+chMod.checkProgress();
+assert('挑战全部完成', chMod.isCompleted('challenge_no_investment'));
+// 完成后削弱解除，但挑战目标奖励(×2×3×5=×30)与升级(×2)已永久生效
+resMod.load({ resources: {}, generators: { compute_node: Num.toJSON('1') } });
+const prodAfter = resMod.getProductionPerSecond('compute');
+assert('挑战后削弱解除 10×2×30=600', Num.eq(prodAfter, 600));
+
+console.log('== 成就奖励 ==');
+achMod.load([]);
+resMod.initResources(resourcesCfg);
+prestigeMod.load({ timeCrystals: Num.toJSON('0'), prestigeCount: 0 }); // 重置周目，避免 first_prestige 同时触发
+resMod.load({ resources: { compute: Num.toJSON('1') }, generators: {} });
+achMod.checkAll();
+assert('first_compute 无奖励', Num.eq(resMod.getGlobalMultiplier(), 1));
+prestigeMod.load({ timeCrystals: Num.toJSON('0'), prestigeCount: 1 });
+achMod.checkAll();
+assert('first_prestige 奖励 ×1.5', Num.eq(resMod.getGlobalMultiplier(), 1.5));
+
+console.log(`\n通过 ${passed} 项，失败 ${failed} 项`);
+if (failed > 0) process.exit(1);

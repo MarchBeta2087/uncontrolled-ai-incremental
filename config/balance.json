@@ -38,5 +38,9 @@
 
   "offline": {
     "rateDiscount": 1.0
+  },
+
+  "challenge": {
+    "upgradeNerf": "0.25"
   }
 }

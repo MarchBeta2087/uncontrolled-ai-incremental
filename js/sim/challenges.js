@@ -13,6 +13,7 @@ import { checkCondition } from './conditions.js';
 
 const challenges = new Map(); // id -> { goalsDone: Set<number>, def: Object }
 let activeChallenge = null;  // 当前进行中的挑战 id（不存档，中断需重新进入）
+let nerfValue = '0.25';     // 挑战期间永久升级效果的削弱系数（可配置）
 
 export function initChallenges(cfg) {
   challenges.clear();
@@ -20,6 +21,16 @@ export function initChallenges(cfg) {
   for (const c of cfg.challenges ?? []) {
     challenges.set(c.id, { goalsDone: new Set(), def: c });
   }
+}
+
+/** 注入挑战削弱系数等可调参数（由 main.js 从 balance.json 调用） */
+export function configureChallenges(cfg = {}) {
+  if (cfg.challenge?.upgradeNerf !== undefined) nerfValue = cfg.challenge.upgradeNerf;
+}
+
+/** 当前挑战削弱系数（Num，1 为不削弱） */
+export function getNerf() {
+  return Num.parse(nerfValue);
 }
 
 export function getChallenge(id) {
@@ -53,14 +64,14 @@ export function canStart(id) {
   return checkCondition(c.def.unlockCondition);
 }
 
-/** 进入挑战：清空周目状态 + 施加限制（目标进度保留，重新进入从上次继续） */
+/** 进入挑战：清空周目状态 + 施加限制 + 削弱永久升级（保留但打折，非完全失效） */
 export function startChallenge(id) {
   if (!canStart(id)) return { ok: false, reason: '无法进入该挑战' };
-  Resources.reset();
-  Techs.reset();
+  Resources.resetRun(); // 清资源/生成器/技术乘子，保留永久全产出乘子
+  Techs.resetRun();     // 清技术及其速率乘子，保留永久速率乘子
   Time.reset();
-  Time.clearRateMultipliers();
   applyRestrictions(id);
+  applyNerf();
   activeChallenge = id;
   Events.emit('challenge:started', { id });
   return { ok: true };
@@ -70,6 +81,7 @@ export function startChallenge(id) {
 export function exitChallenge() {
   if (!activeChallenge) return;
   clearRestrictions();
+  clearNerf();
   activeChallenge = null;
   Events.emit('challenge:exited');
 }
@@ -99,6 +111,7 @@ export function checkProgress() {
   if (c.goalsDone.size >= goals.length) {
     const id = activeChallenge;
     clearRestrictions();
+    clearNerf();
     activeChallenge = null;
     Events.emit('challenge:completed', { id });
   }
@@ -132,6 +145,17 @@ function clearRestrictions() {
   Resources.clearGeneratorDisabled();
   Resources.clearChallengeCostMult();
   Time.clearChallengeRateDiv();
+}
+
+function applyNerf() {
+  const n = Num.parse(nerfValue);
+  Resources.setChallengeNerf(n);
+  Time.setChallengeRateNerf(n);
+}
+
+function clearNerf() {
+  Resources.clearChallengeNerf();
+  Time.clearChallengeRateNerf();
 }
 
 function applyGoalReward(id, goalIndex) {
@@ -170,5 +194,6 @@ export function load(data) {
   // 挑战进行态不存档：重新加载即退出挑战
   activeChallenge = null;
   clearRestrictions();
+  clearNerf();
   applyAll();
 }

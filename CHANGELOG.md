@@ -2,6 +2,18 @@
 
 本项目遵循语义化版本（SemVer）。
 
+## [0.2.0] - 2026-10-09
+
+### 新增（Added）
+
+- **GitHub Pages 部署**（`.github/workflows/pages.yml`）：push 到 main 自动部署到 https://marchbeta2087.github.io/uncontrolled-ai-incremental/。
+- **CI/CD**（`.github/workflows/ci.yml` + `test/smoke.mjs`）：配置校验、Num 序列化/格式化、穿梭结算、成本曲线、挑战多目标与削弱、成就奖励的回归测试。
+- **挑战期间永久升级削弱**：挑战开始不再完全清除永久升级（升级/挑战/成就），而是削弱至 25%（`balance.json` 的 `challenge.upgradeNerf`），退出/完成挑战后恢复；UI 显示「挑战中削弱至 25%」。
+
+### 修复（Fixed）
+
+- `initResources` 未清空 `globalMults` 等状态导致跨初始化残留。
+
 ## [0.1.0] - 2026-10-09
 
 首个可玩版本（MVP + 内容扩充）：完整周目循环、时间晶体升级树、成就、记忆碎片、挑战模式、离线收益报告。

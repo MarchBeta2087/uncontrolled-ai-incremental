@@ -16,6 +16,7 @@ const clickMults = new Map();      // sourceId -> Num
 const globalMults = new Map();     // sourceId -> Num（永久全产出乘子，穿梭保留）
 const disabledGenerators = new Set(); // 挑战禁用的生成器 id
 let challengeCostMult = Num.parse(1); // 挑战成本乘子（默认 1）
+let challengeNerfMult = Num.parse(1); // 挑战削弱系数（作用于永久全产出乘子，默认 1）
 
 let clickProduction = Num.parse(0);
 let clickResourceId = 'funds'; // MVP：点击产出资金
@@ -25,6 +26,10 @@ export function initResources(cfg) {
   generators.clear();
   generatorMults.clear();
   clickMults.clear();
+  globalMults.clear();
+  disabledGenerators.clear();
+  challengeCostMult = Num.parse(1);
+  challengeNerfMult = Num.parse(1);
 
   for (const r of cfg.resources ?? []) {
     resources.set(r.id, { amount: Num.parse(r.baseAmount ?? 0), def: r });
@@ -74,7 +79,7 @@ export function getGeneratorMultiplier(genId) {
 /** 某资源的总产出速率（游戏秒），用于 UI 展示 */
 export function getProductionPerSecond(resourceId) {
   let total = Num.parse(0);
-  const globalMult = getGlobalMultiplier();
+  const globalMult = Num.mul(getGlobalMultiplier(), challengeNerfMult);
   for (const [genId, g] of generators) {
     if (g.def.produces !== resourceId) continue;
     const perSec = Num.mul(
@@ -123,6 +128,13 @@ export function setChallengeCostMult(value) {
 }
 export function clearChallengeCostMult() {
   challengeCostMult = Num.parse(1);
+}
+/** 挑战削弱：永久全产出乘子的削弱系数（<1 削弱，1 不削弱） */
+export function setChallengeNerf(value) {
+  challengeNerfMult = Num.parse(value);
+}
+export function clearChallengeNerf() {
+  challengeNerfMult = Num.parse(1);
 }
 /** 清空所有技术乘子（穿梭回卷 / 重新加载周目内状态时用） */
 export function clearMultipliers() {
@@ -215,7 +227,7 @@ export function buyMaxAll() {
 /** 每 tick 生产结算：产出 = 基础产量 × 数量 × 技术乘子 × 全局乘子，再 × 游戏秒增量 */
 export function tick(dtGameSeconds) {
   const dt = Num.parse(dtGameSeconds);
-  const globalMult = getGlobalMultiplier();
+  const globalMult = Num.mul(getGlobalMultiplier(), challengeNerfMult);
   for (const [genId, g] of generators) {
     const perSec = Num.mul(
       Num.mul(Num.mul(Num.parse(g.def.baseProduction), g.count), getGeneratorMultiplier(genId)),
@@ -258,4 +270,15 @@ export function reset() {
   }
   clearMultipliers();
   globalMults.clear(); // 永久乘子也清（穿梭后由升级 applyAll 重新应用）
+}
+
+/** 挑战开始：清空周目内资源/生成器/技术乘子，但保留永久乘子（升级/挑战/成就奖励，挑战期间削弱） */
+export function resetRun() {
+  for (const r of resources.values()) {
+    r.amount = Num.parse(r.def.baseAmount ?? 0);
+  }
+  for (const g of generators.values()) {
+    g.count = Num.parse(0);
+  }
+  clearMultipliers(); // 清技术乘子，保留 globalMults
 }
