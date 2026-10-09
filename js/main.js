@@ -48,10 +48,15 @@ async function bootstrap() {
 
     // 自动存档：每 30 秒 + 页面隐藏 + 关闭前（设计 §7.1）
     setInterval(() => save(), AUTO_SAVE_MS);
-    window.addEventListener('beforeunload', () => save());
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) save();
+    window.addEventListener('beforeunload', () => {
+      // 硬重置时跳过自动存档，避免把旧状态写回
+      if (!window.sessionStorage.getItem('uai_resetting')) save();
     });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && !window.sessionStorage.getItem('uai_resetting')) save();
+    });
+    // 清除硬重置标记（正常启动到这里说明标记已消费）
+    window.sessionStorage.removeItem('uai_resetting');
 
     // UI 触发的存档请求
     Events.on('save:request', () => {

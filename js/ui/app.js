@@ -270,6 +270,7 @@ function buildShell() {
   resetBtn.onclick = () => {
     if (window.confirm('确定硬重置？将清除所有存档进度，且不可恢复。')) {
       Save.clear();
+      window.sessionStorage.setItem('uai_resetting', '1'); // 阻止 beforeunload 重新写回旧档
       window.location.reload();
     }
   };
@@ -281,6 +282,11 @@ function buildShell() {
   modalBody.append(el('p', 'modal-text', '代码 GPL-3.0-or-later · 素材 CC BY-SA 4.0 · 字体 SIL OFL 1.1'));
   modalBody.append(el('p', 'modal-text', '大数库 MegotaNum.js（MIT，© sonic3XE）'));
   modalBody.append(el('p', 'modal-text', '设计参照 Ordinal Markup（机制理念，未复用其代码/素材）'));
+  const repoLink = el('a', 'modal-text', '项目仓库：github.com/MarchBeta2087/uncontrolled-ai-incremental');
+  repoLink.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental';
+  repoLink.target = '_blank';
+  repoLink.rel = 'noopener noreferrer';
+  modalBody.append(repoLink);
 
   const closeBtn = el('button', 'btn', '关闭');
   closeBtn.onclick = () => closeModal();
@@ -374,10 +380,12 @@ function updateGenerators() {
     const afford = currency !== null && Num.gte(currency, cost);
     const perOne = Num.mul(Num.parse(def.baseProduction), Resources.getGeneratorMultiplier(gid));
     const maxN = Resources.maxAffordable(gid);
+    const costName = Resources.getResourceDef(def.costCurrency).name;
+    const prodName = Resources.getResourceDef(def.produces).name;
     card.querySelector('.gen-count').textContent = count ? Num.format(count) : '0';
     card.querySelector('.gen-meta').textContent =
-      `每个 +${Num.format(perOne)} ${Resources.getResourceDef(def.produces).name}/秒`;
-    buyOneBtn.textContent = `×1 · ${Num.format(cost)}`;
+      `消耗 ${costName} · 每个 +${Num.format(perOne)} ${prodName}/秒`;
+    buyOneBtn.textContent = `×1 · ${Num.format(cost)} ${costName}`;
     buyOneBtn.disabled = !afford;
     maxBtn.textContent = `MAX ×${Num.format(maxN)}`;
     maxBtn.disabled = Num.lte(maxN, 0);
@@ -413,9 +421,12 @@ function updateExpand() {
   refs.progressFill.style.width = `${pct.toFixed(1)}%`;
   refs.labelRight.textContent = `${Num.format(mass)} / ${Num.format(cap)} J`;
   const ready = Prestige.canPrestige();
+  const preview = Prestige.calculateCrystals();
   refs.status.textContent = ready ? '宇宙质能已耗尽，可撕开因果闭环的裂缝' : '尚未触顶';
   refs.prestigeBtn.disabled = !ready;
-  refs.crystalInfo.textContent = `时间晶体：${Num.format(Prestige.getTimeCrystals())}`;
+  refs.crystalInfo.textContent = ready
+    ? `时间晶体：${Num.format(Prestige.getTimeCrystals())}（穿梭将 +${Num.toString(preview)}）`
+    : `时间晶体：${Num.format(Prestige.getTimeCrystals())}`;
 
   // 时间晶体升级卡片
   if (refs.upgGrid) {
