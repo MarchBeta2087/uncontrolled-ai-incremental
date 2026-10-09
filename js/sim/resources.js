@@ -16,7 +16,7 @@ const clickMults = new Map();      // sourceId -> Num
 const globalMults = new Map();     // sourceId -> Num（永久全产出乘子，穿梭保留）
 const disabledGenerators = new Set(); // 挑战禁用的生成器 id
 let challengeCostMult = Num.parse(1); // 挑战成本乘子（默认 1）
-let challengeNerfMult = Num.parse(1); // 挑战削弱系数（作用于永久全产出乘子，默认 1）
+let challengeNerfExp = Num.parse(1); // 挑战削弱指数（作用于永久全产出乘子，1=不削弱，0.25=开四次方）
 
 let clickProduction = Num.parse(0);
 let clickResourceId = 'funds'; // MVP：点击产出资金
@@ -29,7 +29,7 @@ export function initResources(cfg) {
   globalMults.clear();
   disabledGenerators.clear();
   challengeCostMult = Num.parse(1);
-  challengeNerfMult = Num.parse(1);
+  challengeNerfExp = Num.parse(1);
 
   for (const r of cfg.resources ?? []) {
     resources.set(r.id, { amount: Num.parse(r.baseAmount ?? 0), def: r });
@@ -79,7 +79,7 @@ export function getGeneratorMultiplier(genId) {
 /** 某资源的总产出速率（游戏秒），用于 UI 展示 */
 export function getProductionPerSecond(resourceId) {
   let total = Num.parse(0);
-  const globalMult = Num.mul(getGlobalMultiplier(), challengeNerfMult);
+  const globalMult = Num.pow(getGlobalMultiplier(), challengeNerfExp);
   for (const [genId, g] of generators) {
     if (g.def.produces !== resourceId) continue;
     const perSec = Num.mul(
@@ -129,12 +129,12 @@ export function setChallengeCostMult(value) {
 export function clearChallengeCostMult() {
   challengeCostMult = Num.parse(1);
 }
-/** 挑战削弱：永久全产出乘子的削弱系数（<1 削弱，1 不削弱） */
-export function setChallengeNerf(value) {
-  challengeNerfMult = Num.parse(value);
+/** 挑战削弱：永久全产出乘子的削弱指数（<1 削弱，如 0.25 为乘子开四次方） */
+export function setChallengeNerfExp(value) {
+  challengeNerfExp = Num.parse(value);
 }
-export function clearChallengeNerf() {
-  challengeNerfMult = Num.parse(1);
+export function clearChallengeNerfExp() {
+  challengeNerfExp = Num.parse(1);
 }
 /** 清空所有技术乘子（穿梭回卷 / 重新加载周目内状态时用） */
 export function clearMultipliers() {
@@ -227,7 +227,7 @@ export function buyMaxAll() {
 /** 每 tick 生产结算：产出 = 基础产量 × 数量 × 技术乘子 × 全局乘子，再 × 游戏秒增量 */
 export function tick(dtGameSeconds) {
   const dt = Num.parse(dtGameSeconds);
-  const globalMult = Num.mul(getGlobalMultiplier(), challengeNerfMult);
+  const globalMult = Num.pow(getGlobalMultiplier(), challengeNerfExp);
   for (const [genId, g] of generators) {
     const perSec = Num.mul(
       Num.mul(Num.mul(Num.parse(g.def.baseProduction), g.count), getGeneratorMultiplier(genId)),

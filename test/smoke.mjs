@@ -83,10 +83,10 @@ upgMod.buyUpgrade('causal_residue_1'); // 全产出 ×2
 const beforeNerf = resMod.getGlobalMultiplier();
 chMod.startChallenge('challenge_no_investment');
 assert('挑战中永久乘子保留(削弱)', Num.eq(resMod.getGlobalMultiplier(), beforeNerf));
-// 挑战中产出削弱：1 节点 ×10 baseProd × 全局2 × nerf0.25
+// 挑战中产出削弱：全局乘子 2 → 2^0.25
 resMod.load({ resources: {}, generators: { compute_node: Num.toJSON('1') } });
 const prod = resMod.getProductionPerSecond('compute');
-assert('挑战中产出削弱 10×2×0.25=5', Num.eq(prod, 5));
+assert('挑战中产出削弱 10×2^0.25≈11.892', Num.eq(prod, Num.mul(10, Num.pow(2, Num.parse('0.25')))));
 // 目标推进
 resMod.load({ resources: { mass_energy: Num.toJSON('1e12') }, generators: {} });
 chMod.checkProgress();

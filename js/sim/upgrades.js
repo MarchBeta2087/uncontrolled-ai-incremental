@@ -74,7 +74,7 @@ function applyEffects(effects, sourceId) {
         Resources.setClickMultiplier(sourceId, e.value);
         break;
       case 'rate_mult':
-        Time.setRateMultiplier(sourceId, e.value);
+        Time.setRateMultiplier(sourceId, e.value, true); // 永久速率乘子
         break;
       case 'offline_mult':
         offlineMults.set(sourceId, Num.parse(e.value));

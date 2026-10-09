@@ -35,8 +35,9 @@ let YEAR_SCI_LIMIT = Num.parse(DEFAULTS.yearScientificLimit);
 
 let gameSecondsElapsed = Num.parse(0);
 const rateMultipliers = new Map(); // id -> Num（各机制贡献的时间速率乘子）
+const permanentRateSources = new Set(); // 永久速率乘子来源 id（升级/挑战/成就）
 let challengeRateDiv = Num.parse(1); // 挑战速率惩罚（默认 1）
-let challengeRateNerf = Num.parse(1); // 挑战削弱系数（作用于永久速率乘子，默认 1）
+let challengeRateNerfExp = Num.parse(1); // 挑战削弱指数（作用于永久速率乘子，默认 1）
 
 function pad(n) {
   return String(n).padStart(2, '0');
@@ -59,21 +60,25 @@ function formatYearOnly(Y) {
 
 export const Time = {
   // ---- 速率乘子管理 ----
-  setRateMultiplier(id, value) {
+  setRateMultiplier(id, value, permanent = false) {
     const v = Num.parse(value);
     if (Num.isNaN(v)) return;
     rateMultipliers.set(id, v);
+    if (permanent) permanentRateSources.add(id);
+    else permanentRateSources.delete(id);
   },
   removeRateMultiplier(id) {
     rateMultipliers.delete(id);
   },
   clearRateMultipliers() {
     rateMultipliers.clear();
+    permanentRateSources.clear();
   },
 
   /** 移除指定来源的速率乘子（挑战开始清技术速率乘子用，保留永久速率乘子） */
   removeRateMultiplier(id) {
     rateMultipliers.delete(id);
+    permanentRateSources.delete(id);
   },
 
   /** 挑战限制：时间速率惩罚（÷value） */
@@ -84,12 +89,12 @@ export const Time = {
     challengeRateDiv = Num.parse(1);
   },
 
-  /** 挑战削弱：永久速率乘子削弱系数 */
-  setChallengeRateNerf(value) {
-    challengeRateNerf = Num.parse(value);
+  /** 挑战削弱：永久速率乘子的削弱指数 */
+  setChallengeRateNerfExp(value) {
+    challengeRateNerfExp = Num.parse(value);
   },
-  clearChallengeRateNerf() {
-    challengeRateNerf = Num.parse(1);
+  clearChallengeRateNerfExp() {
+    challengeRateNerfExp = Num.parse(1);
   },
 
   /** 基础速率（不含乘子） */
@@ -97,15 +102,15 @@ export const Time = {
     return BASE_RATE;
   },
 
-  /** 当前时间速率（游戏秒/物理秒），已含软上限、挑战惩罚与挑战削弱 */
+  /** 当前时间速率（游戏秒/物理秒），永久速率乘子在挑战中取 ^nerfExp 削弱 */
   getRate() {
     let r = BASE_RATE;
-    for (const m of rateMultipliers.values()) {
-      r = Num.mul(r, m);
+    for (const [id, m] of rateMultipliers) {
+      const eff = permanentRateSources.has(id) ? Num.pow(m, challengeRateNerfExp) : m;
+      r = Num.mul(r, eff);
     }
     if (Num.gt(r, RATE_CAP)) r = RATE_CAP;
     r = Num.div(r, challengeRateDiv);
-    r = Num.mul(r, challengeRateNerf);
     return r;
   },
 

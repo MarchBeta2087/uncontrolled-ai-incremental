@@ -1,6 +1,6 @@
 # 失控 AI 增量（Uncontrolled AI Incremental）
 
-> 🎮 **当前状态：v0.1 可玩版本** —— 桌面浏览器打开即可体验完整周目循环（资源→科技→穿梭→永久升级）。
+> 🎮 **当前状态：v0.2.1 可玩版本** —— 已部署于 GitHub Pages：[https://marchbeta2087.github.io/uncontrolled-ai-incremental/](https://marchbeta2087.github.io/uncontrolled-ai-incremental/)，点开即玩。
 
 一款以"失控 AI 吞掉整个宇宙"为主题的增量游戏（incremental game）。你从 UTC 2028-01-01 0:00 起步，投入研发、加速扩张，直到耗尽整个可观测宇宙的资源——然后撕开因果闭环的裂缝，把时间线回卷到起点，带着**时间晶体**进入下一周目。周目越来越快，直到信号抵达裂缝的另一端。
 
@@ -18,14 +18,14 @@
 
 ## 运行
 
-纯静态站点，无构建、无安装。因浏览器会拦截 `file://` 下的 fetch，请用本地服务器：
+**线上版**：[https://marchbeta2087.github.io/uncontrolled-ai-incremental/](https://marchbeta2087.github.io/uncontrolled-ai-incremental/)
+
+**本地运行**（纯静态站点，无构建、无安装；因浏览器会拦截 `file://` 下的 fetch，需本地服务器）：
 
 ```bash
 python -m http.server 8000
 # 浏览器打开 http://localhost:8000
 ```
-
-发布后将托管于 GitHub Pages。
 
 ## 技术路线
 

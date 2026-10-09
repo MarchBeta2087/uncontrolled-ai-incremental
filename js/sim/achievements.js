@@ -53,7 +53,7 @@ function applyReward(id) {
       Resources.setGlobalMultiplier('achievement:' + id, r.value);
       break;
     case 'rate_mult':
-      Time.setRateMultiplier('achievement:' + id, r.value);
+      Time.setRateMultiplier('achievement:' + id, r.value, true);
       break;
     case 'generator_mult':
       Resources.setGeneratorMultiplier(r.target, 'achievement:' + id, r.value);

@@ -15,6 +15,8 @@ import * as Challenges from '../sim/challenges.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 
+const VERSION = '0.2.1';
+
 const refs = {};
 let dirty = false;
 let rafId = 0;
@@ -246,7 +248,7 @@ function buildShell() {
         if (!r.ok) showToast(r.reason || '无法进入挑战');
         else showToast(`已进入挑战：${c.name}`);
       }
-      markDirty();
+      renderNow();
     };
     card.append(btn);
     chGrid.append(card);
@@ -363,6 +365,7 @@ function buildShell() {
 
   modalBody.append(el('div', 'modal-section', '关于'));
   modalBody.append(el('p', 'modal-text', '《失控 AI 增量》'));
+  modalBody.append(el('p', 'modal-text', `版本 v${VERSION}`));
   modalBody.append(el('p', 'modal-text', '代码 GPL-3.0-or-later · 素材 CC BY-SA 4.0 · 字体 SIL OFL 1.1'));
   modalBody.append(el('p', 'modal-text', '大数库 MegotaNum.js（MIT，© sonic3XE）'));
   modalBody.append(el('p', 'modal-text', '设计参照 Ordinal Markup（机制理念，未复用其代码/素材）'));
@@ -475,15 +478,33 @@ function markDirty() {
   if (!rafId) rafId = requestAnimationFrame(render);
 }
 
+/** 同步立即渲染（挑战按钮等关键交互用，确保状态即时反映） */
+function renderNow() {
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+  dirty = false;
+  render();
+}
+
+function safeUpdate(fn, name) {
+  try {
+    fn();
+  } catch (err) {
+    console.error(`[UI] ${name} 渲染异常：`, err);
+  }
+}
+
 function render() {
   dirty = false;
   rafId = 0;
-  updateTitlebar();
-  updateResources();
-  updateGenerators();
-  updateTechs();
-  updateExpand();
-  updateRecords();
+  safeUpdate(updateTitlebar, 'updateTitlebar');
+  safeUpdate(updateResources, 'updateResources');
+  safeUpdate(updateGenerators, 'updateGenerators');
+  safeUpdate(updateTechs, 'updateTechs');
+  safeUpdate(updateExpand, 'updateExpand');
+  safeUpdate(updateRecords, 'updateRecords');
 }
 
 function updateTitlebar() {
@@ -573,8 +594,7 @@ function updateExpand() {
   if (refs.upgTitle) {
     const active = Challenges.getActiveChallenge();
     if (active) {
-      const nerfPct = Num.toString(Num.mul(Challenges.getNerf(), 100));
-      refs.upgTitle.textContent = `时间晶体升级（挑战中削弱至 ${nerfPct}%）`;
+      refs.upgTitle.textContent = `时间晶体升级（挑战中：效果 ^${Challenges.getNerf().toString()}）`;
     } else {
       refs.upgTitle.textContent = '时间晶体升级';
     }
@@ -582,19 +602,29 @@ function updateExpand() {
 
   // 时间晶体升级卡片
   if (refs.upgGrid) {
+    const activeChallenge = Challenges.getActiveChallenge();
     for (const card of refs.upgGrid.querySelectorAll('.tech-card')) {
       const btn = card.querySelector('.btn');
       const uid = btn.dataset.upg;
       const u = Upgrades.getUpgrade(uid);
       const owned = Upgrades.isOwned(uid);
       card.classList.toggle('owned', owned);
-      card.querySelector('.tech-cost').textContent = `成本：${Num.format(Num.parse(u.cost))} 晶体`;
+      const costEl = card.querySelector('.tech-cost');
       if (owned) {
         btn.textContent = '已购买';
         btn.disabled = true;
+        // 挑战中显示削弱后的实际效果（乘子 ^nerf）
+        if (activeChallenge && u.effects?.length) {
+          const e = u.effects[0];
+          const nerfed = Num.pow(Num.parse(e.value), Challenges.getNerf());
+          costEl.textContent = `效果 ×${e.value} → ×${Num.format(nerfed, { decimals: 6 })}`;
+        } else {
+          costEl.textContent = `成本：${Num.format(Num.parse(u.cost))} 晶体`;
+        }
       } else {
         btn.textContent = '购买';
         btn.disabled = !Upgrades.canBuy(uid);
+        costEl.textContent = `成本：${Num.format(Num.parse(u.cost))} 晶体`;
       }
     }
   }

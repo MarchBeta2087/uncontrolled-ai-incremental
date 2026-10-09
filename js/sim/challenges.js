@@ -149,13 +149,13 @@ function clearRestrictions() {
 
 function applyNerf() {
   const n = Num.parse(nerfValue);
-  Resources.setChallengeNerf(n);
-  Time.setChallengeRateNerf(n);
+  Resources.setChallengeNerfExp(n);
+  Time.setChallengeRateNerfExp(n);
 }
 
 function clearNerf() {
-  Resources.clearChallengeNerf();
-  Time.clearChallengeRateNerf();
+  Resources.clearChallengeNerfExp();
+  Time.clearChallengeRateNerfExp();
 }
 
 function applyGoalReward(id, goalIndex) {
@@ -167,7 +167,7 @@ function applyGoalReward(id, goalIndex) {
       Resources.setGlobalMultiplier(sourceId, r.value);
       break;
     case 'rate_mult':
-      Time.setRateMultiplier(sourceId, r.value);
+      Time.setRateMultiplier(sourceId, r.value, true);
       break;
     case 'generator_mult':
       Resources.setGeneratorMultiplier(r.target, sourceId, r.value);
