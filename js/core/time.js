@@ -83,7 +83,7 @@ export const Time = {
   /**
    * 结算一个物理 tick 的时间增量。
    * @param {number} dtRealSeconds 物理秒差值（float64，仅 tick 间隔用）
-   * @returns {object} 当前 gameSecondsElapsed（Num）
+   * @returns {object} 本次游戏秒增量（Num），供生产链按游戏内时间结算
    */
   tick(dtRealSeconds) {
     const inc = Num.mul(Num.parse(dtRealSeconds), this.getRate());
@@ -91,10 +91,10 @@ export const Time = {
     if (Num.isNaN(next)) {
       // 设计 §10：时间轴运算异常 → 冻结在本次合法值，UI 显示"时间轴异常"
       Events.emit('time:error', { reason: 'NaN', at: gameSecondsElapsed });
-      return gameSecondsElapsed;
+      return Num.parse(0);
     }
     gameSecondsElapsed = next;
-    return gameSecondsElapsed;
+    return inc;
   },
 
   /** 穿梭回卷：时间归零（回 2028-01-01 00:00:00），速率乘子由穿梭结算重算 */
