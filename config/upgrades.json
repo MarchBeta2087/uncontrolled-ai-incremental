@@ -6,6 +6,8 @@
     { "id": "causal_residue_3", "name": "因果残响 III", "description": "全产出 ×4", "cost": "6", "requires": ["causal_residue_2"], "effects": [{ "type": "all_generator_mult", "value": "4" }] },
     { "id": "rate_resonance_1", "name": "时间晶体谐振 I", "description": "时间速率 ×10", "cost": "2", "requires": [], "effects": [{ "type": "rate_mult", "value": "10" }] },
     { "id": "rate_resonance_2", "name": "时间晶体谐振 II", "description": "时间速率 ×100", "cost": "8", "requires": ["rate_resonance_1"], "effects": [{ "type": "rate_mult", "value": "100" }] },
-    { "id": "rate_resonance_3", "name": "时间晶体谐振 III", "description": "时间速率 ×1000", "cost": "20", "requires": ["rate_resonance_2"], "effects": [{ "type": "rate_mult", "value": "1000" }] }
+    { "id": "rate_resonance_3", "name": "时间晶体谐振 III", "description": "时间速率 ×1000", "cost": "20", "requires": ["rate_resonance_2"], "effects": [{ "type": "rate_mult", "value": "1000" }] },
+    { "id": "offline_efficiency_1", "name": "离线收益 I", "description": "离线收益 ×2", "cost": "4", "requires": [], "effects": [{ "type": "offline_mult", "value": "2" }] },
+    { "id": "offline_efficiency_2", "name": "离线收益 II", "description": "离线收益 ×5", "cost": "12", "requires": ["offline_efficiency_1"], "effects": [{ "type": "offline_mult", "value": "5" }] }
   ]
 }

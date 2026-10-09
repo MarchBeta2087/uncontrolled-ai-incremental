@@ -440,6 +440,7 @@ function showToast(text) {
 
 function formatDuration(seconds) {
   const s = Math.floor(seconds);
+  if (s < 1) return '不足 1 秒';
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;

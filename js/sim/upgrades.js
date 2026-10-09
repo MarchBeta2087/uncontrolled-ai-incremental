@@ -11,6 +11,7 @@ import * as Prestige from './prestige.js';
 import { Events } from '../core/events.js';
 
 const upgrades = new Map(); // id -> { owned: bool, def: Object }
+const offlineMults = new Map(); // sourceId -> Num（离线收益乘子，永久）
 
 export function initUpgrades(cfg) {
   upgrades.clear();
@@ -27,6 +28,13 @@ export function getUpgrade(id) {
 }
 export function getUpgradeIds() {
   return [...upgrades.keys()];
+}
+
+/** 当前离线收益总乘子（时间晶体升级贡献） */
+export function getOfflineMult() {
+  let m = Num.parse(1);
+  for (const v of offlineMults.values()) m = Num.mul(m, v);
+  return m;
 }
 
 export function canBuy(id) {
@@ -67,6 +75,9 @@ function applyEffects(effects, sourceId) {
         break;
       case 'rate_mult':
         Time.setRateMultiplier(sourceId, e.value);
+        break;
+      case 'offline_mult':
+        offlineMults.set(sourceId, Num.parse(e.value));
         break;
       default:
         console.warn(`[Upgrades] 未知效果类型: ${e.type}`);

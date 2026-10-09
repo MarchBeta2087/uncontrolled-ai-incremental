@@ -53,9 +53,9 @@ async function bootstrap() {
     initUI();
     Engine.start();
 
-    // 离线收益报告弹窗（延迟到 UI 就绪后展示）
+    // 离线收益报告弹窗（UI 就绪后立即显示，需玩家自行关闭）
     if (pendingOfflineReport) {
-      setTimeout(() => Events.emit('ui:offline-report', pendingOfflineReport), 600);
+      Events.emit('ui:offline-report', pendingOfflineReport);
       pendingOfflineReport = null;
     }
 
@@ -90,10 +90,11 @@ async function bootstrap() {
         Events.emit('ui:toast', { text: `导入失败：${err.message}` });
       }
     });
-    // 穿梭后：重新应用永久升级/挑战奖励（挑战完成由每 tick 的 checkProgress 处理）
+    // 穿梭后：重新应用永久升级/挑战奖励/成就奖励（挑战完成由每 tick 的 checkProgress 处理）
     Events.on('prestige:done', () => {
       Upgrades.applyAll();
       Challenges.applyAll();
+      Achievements.applyAll();
     });
     // 退出/完成挑战后，重新应用永久升级与挑战奖励（挑战期间被清空）
     Events.on('challenge:exited', () => {
@@ -163,7 +164,10 @@ function settleOffline(snap) {
   let offlineReal = (now - last) / 1000;
   if (offlineReal <= 0) return null; // 系统时间回拨
   offlineReal = Math.min(offlineReal, MAX_OFFLINE_SECONDS);
-  const offlineGame = Num.mul(Num.parse(offlineReal * offlineDiscount), Time.getRate());
+  const offlineGame = Num.mul(
+    Num.mul(Num.parse(offlineReal * offlineDiscount), Time.getRate()),
+    Upgrades.getOfflineMult()
+  );
 
   // 记录离线前各资源量
   const before = new Map();

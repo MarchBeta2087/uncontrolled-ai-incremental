@@ -1,0 +1,33 @@
+/* css/shell-mobile.css —— 移动端外壳（M3，设计 §8.3）
+   触控目标 ≥44px、单列布局、底部 Tab 导航、穿梭动画降级为全屏渐变。 */
+
+/* 触控友好：按钮/可点元素不小于 44px */
+.shell-mobile .btn { min-height: 44px; padding: 10px 14px; font-size: 14px; }
+.shell-mobile .task-btn { flex: 1; min-height: 48px; padding: 12px 4px; font-size: 13px; }
+
+/* 底部 Tab 导航加高 */
+.shell-mobile .taskbar { height: 58px; padding: 4px 6px; gap: 4px; }
+
+/* 点击大按钮 */
+.shell-mobile .click-btn { min-height: 100px; padding: 40px 16px; font-size: 20px; }
+
+/* 单列布局 */
+.shell-mobile .resources-layout,
+.shell-mobile .records-layout { grid-template-columns: 1fr; }
+.shell-mobile .tech-grid { grid-template-columns: 1fr; }
+.shell-mobile .ach-grid { grid-template-columns: 1fr 1fr; }
+
+/* 标题栏精简 */
+.shell-mobile .titlebar { height: 46px; padding: 0 10px; }
+.shell-mobile .titlebar-right { gap: 10px; font-size: 11px; }
+
+/* 生成器卡片：按钮组换行到右侧 */
+.shell-mobile .gen-card { flex-wrap: wrap; }
+.shell-mobile .gen-btns { width: 100%; justify-content: flex-end; }
+
+/* 面板与视口间距 */
+.shell-mobile .view-container { padding: 10px; }
+.shell-mobile .panel { padding: 10px; }
+
+/* 数值字号略调大，便于阅读 */
+.shell-mobile .res-value { font-size: 16px; }

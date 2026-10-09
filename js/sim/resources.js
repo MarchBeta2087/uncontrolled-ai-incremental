@@ -180,14 +180,14 @@ export function buyGenerator(genId, n = 1) {
   return { ok: true, cost, count: g.count };
 }
 
-/** 当前资源能买的最大数量（几何级数反解；被禁用的生成器为 0） */
+/** 当前资源能买的最大数量（几何级数反解；含挑战成本乘子，被禁用的生成器为 0） */
 export function maxAffordable(genId) {
   if (disabledGenerators.has(genId)) return Num.parse(0);
   const g = generators.get(genId);
   if (!g) return Num.parse(0);
   const currency = resources.get(g.def.costCurrency);
   if (!currency) return Num.parse(0);
-  const base = Num.parse(g.def.baseCost);
+  const base = Num.mul(Num.parse(g.def.baseCost), challengeCostMult);
   const growth = Num.parse(g.def.costGrowth);
   const firstCost = Num.mul(base, Num.pow(growth, g.count));
   const ratio = Num.div(Num.mul(currency.amount, Num.sub(growth, Num.parse(1))), firstCost);
