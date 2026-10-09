@@ -11,6 +11,7 @@ import * as Prestige from './sim/prestige.js';
 import * as Upgrades from './sim/upgrades.js';
 import * as Achievements from './sim/achievements.js';
 import * as Fragments from './sim/fragments.js';
+import * as Challenges from './sim/challenges.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
@@ -20,6 +21,7 @@ const MAX_OFFLINE_SECONDS = 8 * 3600; // 离线结算上限 8 小时
 
 let meta = { createdAt: Date.now() };
 let offlineDiscount = 1.0;
+let pendingOfflineReport = null;
 
 async function bootstrap() {
   try {
@@ -42,6 +44,7 @@ async function bootstrap() {
     Upgrades.initUpgrades(cfg.upgrades);
     Achievements.initAchievements(cfg.achievements);
     Fragments.initFragments(cfg.fragments);
+    Challenges.initChallenges(cfg.challenges);
 
     // 恢复存档（含离线结算）
     restoreSave();
@@ -49,6 +52,12 @@ async function bootstrap() {
     // UI 与主循环
     initUI();
     Engine.start();
+
+    // 离线收益报告弹窗（延迟到 UI 就绪后展示）
+    if (pendingOfflineReport) {
+      setTimeout(() => Events.emit('ui:offline-report', pendingOfflineReport), 600);
+      pendingOfflineReport = null;
+    }
 
     // 自动存档：每 30 秒 + 页面隐藏 + 关闭前（设计 §7.1）
     setInterval(() => save(), AUTO_SAVE_MS);
@@ -81,8 +90,12 @@ async function bootstrap() {
         Events.emit('ui:toast', { text: `导入失败：${err.message}` });
       }
     });
-    // 穿梭后重新应用永久升级效果
-    Events.on('prestige:done', () => Upgrades.applyAll());
+    // 穿梭后：完成挑战判定 + 重新应用永久升级/挑战奖励
+    Events.on('prestige:done', () => {
+      Challenges.onPrestige();
+      Upgrades.applyAll();
+      Challenges.applyAll();
+    });
     // 每 tick 轮询成就与碎片条件
     Events.on('tick', () => {
       Achievements.checkAll();
@@ -128,9 +141,10 @@ function restoreFromSnapshot(snap) {
   Upgrades.load(snap.metaProgress?.upgrades);
   Achievements.load(snap.metaProgress?.achievements);
   Fragments.load(snap.metaProgress?.fragments);
+  Challenges.load(snap.metaProgress?.challenges);
 
-  // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣
-  settleOffline(snap);
+  // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣；返回报告供 UI 弹窗
+  pendingOfflineReport = settleOffline(snap);
 }
 
 function settleOffline(snap) {
@@ -168,6 +182,7 @@ function buildSnapshot() {
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),
+      challenges: Challenges.serialize(),
     },
     theories: [],
   };

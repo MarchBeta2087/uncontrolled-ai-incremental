@@ -14,6 +14,8 @@ const generators = new Map();      // id -> { count: Num, def: Object }
 const generatorMults = new Map();  // genId -> Map(sourceId -> Num)
 const clickMults = new Map();      // sourceId -> Num
 const globalMults = new Map();     // sourceId -> Num（永久全产出乘子，穿梭保留）
+const disabledGenerators = new Set(); // 挑战禁用的生成器 id
+let challengeCostMult = Num.parse(1); // 挑战成本乘子（默认 1）
 
 let clickProduction = Num.parse(0);
 let clickResourceId = 'funds'; // MVP：点击产出资金
@@ -91,6 +93,10 @@ export function getClickMultiplier() {
   for (const v of clickMults.values()) m = Num.mul(m, v);
   return m;
 }
+/** 当前每次点击的产出（含乘子） */
+export function getClickProduction() {
+  return Num.mul(clickProduction, getClickMultiplier());
+}
 /** 永久全产出乘子（时间晶体升级等，穿梭后由升级重新应用） */
 export function setGlobalMultiplier(sourceId, value) {
   globalMults.set(sourceId, Num.parse(value));
@@ -102,6 +108,21 @@ export function getGlobalMultiplier() {
 }
 export function clearGlobalMultipliers() {
   globalMults.clear();
+}
+/** 挑战限制：禁用/恢复某生成器 */
+export function setGeneratorDisabled(genId, disabled) {
+  if (disabled) disabledGenerators.add(genId);
+  else disabledGenerators.delete(genId);
+}
+export function clearGeneratorDisabled() {
+  disabledGenerators.clear();
+}
+/** 挑战限制：所有生成器成本乘子 */
+export function setChallengeCostMult(value) {
+  challengeCostMult = Num.parse(value);
+}
+export function clearChallengeCostMult() {
+  challengeCostMult = Num.parse(1);
 }
 /** 清空所有技术乘子（穿梭回卷 / 重新加载周目内状态时用） */
 export function clearMultipliers() {
@@ -128,12 +149,12 @@ export function spend(id, amount) {
   return true;
 }
 
-/** 当前已有 count 个时，再买 n 个生成器的总成本（几何级数求和） */
+/** 当前已有 count 个时，再买 n 个生成器的总成本（几何级数求和，含挑战成本乘子） */
 export function buyCost(genId, n) {
   const g = generators.get(genId);
   if (!g) return Num.parse(0);
   const count = Num.parse(n);
-  const base = Num.parse(g.def.baseCost);
+  const base = Num.mul(Num.parse(g.def.baseCost), challengeCostMult);
   const growth = Num.parse(g.def.costGrowth);
   const gCur = Num.pow(growth, g.count); // growth^current
   const gN = Num.pow(growth, count);     // growth^n
@@ -144,6 +165,7 @@ export function buyCost(genId, n) {
 export function buyGenerator(genId, n = 1) {
   const g = generators.get(genId);
   if (!g) return { ok: false, reason: '生成器不存在' };
+  if (disabledGenerators.has(genId)) return { ok: false, reason: '该生成器在当前挑战中被禁用' };
   const count = Num.parse(n);
   if (Num.lte(count, 0)) return { ok: false, reason: '购买数量须为正整数' };
   const cost = buyCost(genId, count);
@@ -158,8 +180,9 @@ export function buyGenerator(genId, n = 1) {
   return { ok: true, cost, count: g.count };
 }
 
-/** 当前资源能买的最大数量（几何级数反解） */
+/** 当前资源能买的最大数量（几何级数反解；被禁用的生成器为 0） */
 export function maxAffordable(genId) {
+  if (disabledGenerators.has(genId)) return Num.parse(0);
   const g = generators.get(genId);
   if (!g) return Num.parse(0);
   const currency = resources.get(g.def.costCurrency);

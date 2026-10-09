@@ -35,6 +35,7 @@ let YEAR_SCI_LIMIT = Num.parse(DEFAULTS.yearScientificLimit);
 
 let gameSecondsElapsed = Num.parse(0);
 const rateMultipliers = new Map(); // id -> Num（各机制贡献的时间速率乘子）
+let challengeRateDiv = Num.parse(1); // 挑战速率惩罚（默认 1）
 
 function pad(n) {
   return String(n).padStart(2, '0');
@@ -69,18 +70,27 @@ export const Time = {
     rateMultipliers.clear();
   },
 
+  /** 挑战限制：时间速率惩罚（÷value） */
+  setChallengeRateDiv(value) {
+    challengeRateDiv = Num.parse(value);
+  },
+  clearChallengeRateDiv() {
+    challengeRateDiv = Num.parse(1);
+  },
+
   /** 基础速率（不含乘子） */
   getBaseRate() {
     return BASE_RATE;
   },
 
-  /** 当前时间速率（游戏秒/物理秒），已含软上限 */
+  /** 当前时间速率（游戏秒/物理秒），已含软上限与挑战惩罚 */
   getRate() {
     let r = BASE_RATE;
     for (const m of rateMultipliers.values()) {
       r = Num.mul(r, m);
     }
     if (Num.gt(r, RATE_CAP)) r = RATE_CAP;
+    r = Num.div(r, challengeRateDiv);
     return r;
   },
 

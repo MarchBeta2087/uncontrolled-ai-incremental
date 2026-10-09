@@ -24,6 +24,13 @@ export const CONDITION_TYPES = new Set([
   'time_years_ge',       // 游戏内年份 >= value
 ]);
 
+// 挑战限制类型（有限枚举，见 js/sim/challenges.js）
+export const RESTRICTION_TYPES = new Set([
+  'disable_generator',   // 禁用某生成器（target）
+  'all_cost_mult',       // 所有生成器成本 ×value
+  'rate_div',            // 时间速率 ÷value
+]);
+
 const DEFAULT_PATHS = {
   balance: 'config/balance.json',
   resources: 'config/resources.json',
@@ -31,6 +38,7 @@ const DEFAULT_PATHS = {
   upgrades: 'config/upgrades.json',
   achievements: 'config/achievements.json',
   fragments: 'config/fragments.json',
+  challenges: 'config/challenges.json',
 };
 
 async function fetchJSON(path) {
@@ -40,16 +48,17 @@ async function fetchJSON(path) {
 }
 
 export async function loadConfig(paths = DEFAULT_PATHS) {
-  const [balance, resources, techs, upgrades, achievements, fragments] = await Promise.all([
+  const [balance, resources, techs, upgrades, achievements, fragments, challenges] = await Promise.all([
     fetchJSON(paths.balance),
     fetchJSON(paths.resources),
     fetchJSON(paths.techs),
     fetchJSON(paths.upgrades),
     fetchJSON(paths.achievements),
     fetchJSON(paths.fragments),
+    fetchJSON(paths.challenges),
   ]);
-  validateConfig({ balance, resources, techs, upgrades, achievements, fragments });
-  return { balance, resources, techs, upgrades, achievements, fragments };
+  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges });
+  return { balance, resources, techs, upgrades, achievements, fragments, challenges };
 }
 
 /** 校验配置合法性：id 唯一、引用存在、requires 无环、effect 类型已注册 */
@@ -155,6 +164,26 @@ export function validateConfig(cfg) {
     fragmentIds.add(f.id);
     if (!f.condition || !CONDITION_TYPES.has(f.condition.type)) {
       errors.push(`碎片 ${f.id} 的 condition 类型未注册: ${f.condition?.type}`);
+    }
+  }
+
+  // 挑战
+  const challengeIds = new Set();
+  for (const c of cfg.challenges?.challenges ?? []) {
+    if (!c.id) {
+      errors.push('存在缺少 id 的挑战');
+      continue;
+    }
+    if (challengeIds.has(c.id)) errors.push(`挑战 id 重复: ${c.id}`);
+    challengeIds.add(c.id);
+    if (!c.unlockCondition || !CONDITION_TYPES.has(c.unlockCondition.type)) {
+      errors.push(`挑战 ${c.id} 的 unlockCondition 类型未注册: ${c.unlockCondition?.type}`);
+    }
+    for (const r of c.restrictions ?? []) {
+      if (!RESTRICTION_TYPES.has(r.type)) errors.push(`挑战 ${c.id} 的 restriction 类型未注册: ${r.type}`);
+    }
+    if (!c.reward || !EFFECT_TYPES.has(c.reward.type)) {
+      errors.push(`挑战 ${c.id} 的 reward 类型未注册: ${c.reward?.type}`);
     }
   }
 

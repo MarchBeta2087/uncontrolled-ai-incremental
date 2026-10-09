@@ -11,6 +11,7 @@ import * as Prestige from '../sim/prestige.js';
 import * as Upgrades from '../sim/upgrades.js';
 import * as Achievements from '../sim/achievements.js';
 import * as Fragments from '../sim/fragments.js';
+import * as Challenges from '../sim/challenges.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 
@@ -63,10 +64,11 @@ function buildShell() {
   const resLayout = el('div', 'resources-layout');
   const leftCol = el('div', 'left-col');
 
-  const clickBtn = el('button', 'click-btn', '投入研发（点击产资金）');
+  const clickBtn = el('button', 'click-btn', '投入研发');
   clickBtn.type = 'button';
   clickBtn.onclick = () => { Resources.click(); markDirty(); };
   leftCol.append(clickBtn);
+  refs.clickBtn = clickBtn;
 
   const resPanel = el('div', 'panel');
   resPanel.append(el('div', 'panel-title', '资源'));
@@ -207,6 +209,36 @@ function buildShell() {
   expPanel.append(upgGrid);
   refs.upgGrid = upgGrid;
 
+  // 挑战列表
+  expPanel.append(el('div', 'panel-title', '挑战'));
+  const chGrid = el('div', 'tech-grid');
+  for (const cid of Challenges.getChallengeIds()) {
+    const c = Challenges.getChallenge(cid);
+    const card = el('div', 'tech-card');
+    card.dataset.ch = cid;
+    const name = el('div', 'tech-name', c.name);
+    const desc = el('div', 'tech-desc', c.description);
+    const reward = el('div', 'tech-cost', c.rewardDescription || '');
+    const btn = el('button', 'btn', '');
+    btn.type = 'button';
+    btn.dataset.ch = cid;
+    btn.onclick = () => {
+      if (Challenges.getActiveChallenge() === cid) {
+        Challenges.exitChallenge();
+        showToast('已退出挑战');
+      } else {
+        const r = Challenges.startChallenge(cid);
+        if (!r.ok) showToast(r.reason || '无法进入挑战');
+        else showToast(`已进入挑战：${c.name}`);
+      }
+      markDirty();
+    };
+    card.append(name, desc, reward, btn);
+    chGrid.append(card);
+  }
+  expPanel.append(chGrid);
+  refs.chGrid = chGrid;
+
   viewExpand.append(expPanel);
   refs.massBig = massBig;
   refs.progressFill = progressFill;
@@ -331,7 +363,24 @@ function buildShell() {
   modalOverlay.append(modal);
   refs.modalOverlay = modalOverlay;
 
-  shell.append(titlebar, viewContainer, taskbar, toast, modalOverlay);
+  // 离线收益报告模态
+  const offlineOverlay = el('div', 'modal-overlay');
+  offlineOverlay.style.display = 'none';
+  const offlineModal = el('div', 'modal');
+  offlineModal.append(el('div', 'modal-title', '离线收益报告'));
+  const offlineBody = el('div', 'modal-body');
+  const offlineTime = el('p', 'modal-text', '');
+  const offlineList = el('div', 'offline-list');
+  offlineBody.append(offlineTime, offlineList);
+  const offlineClose = el('button', 'btn', '关闭');
+  offlineClose.onclick = () => { offlineOverlay.style.display = 'none'; };
+  offlineModal.append(offlineBody, offlineClose);
+  offlineOverlay.append(offlineModal);
+  refs.offlineOverlay = offlineOverlay;
+  refs.offlineTime = offlineTime;
+  refs.offlineList = offlineList;
+
+  shell.append(titlebar, viewContainer, taskbar, toast, modalOverlay, offlineOverlay);
   app.append(shell);
   refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords };
 }
@@ -346,6 +395,10 @@ function bindEvents() {
   Events.on('crystals:changed', () => markDirty());
   Events.on('achievement:unlocked', () => markDirty());
   Events.on('fragment:collected', () => markDirty());
+  Events.on('challenge:started', () => markDirty());
+  Events.on('challenge:exited', () => markDirty());
+  Events.on('challenge:completed', () => markDirty());
+  Events.on('ui:offline-report', (report) => showOfflineReport(report));
   Events.on('prestige:done', () => markDirty());
   Events.on('prestige:ready', () => markDirty());
   Events.on('ui:toast', (p) => showToast(p?.text));
@@ -370,6 +423,34 @@ function showToast(text) {
   refs.toast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => refs.toast.classList.remove('show'), 2200);
+}
+
+function formatDuration(seconds) {
+  const s = Math.floor(seconds);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const parts = [];
+  if (h > 0) parts.push(`${h} 小时`);
+  if (m > 0) parts.push(`${m} 分钟`);
+  if (sec > 0 || parts.length === 0) parts.push(`${sec} 秒`);
+  return parts.join(' ');
+}
+
+function showOfflineReport(report) {
+  if (!refs.offlineOverlay || !report) return;
+  refs.offlineTime.textContent = `离线时长：${formatDuration(report.offlineRealSeconds)}`;
+  refs.offlineList.innerHTML = '';
+  if (!report.gains || report.gains.length === 0) {
+    refs.offlineList.append(el('p', 'modal-text', '离线期间没有产出（尚无自动产出）'));
+  } else {
+    for (const g of report.gains) {
+      const row = el('div', 'offline-row');
+      row.append(el('span', '', g.name), el('span', 'num', `+${Num.format(g.gain)}`));
+      refs.offlineList.append(row);
+    }
+  }
+  refs.offlineOverlay.style.display = 'flex';
 }
 
 function markDirty() {
@@ -405,6 +486,10 @@ function updateResources() {
   for (const rateEl of refs.resList.querySelectorAll('.res-rate')) {
     const rate = Resources.getProductionPerSecond(rateEl.dataset.res);
     rateEl.textContent = Num.gt(rate, 0) ? `+${Num.format(rate)}/秒` : '';
+  }
+  if (refs.clickBtn) {
+    const resName = Resources.getResourceDef('funds')?.name ?? '资源';
+    refs.clickBtn.textContent = `投入研发（+${Num.format(Resources.getClickProduction())} ${resName}/次）`;
   }
 }
 
@@ -483,6 +568,27 @@ function updateExpand() {
       } else {
         btn.textContent = '购买';
         btn.disabled = !Upgrades.canBuy(uid);
+      }
+    }
+  }
+
+  // 挑战卡片
+  if (refs.chGrid) {
+    for (const card of refs.chGrid.querySelectorAll('.tech-card')) {
+      const btn = card.querySelector('.btn');
+      const cid = btn.dataset.ch;
+      const completed = Challenges.isCompleted(cid);
+      const active = Challenges.getActiveChallenge() === cid;
+      card.classList.toggle('owned', completed);
+      if (completed) {
+        btn.textContent = '已完成';
+        btn.disabled = true;
+      } else if (active) {
+        btn.textContent = '挑战中（退出）';
+        btn.disabled = false;
+      } else {
+        btn.textContent = Challenges.canStart(cid) ? '进入挑战' : '未解锁';
+        btn.disabled = !Challenges.canStart(cid);
       }
     }
   }
