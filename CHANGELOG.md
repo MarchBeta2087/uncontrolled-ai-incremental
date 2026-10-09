@@ -10,6 +10,7 @@
 - **`config/balance.json`**：全局可调参数初值（时间、宇宙锚点、膨胀、穿梭、格式化、离线）。
 - **`vendor/MegotaNum.js`**：按设计说明书 §1.2 vendor 化大数库，附 MIT 许可证文本。
 - 仓库 git 初始化（`main` 分支，remote 指向 github.com/MarchBeta2087/uncontrolled-ai-incremental）。
+- **LICENSE**：GPL-3.0-or-later 全文（取自 GNU 官方标准文本，35KB）。
 - 修正 README 设计文档链接，补充数值模型文档入口。
 
 ### 变更（Changed）
