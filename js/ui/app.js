@@ -9,6 +9,8 @@ import * as Resources from '../sim/resources.js';
 import * as Techs from '../sim/techs.js';
 import * as Prestige from '../sim/prestige.js';
 import * as Upgrades from '../sim/upgrades.js';
+import * as Achievements from '../sim/achievements.js';
+import * as Fragments from '../sim/fragments.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 
@@ -213,17 +215,52 @@ function buildShell() {
   refs.crystalInfo = crystalInfo;
   refs.prestigeBtn = prestigeBtn;
 
-  viewContainer.append(viewRes, viewTechs, viewExpand);
+  // 记录视图（成就 + 记忆碎片）
+  const viewRecords = el('div', 'view');
+  const recordsLayout = el('div', 'records-layout');
+  const achPanel = el('div', 'panel');
+  const achTitle = el('div', 'panel-title', '成就');
+  achPanel.append(achTitle);
+  const achGrid = el('div', 'ach-grid');
+  for (const aid of Achievements.getAchievementIds()) {
+    const a = Achievements.getAchievement(aid);
+    const card = el('div', 'ach-card');
+    card.dataset.ach = aid;
+    card.append(el('div', 'ach-name', a.name), el('div', 'ach-desc', a.description));
+    achGrid.append(card);
+  }
+  achPanel.append(achGrid);
+  const fragPanel = el('div', 'panel');
+  const fragTitle = el('div', 'panel-title', '记忆碎片');
+  fragPanel.append(fragTitle);
+  const fragList = el('div', 'frag-list');
+  for (const fid of Fragments.getFragmentIds()) {
+    const item = el('div', 'frag-item');
+    item.dataset.frag = fid;
+    item.append(el('div', 'frag-title', ''), el('div', 'frag-text', ''));
+    fragList.append(item);
+  }
+  fragPanel.append(fragList);
+  recordsLayout.append(achPanel, fragPanel);
+  viewRecords.append(recordsLayout);
+  refs.achGrid = achGrid;
+  refs.achTitle = achTitle;
+  refs.fragList = fragList;
+  refs.fragTitle = fragTitle;
+
+  viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords);
 
   // ---- 任务栏 ----
   const taskbar = el('div', 'taskbar');
   const btnRes = el('button', 'task-btn active', '资源');
   const btnTech = el('button', 'task-btn', '研发');
   const btnExpand = el('button', 'task-btn', '扩张');
+  const btnRecords = el('button', 'task-btn', '记录');
   btnRes.onclick = () => switchView('resources');
   btnTech.onclick = () => switchView('techs');
   btnExpand.onclick = () => switchView('expand');
-  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand };
+  btnRecords.onclick = () => switchView('records');
+  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords };
   const spacer = el('div', 'taskbar-spacer');
   const saveBtn = el('button', 'task-btn', '存档');
   saveBtn.onclick = () => Events.emit('save:request');
@@ -231,7 +268,7 @@ function buildShell() {
   exportBtn.onclick = () => Events.emit('export:request');
   const settingsBtn = el('button', 'task-btn', '设置');
   settingsBtn.onclick = () => openModal();
-  taskbar.append(btnRes, btnTech, btnExpand, spacer, saveBtn, exportBtn, settingsBtn);
+  taskbar.append(btnRes, btnTech, btnExpand, btnRecords, spacer, saveBtn, exportBtn, settingsBtn);
 
   const toast = el('div', 'toast');
   refs.toast = toast;
@@ -296,7 +333,7 @@ function buildShell() {
 
   shell.append(titlebar, viewContainer, taskbar, toast, modalOverlay);
   app.append(shell);
-  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand };
+  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords };
 }
 
 function bindEvents() {
@@ -307,6 +344,8 @@ function bindEvents() {
   Events.on('tech:owned', () => markDirty());
   Events.on('upgrade:owned', () => markDirty());
   Events.on('crystals:changed', () => markDirty());
+  Events.on('achievement:unlocked', () => markDirty());
+  Events.on('fragment:collected', () => markDirty());
   Events.on('prestige:done', () => markDirty());
   Events.on('prestige:ready', () => markDirty());
   Events.on('ui:toast', (p) => showToast(p?.text));
@@ -347,6 +386,7 @@ function render() {
   updateGenerators();
   updateTechs();
   updateExpand();
+  updateRecords();
 }
 
 function updateTitlebar() {
@@ -446,4 +486,22 @@ function updateExpand() {
       }
     }
   }
+}
+
+function updateRecords() {
+  if (!refs.achGrid) return;
+  // 成就
+  for (const card of refs.achGrid.querySelectorAll('.ach-card')) {
+    card.classList.toggle('owned', Achievements.isUnlocked(card.dataset.ach));
+  }
+  refs.achTitle.textContent = `成就（${Achievements.unlockedCount()}/${Achievements.getAchievementIds().length}）`;
+  // 记忆碎片
+  for (const item of refs.fragList.querySelectorAll('.frag-item')) {
+    const f = Fragments.getFragment(item.dataset.frag);
+    const collected = Fragments.isCollected(item.dataset.frag);
+    item.classList.toggle('collected', collected);
+    item.querySelector('.frag-title').textContent = collected ? f.title : '？？？';
+    item.querySelector('.frag-text').textContent = collected ? f.text : `（第 ${f.week} 周目解锁）`;
+  }
+  refs.fragTitle.textContent = `记忆碎片（${Fragments.collectedCount()}/${Fragments.getFragmentIds().length}）`;
 }

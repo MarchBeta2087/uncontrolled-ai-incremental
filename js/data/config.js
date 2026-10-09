@@ -12,11 +12,25 @@ export const EFFECT_TYPES = new Set([
   'rate_mult',           // 时间速率 ×value
 ]);
 
+// 成就/碎片条件类型（有限枚举，见 js/sim/conditions.js）
+export const CONDITION_TYPES = new Set([
+  'resource_ge',         // 资源量 >= value（target 资源 id）
+  'generator_count_ge',  // 生成器数量 >= value（target 生成器 id）
+  'prestige_count_ge',   // 周目数 >= value
+  'tech_count_ge',       // 已研发技术数 >= value
+  'tech_owned',          // 已研发指定技术（target）
+  'upgrade_owned',       // 已购指定升级（target）
+  'crystals_ge',         // 时间晶体 >= value
+  'time_years_ge',       // 游戏内年份 >= value
+]);
+
 const DEFAULT_PATHS = {
   balance: 'config/balance.json',
   resources: 'config/resources.json',
   techs: 'config/techs.json',
   upgrades: 'config/upgrades.json',
+  achievements: 'config/achievements.json',
+  fragments: 'config/fragments.json',
 };
 
 async function fetchJSON(path) {
@@ -26,14 +40,16 @@ async function fetchJSON(path) {
 }
 
 export async function loadConfig(paths = DEFAULT_PATHS) {
-  const [balance, resources, techs, upgrades] = await Promise.all([
+  const [balance, resources, techs, upgrades, achievements, fragments] = await Promise.all([
     fetchJSON(paths.balance),
     fetchJSON(paths.resources),
     fetchJSON(paths.techs),
     fetchJSON(paths.upgrades),
+    fetchJSON(paths.achievements),
+    fetchJSON(paths.fragments),
   ]);
-  validateConfig({ balance, resources, techs, upgrades });
-  return { balance, resources, techs, upgrades };
+  validateConfig({ balance, resources, techs, upgrades, achievements, fragments });
+  return { balance, resources, techs, upgrades, achievements, fragments };
 }
 
 /** 校验配置合法性：id 唯一、引用存在、requires 无环、effect 类型已注册 */
@@ -112,6 +128,34 @@ export function validateConfig(cfg) {
   }
   if (hasRequireCycle(cfg.upgrades?.upgrades ?? [])) {
     errors.push('升级 requires 存在环');
+  }
+
+  // 成就
+  const achievementIds = new Set();
+  for (const a of cfg.achievements?.achievements ?? []) {
+    if (!a.id) {
+      errors.push('存在缺少 id 的成就');
+      continue;
+    }
+    if (achievementIds.has(a.id)) errors.push(`成就 id 重复: ${a.id}`);
+    achievementIds.add(a.id);
+    if (!a.condition || !CONDITION_TYPES.has(a.condition.type)) {
+      errors.push(`成就 ${a.id} 的 condition 类型未注册: ${a.condition?.type}`);
+    }
+  }
+
+  // 碎片
+  const fragmentIds = new Set();
+  for (const f of cfg.fragments?.fragments ?? []) {
+    if (!f.id) {
+      errors.push('存在缺少 id 的碎片');
+      continue;
+    }
+    if (fragmentIds.has(f.id)) errors.push(`碎片 id 重复: ${f.id}`);
+    fragmentIds.add(f.id);
+    if (!f.condition || !CONDITION_TYPES.has(f.condition.type)) {
+      errors.push(`碎片 ${f.id} 的 condition 类型未注册: ${f.condition?.type}`);
+    }
   }
 
   if (errors.length) {

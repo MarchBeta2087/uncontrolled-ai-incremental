@@ -9,6 +9,8 @@ import * as Resources from './sim/resources.js';
 import * as Techs from './sim/techs.js';
 import * as Prestige from './sim/prestige.js';
 import * as Upgrades from './sim/upgrades.js';
+import * as Achievements from './sim/achievements.js';
+import * as Fragments from './sim/fragments.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
@@ -38,6 +40,8 @@ async function bootstrap() {
     Techs.initTechs(cfg.techs);
     Prestige.initPrestige();
     Upgrades.initUpgrades(cfg.upgrades);
+    Achievements.initAchievements(cfg.achievements);
+    Fragments.initFragments(cfg.fragments);
 
     // 恢复存档（含离线结算）
     restoreSave();
@@ -79,6 +83,11 @@ async function bootstrap() {
     });
     // 穿梭后重新应用永久升级效果
     Events.on('prestige:done', () => Upgrades.applyAll());
+    // 每 tick 轮询成就与碎片条件
+    Events.on('tick', () => {
+      Achievements.checkAll();
+      Fragments.checkAll();
+    });
   } catch (err) {
     console.error('[main] 启动失败：', err);
     const app = document.getElementById('app');
@@ -117,6 +126,8 @@ function restoreFromSnapshot(snap) {
     prestigeCount: snap.meta?.prestigeCount,
   });
   Upgrades.load(snap.metaProgress?.upgrades);
+  Achievements.load(snap.metaProgress?.achievements);
+  Fragments.load(snap.metaProgress?.fragments);
 
   // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣
   settleOffline(snap);
@@ -155,8 +166,8 @@ function buildSnapshot() {
     metaProgress: {
       timeCrystals: prestige.timeCrystals,
       upgrades: Upgrades.serialize(),
-      achievements: [],
-      fragments: [],
+      achievements: Achievements.serialize(),
+      fragments: Fragments.serialize(),
     },
     theories: [],
   };

@@ -28,6 +28,9 @@
 - **MAX ALL / MAX 购买**：`Resources.buyMaxGenerator` / `buyMaxAll`（几何级数反解最大可买数量），UI 生成器卡片加 ×1 / MAX 按钮，面板加 MAX ALL 按钮。
 - **设置页面**（模态面板）：存档管理（保存/导出/导入/硬重置）+ 关于/许可证信息 + 项目仓库链接；任务栏新增「设置」按钮。
 - **ASSETS.md**：第三方授权归属清单（MegotaNum.js MIT 署名、Ordinal Markup 设计参照致谢、素材登记表）。
+- **成就系统**（`config/achievements.json` + `js/sim/achievements.js` + `js/sim/conditions.js`）：12 项成就，条件声明式（resource_ge/tech_count_ge/prestige_count_ge 等有限枚举），引擎轮询触发。
+- **记忆碎片**（`config/fragments.json` + `js/sim/fragments.js`）：6 枚周目叙事碎片，原创短文本日志体（审计日志/伊甸环/散热片/黑洞引擎/裂缝/信号），随周目解锁。
+- **记录视图**：任务栏新增「记录」入口，展示成就墙与碎片收集册。
 - `config/balance.json`：全局可调参数初值（时间、宇宙锚点、膨胀、穿梭、格式化档位阈值、离线）。
 - **M1 数值模型推演**（`docs/失控AI增量-数值模型-v1.0.md`）：单周目 e-folding 膨胀骨架（τ₁=3 游戏年，第一周目约 428 游戏年触顶）、τ 减半的周目加速模型、时间晶体穿梭结算公式（首次校准为 2 晶体）、时间速率调节机制。
 - **`vendor/MegotaNum.js`**：按设计说明书 §1.2 vendor 化大数库，附 MIT 许可证文本。
