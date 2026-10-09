@@ -69,6 +69,11 @@ export const Time = {
     rateMultipliers.clear();
   },
 
+  /** 基础速率（不含乘子） */
+  getBaseRate() {
+    return BASE_RATE;
+  },
+
   /** 当前时间速率（游戏秒/物理秒），已含软上限 */
   getRate() {
     let r = BASE_RATE;

@@ -19,6 +19,11 @@
   - `js/sim/techs.js`：技术树（前置校验、效果应用、乘子恢复）。
   - `js/sim/engine.js`：主循环（100ms tick、performance.now 校正、穿梭触发检查）。
 - **素材与授权规则**（`docs/素材与授权规则-v1.0.md`）：许可证兼容矩阵、CC 搜索使用要点、必记信息、ASSETS.md 登记格式、字体 OFL 特殊条款、PR 检查清单；CONTRIBUTING.md 已挂链接。
+- **M2 骨架（第三批 · 表现层与入口）**：
+  - `js/sim/prestige.js`：时空穿梭（结算公式 + 重置顺序，首次穿梭校准 2 晶体）。
+  - `js/ui/platform.js` + `js/ui/app.js`：外壳判定与桌面外壳 UI（脏标记 + rAF 节流渲染）。
+  - `js/main.js`：入口（配置加载→注入→init→存档恢复→离线结算→自动存档）。
+  - `index.html` + `css/core.css` + `css/shell-desktop.css`：静态入口与桌面外壳样式。
 - `config/balance.json`：全局可调参数初值（时间、宇宙锚点、膨胀、穿梭、格式化档位阈值、离线）。
 - **M1 数值模型推演**（`docs/失控AI增量-数值模型-v1.0.md`）：单周目 e-folding 膨胀骨架（τ₁=3 游戏年，第一周目约 428 游戏年触顶）、τ 减半的周目加速模型、时间晶体穿梭结算公式（首次校准为 2 晶体）、时间速率调节机制。
 - **`vendor/MegotaNum.js`**：按设计说明书 §1.2 vendor 化大数库，附 MIT 许可证文本。

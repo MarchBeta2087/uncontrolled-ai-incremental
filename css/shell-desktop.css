@@ -1,0 +1,90 @@
+/* css/shell-desktop.css —— 桌面外壳（仿 Windows，MVP 外壳，设计 §8.2） */
+#shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ---- 顶部标题栏 ---- */
+.titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  height: 42px;
+  padding: 0 14px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+  flex-shrink: 0;
+}
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.titlebar-dot { color: var(--highlight); }
+.titlebar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.titlebar-right .num { color: var(--text); }
+
+/* ---- 视图容器 ---- */
+.view-container {
+  flex: 1;
+  overflow: auto;
+  padding: 14px;
+}
+.view { display: none; }
+.view.active { display: block; }
+
+/* ---- 底部任务栏 ---- */
+.taskbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 10px;
+  background: var(--panel-2);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.task-btn {
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  user-select: none;
+  transition: background 0.15s, color 0.15s;
+}
+.task-btn:hover { background: var(--panel); color: var(--text); }
+.task-btn.active { background: var(--accent); color: #04121f; font-weight: 600; }
+.taskbar-spacer { flex: 1; }
+
+/* ---- 资源视图布局 ---- */
+.resources-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 14px;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .resources-layout { grid-template-columns: 1fr; }
+}
+.left-col { display: flex; flex-direction: column; gap: 14px; }
+
+/* ---- 扩张视图 ---- */
+.prestige-panel { max-width: 720px; }
+.prestige-big { font-size: 20px; font-family: var(--mono); margin: 8px 0; }

@@ -1,0 +1,176 @@
+/* css/core.css —— 共用组件与设计变量（设计 §8.1） */
+:root {
+  --bg: #0d1117;
+  --panel: #161b22;
+  --panel-2: #1c2434;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --accent: #58a6ff;
+  --accent-strong: #79b8ff;
+  --highlight: #f85149;
+  --success: #3fb950;
+  --warning: #d29922;
+  --font: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --mono: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+/* 数值一律等宽 + 表格数字对齐 */
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* ---- 按钮 ---- */
+.btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  user-select: none;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #2d3748; border-color: var(--accent); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #04121f; font-weight: 600; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-strong); }
+.btn-danger { background: var(--highlight); border-color: var(--highlight); color: #fff; }
+
+/* ---- 面板 ---- */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+}
+.panel-title {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+/* ---- 资源行 ---- */
+.res-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+.res-row:last-child { border-bottom: none; }
+.res-name { color: var(--text-dim); }
+.res-value { font-size: 15px; text-align: right; word-break: break-all; }
+
+/* ---- 点击大按钮 ---- */
+.click-btn {
+  width: 100%;
+  padding: 28px 16px;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: linear-gradient(180deg, #1c3a5e, #14263e);
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.05s, background 0.15s;
+}
+.click-btn:hover { background: linear-gradient(180deg, #234a76, #1a3050); }
+.click-btn:active { transform: scale(0.98); }
+
+/* ---- 生成器卡片 ---- */
+.gen-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.gen-card:last-child { margin-bottom: 0; }
+.gen-info { flex: 1; min-width: 0; }
+.gen-name { font-weight: 600; }
+.gen-meta { font-size: 12px; color: var(--text-dim); }
+.gen-count { font-family: var(--mono); font-size: 15px; margin-left: 4px; color: var(--accent); }
+
+/* ---- 技术卡片 ---- */
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+.tech-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.tech-card.owned { border-color: var(--success); opacity: 0.65; }
+.tech-name { font-weight: 600; }
+.tech-desc { font-size: 12px; color: var(--text-dim); flex: 1; }
+.tech-cost { font-size: 12px; color: var(--warning); font-family: var(--mono); }
+.tech-card .btn { align-self: flex-end; }
+
+/* ---- 进度条 ---- */
+.progress {
+  height: 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  transition: width 0.3s;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ---- 提示条 ---- */
+.toast {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+.toast.show { opacity: 1; }

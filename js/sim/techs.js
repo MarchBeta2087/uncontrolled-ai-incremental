@@ -56,7 +56,7 @@ export function buyTech(id) {
   return { ok: true };
 }
 
-function applyEffects(effects, sourceId) {
+function applyEffects(effects, sourceId, skipRate = false) {
   for (const e of effects) {
     switch (e.type) {
       case 'generator_mult':
@@ -71,7 +71,7 @@ function applyEffects(effects, sourceId) {
         Resources.setClickMultiplier(sourceId, e.value);
         break;
       case 'rate_mult':
-        Time.setRateMultiplier(sourceId, e.value);
+        if (!skipRate) Time.setRateMultiplier(sourceId, e.value);
         break;
       default:
         console.warn(`[Techs] 未知效果类型: ${e.type}`);
@@ -79,21 +79,31 @@ function applyEffects(effects, sourceId) {
   }
 }
 
+export function ownedCount() {
+  return [...techs.values()].filter((t) => t.owned).length;
+}
+
+/** 穿梭回卷：清空所有已研发技术与相关乘子 */
+export function reset() {
+  for (const t of techs.values()) t.owned = false;
+  Resources.clearMultipliers();
+  Time.clearRateMultipliers();
+}
+
 // ---- 存档 ----
 export function serialize() {
   return [...techs.entries()].filter(([, t]) => t.owned).map(([id]) => id);
 }
 
-/** 从已研发列表恢复；先清空技术相关乘子再重新应用，避免残留 */
+/** 从已研发列表恢复；只重建资源乘子，速率乘子由 time.rateMultipliers 快照恢复（见 Time.load） */
 export function load(ownedList) {
   Resources.clearMultipliers();
-  Time.clearRateMultipliers();
   for (const t of techs.values()) t.owned = false;
   for (const id of ownedList ?? []) {
     const t = techs.get(id);
     if (t) {
       t.owned = true;
-      applyEffects(t.def.effects ?? [], id);
+      applyEffects(t.def.effects ?? [], id, true);
     }
   }
 }

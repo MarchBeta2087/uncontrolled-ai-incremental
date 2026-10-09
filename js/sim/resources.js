@@ -164,3 +164,14 @@ export function load(state) {
     if (g) g.count = Num.fromJSON(json);
   }
 }
+
+/** 穿梭回卷：清空周目内资源与生成器，并清空技术乘子 */
+export function reset() {
+  for (const r of resources.values()) {
+    r.amount = Num.parse(r.def.baseAmount ?? 0);
+  }
+  for (const g of generators.values()) {
+    g.count = Num.parse(0);
+  }
+  clearMultipliers();
+}
