@@ -9,6 +9,7 @@ import * as Resources from '../sim/resources.js';
 import * as Techs from '../sim/techs.js';
 import * as Prestige from '../sim/prestige.js';
 import * as Upgrades from '../sim/upgrades.js';
+import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 
 const refs = {};
@@ -228,12 +229,66 @@ function buildShell() {
   saveBtn.onclick = () => Events.emit('save:request');
   const exportBtn = el('button', 'task-btn', '导出');
   exportBtn.onclick = () => Events.emit('export:request');
-  taskbar.append(btnRes, btnTech, btnExpand, spacer, saveBtn, exportBtn);
+  const settingsBtn = el('button', 'task-btn', '设置');
+  settingsBtn.onclick = () => openModal();
+  taskbar.append(btnRes, btnTech, btnExpand, spacer, saveBtn, exportBtn, settingsBtn);
 
   const toast = el('div', 'toast');
   refs.toast = toast;
 
-  shell.append(titlebar, viewContainer, taskbar, toast);
+  // 设置模态面板
+  const modalOverlay = el('div', 'modal-overlay');
+  modalOverlay.style.display = 'none';
+  const modal = el('div', 'modal');
+  modal.append(el('div', 'modal-title', '设置'));
+  const modalBody = el('div', 'modal-body');
+
+  modalBody.append(el('div', 'modal-section', '存档管理'));
+  const row1 = el('div', 'modal-row');
+  const saveBtnM = el('button', 'btn', '保存存档');
+  saveBtnM.onclick = () => { Events.emit('save:request'); closeModal(); };
+  const exportBtnM = el('button', 'btn', '导出存档');
+  exportBtnM.onclick = () => { Events.emit('export:request'); closeModal(); };
+  row1.append(saveBtnM, exportBtnM);
+  modalBody.append(row1);
+
+  const row2 = el('div', 'modal-row');
+  const importBtn = el('button', 'btn', '导入存档');
+  const fileInput = el('input', '');
+  fileInput.type = 'file';
+  fileInput.accept = 'application/json,.json';
+  fileInput.style.display = 'none';
+  importBtn.onclick = () => fileInput.click();
+  fileInput.onchange = () => {
+    if (fileInput.files && fileInput.files[0]) {
+      Events.emit('import:request', { file: fileInput.files[0] });
+      closeModal();
+    }
+    fileInput.value = '';
+  };
+  const resetBtn = el('button', 'btn btn-danger', '硬重置');
+  resetBtn.onclick = () => {
+    if (window.confirm('确定硬重置？将清除所有存档进度，且不可恢复。')) {
+      Save.clear();
+      window.location.reload();
+    }
+  };
+  row2.append(importBtn, resetBtn, fileInput);
+  modalBody.append(row2);
+
+  modalBody.append(el('div', 'modal-section', '关于'));
+  modalBody.append(el('p', 'modal-text', '《失控 AI 增量》'));
+  modalBody.append(el('p', 'modal-text', '代码 GPL-3.0-or-later · 素材 CC BY-SA 4.0 · 字体 SIL OFL 1.1'));
+  modalBody.append(el('p', 'modal-text', '大数库 MegotaNum.js（MIT，© sonic3XE）'));
+  modalBody.append(el('p', 'modal-text', '设计参照 Ordinal Markup（机制理念，未复用其代码/素材）'));
+
+  const closeBtn = el('button', 'btn', '关闭');
+  closeBtn.onclick = () => closeModal();
+  modal.append(modalBody, closeBtn);
+  modalOverlay.append(modal);
+  refs.modalOverlay = modalOverlay;
+
+  shell.append(titlebar, viewContainer, taskbar, toast, modalOverlay);
   app.append(shell);
   refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand };
 }
@@ -255,6 +310,13 @@ function switchView(name) {
   currentView = name;
   for (const [k, v] of Object.entries(refs.views)) v.classList.toggle('active', k === name);
   for (const [k, b] of Object.entries(refs.taskBtns)) b.classList.toggle('active', k === name);
+}
+
+function openModal() {
+  if (refs.modalOverlay) refs.modalOverlay.style.display = 'flex';
+}
+function closeModal() {
+  if (refs.modalOverlay) refs.modalOverlay.style.display = 'none';
 }
 
 function showToast(text) {

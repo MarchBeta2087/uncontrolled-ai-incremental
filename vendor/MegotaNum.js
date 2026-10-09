@@ -1,5 +1,9 @@
 // MegotaNum Version α 1.0.0
 // Code snippets and templates from Decimal.js
+//
+// MegotaNum.js is licensed under the MIT License.
+// Copyright (c) 2024 sonic3XE
+// Full license text: vendor/LICENSE-MegotaNum.txt
 ;(function (globalScope) {
   "use strict";
 

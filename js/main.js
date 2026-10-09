@@ -62,6 +62,16 @@ async function bootstrap() {
       Save.exportSave(buildSnapshot());
       Events.emit('ui:toast', { text: '已导出存档文件' });
     });
+    Events.on('import:request', async (payload) => {
+      try {
+        const snap = await Save.importSave(payload.file);
+        restoreFromSnapshot(snap);
+        save();
+        Events.emit('ui:toast', { text: '存档导入成功' });
+      } catch (err) {
+        Events.emit('ui:toast', { text: `导入失败：${err.message}` });
+      }
+    });
     // 穿梭后重新应用永久升级效果
     Events.on('prestige:done', () => Upgrades.applyAll());
   } catch (err) {
@@ -81,13 +91,20 @@ function restoreSave() {
     Events.emit('ui:toast', { text: `存档加载失败：${res.reason}` });
     return;
   }
-  const snap = res.snapshot;
+  restoreFromSnapshot(res.snapshot);
+}
+
+/** 从存档快照恢复全部状态（供启动加载与导入共用） */
+function restoreFromSnapshot(snap) {
   meta = snap.meta ?? meta;
 
   // 时间（含速率乘子快照）
   Time.load(snap.time.gameSecondsElapsed, snap.time.rateMultipliers);
-  // 周目内状态（Techs.load 只重建资源乘子，速率乘子由上面的快照恢复）
-  Resources.load(snap.run);
+  // 周目内状态：存档字段 buildings 映射回内部 generators
+  Resources.load({
+    resources: snap.run.resources,
+    generators: snap.run.buildings,
+  });
   Techs.load(snap.run.techs);
   // 元进度
   Prestige.load({
