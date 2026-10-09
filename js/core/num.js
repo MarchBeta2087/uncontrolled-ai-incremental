@@ -22,9 +22,9 @@ function toNum(x) {
 
 // 格式化默认档位阈值（与 config/balance.json 的 format 键对应，可被 configureNum 覆盖）
 const defaults = {
-  sciThreshold: '1e6', // 普通记数 → 科学记数的阈值（绝对值）
-  banThreshold: '1e9', // 科学记数 → MegotaNum 内置记法的阈值（绝对值）
-  decimals: 3,         // 小数位数
+  sciThreshold: '1e6',     // 普通记数（千分位）→ 科学记数的阈值（绝对值）
+  banThreshold: '1.8e308', // 科学记数 → MegotaNum 记法的阈值（float64 上限，超此才落 ban）
+  decimals: 3,             // 小数位数
 };
 
 /** 千分位普通记数：1234.5 -> "1,234.5" */
@@ -47,9 +47,16 @@ function formatScientific(n, decimals, style) {
   const abs = n.abs();
   if (abs.eq(0)) return '0';
   const exponent = abs.log10().floor();
-  const expNum = exponent.toNumber();
+  let expNum = exponent.toNumber();
   const mantissa = abs.div(Num.pow(10, exponent));
-  const mantNum = mantissa.toNumber();
+  let mantNum = mantissa.toNumber();
+  // 尾数四舍五入进位：如 9.9999 → 10.000 应显示为 1.000e(exp+1)
+  const factor = Math.pow(10, decimals);
+  mantNum = Math.round(mantNum * factor) / factor;
+  if (mantNum >= 10) {
+    mantNum /= 10;
+    expNum += 1;
+  }
   if (style === 'times') {
     return `${sign}${mantNum.toFixed(decimals)}×10^${expNum}`;
   }

@@ -1,6 +1,6 @@
 {
-  "$comment": "资源与生成器定义（数值模型 §3 的 4 层链式生成器）。所有数值用字符串，便于 Num.parse 解析。",
-  "clickProduction": "1",
+  "$comment": "资源与生成器定义（数值模型 §3 的链式生成器）。所有数值用字符串，便于 Num.parse 解析。生成器参数经平衡模拟校准：目标为约 2 分钟物理时间推进到质能 1e12（恒星工业阶段）。",
+  "clickProduction": "10",
   "resources": [
     { "id": "funds", "name": "资金", "unit": "¥", "tier": 1, "baseAmount": "0" },
     { "id": "compute", "name": "算力", "unit": "FLOP", "tier": 2, "baseAmount": "0" },
@@ -9,13 +9,23 @@
   ],
   "generators": [
     {
+      "id": "investment",
+      "name": "投资组合",
+      "costCurrency": "funds",
+      "produces": "funds",
+      "baseCost": "15",
+      "costGrowth": "1.12",
+      "baseProduction": "1",
+      "tier": 1
+    },
+    {
       "id": "compute_node",
       "name": "算力节点",
       "costCurrency": "funds",
       "produces": "compute",
-      "baseCost": "10",
-      "costGrowth": "1.15",
-      "baseProduction": "1",
+      "baseCost": "100",
+      "costGrowth": "1.12",
+      "baseProduction": "10",
       "tier": 1
     },
     {
@@ -24,8 +34,8 @@
       "costCurrency": "compute",
       "produces": "industry",
       "baseCost": "1000",
-      "costGrowth": "1.15",
-      "baseProduction": "1",
+      "costGrowth": "1.12",
+      "baseProduction": "100",
       "tier": 2
     },
     {
@@ -33,9 +43,9 @@
       "name": "星际工程",
       "costCurrency": "industry",
       "produces": "mass_energy",
-      "baseCost": "1e6",
-      "costGrowth": "1.15",
-      "baseProduction": "1",
+      "baseCost": "1e4",
+      "costGrowth": "1.12",
+      "baseProduction": "1e4",
       "tier": 3
     }
   ]

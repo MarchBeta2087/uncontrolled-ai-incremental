@@ -73,7 +73,9 @@ function buildShell() {
     const name = el('span', 'res-name', def.name);
     const value = el('span', 'res-value num', '0');
     value.dataset.res = rid;
-    row.append(name, value);
+    const rate = el('span', 'res-rate num', '');
+    rate.dataset.res = rid;
+    row.append(name, value, rate);
     resList.append(row);
   }
   resPanel.append(resList);
@@ -90,7 +92,7 @@ function buildShell() {
     const info = el('div', 'gen-info');
     info.append(
       el('div', 'gen-name', def.name),
-      el('div', 'gen-meta', `产 ${Resources.getResourceDef(def.produces).name}`)
+      el('div', 'gen-meta', '')
     );
     const countSpan = el('span', 'gen-count num', '0');
     countSpan.dataset.gen = gid;
@@ -249,6 +251,10 @@ function updateResources() {
     const amount = Resources.getResource(valueEl.dataset.res);
     valueEl.textContent = amount ? Num.format(amount) : '0';
   }
+  for (const rateEl of refs.resList.querySelectorAll('.res-rate')) {
+    const rate = Resources.getProductionPerSecond(rateEl.dataset.res);
+    rateEl.textContent = Num.gt(rate, 0) ? `+${Num.format(rate)}/秒` : '';
+  }
 }
 
 function updateGenerators() {
@@ -260,7 +266,10 @@ function updateGenerators() {
     const cost = Resources.buyCost(gid, 1);
     const currency = Resources.getResource(def.costCurrency);
     const afford = currency !== null && Num.gte(currency, cost);
+    const perOne = Num.mul(Num.parse(def.baseProduction), Resources.getGeneratorMultiplier(gid));
     card.querySelector('.gen-count').textContent = count ? Num.format(count) : '0';
+    card.querySelector('.gen-meta').textContent =
+      `每个 +${Num.format(perOne)} ${Resources.getResourceDef(def.produces).name}/秒`;
     btn.textContent = `×1 · ${Num.format(cost)} ${Resources.getResourceDef(def.costCurrency).name}`;
     btn.disabled = !afford;
   }

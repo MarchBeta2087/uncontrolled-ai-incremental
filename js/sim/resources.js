@@ -67,6 +67,20 @@ export function getGeneratorMultiplier(genId) {
   for (const v of map.values()) m = Num.mul(m, v);
   return m;
 }
+
+/** 某资源的总产出速率（游戏秒），用于 UI 展示 */
+export function getProductionPerSecond(resourceId) {
+  let total = Num.parse(0);
+  for (const [genId, g] of generators) {
+    if (g.def.produces !== resourceId) continue;
+    const perSec = Num.mul(
+      Num.mul(Num.parse(g.def.baseProduction), g.count),
+      getGeneratorMultiplier(genId)
+    );
+    total = Num.add(total, perSec);
+  }
+  return total;
+}
 export function setClickMultiplier(sourceId, value) {
   clickMults.set(sourceId, Num.parse(value));
 }
