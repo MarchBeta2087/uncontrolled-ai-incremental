@@ -1,32 +1,41 @@
 {
-  "$comment": "挑战模式（设计 §6.3，参照 Ordinal Markup 的 challenges）。挑战是限制条件的周目：进入后清空周目状态并施加限制，触顶即完成并获得永久奖励。",
+  "$comment": "挑战模式（设计 §6.3）。每个挑战设 3 个阶段目标（质能里程碑），每完成一个目标给一份永久奖励，全部完成即挑战完成。",
   "challenges": [
     {
       "id": "challenge_no_investment",
       "name": "白手起家",
       "description": "禁用投资组合，资金只能靠点击",
-      "rewardDescription": "奖励：全产出 ×2",
       "unlockCondition": { "type": "prestige_count_ge", "value": 1 },
       "restrictions": [{ "type": "disable_generator", "target": "investment" }],
-      "reward": { "type": "all_generator_mult", "value": "2" }
+      "goals": [
+        { "target": "1e12", "rewardDescription": "全产出 ×2", "reward": { "type": "all_generator_mult", "value": "2" } },
+        { "target": "1e30", "rewardDescription": "全产出 ×3", "reward": { "type": "all_generator_mult", "value": "3" } },
+        { "target": "1e70", "rewardDescription": "全产出 ×5", "reward": { "type": "all_generator_mult", "value": "5" } }
+      ]
     },
     {
       "id": "challenge_cost_x10",
       "name": "通货膨胀",
       "description": "所有生成器成本 ×10",
-      "rewardDescription": "奖励：全产出 ×3",
       "unlockCondition": { "type": "prestige_count_ge", "value": 1 },
       "restrictions": [{ "type": "all_cost_mult", "value": "10" }],
-      "reward": { "type": "all_generator_mult", "value": "3" }
+      "goals": [
+        { "target": "1e12", "rewardDescription": "全产出 ×2", "reward": { "type": "all_generator_mult", "value": "2" } },
+        { "target": "1e30", "rewardDescription": "全产出 ×3", "reward": { "type": "all_generator_mult", "value": "3" } },
+        { "target": "1e70", "rewardDescription": "全产出 ×5", "reward": { "type": "all_generator_mult", "value": "5" } }
+      ]
     },
     {
       "id": "challenge_slow_time",
       "name": "时间凝滞",
       "description": "时间速率 ÷10",
-      "rewardDescription": "奖励：时间速率 ×2",
       "unlockCondition": { "type": "prestige_count_ge", "value": 1 },
       "restrictions": [{ "type": "rate_div", "value": "10" }],
-      "reward": { "type": "rate_mult", "value": "2" }
+      "goals": [
+        { "target": "1e12", "rewardDescription": "时间速率 ×2", "reward": { "type": "rate_mult", "value": "2" } },
+        { "target": "1e30", "rewardDescription": "时间速率 ×3", "reward": { "type": "rate_mult", "value": "3" } },
+        { "target": "1e70", "rewardDescription": "时间速率 ×5", "reward": { "type": "rate_mult", "value": "5" } }
+      ]
     }
   ]
 }

@@ -200,6 +200,21 @@ body {
 .frag-title { font-weight: 600; font-size: 13px; }
 .frag-text { font-size: 12px; color: var(--text-dim); margin-top: 4px; line-height: 1.6; }
 
+/* ---- 挑战目标 ---- */
+.ch-goals { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.ch-goal {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+  padding: 3px 6px;
+  border-left: 2px solid var(--border);
+}
+.ch-goal.done { border-left-color: var(--success); color: var(--text); }
+.ch-goal-reward { color: var(--warning); white-space: nowrap; }
+.ch-goal.done .ch-goal-reward { color: var(--success); }
+
 /* ---- 离线报告 ---- */
 .offline-list { display: flex; flex-direction: column; gap: 6px; }
 .offline-row { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--border); }

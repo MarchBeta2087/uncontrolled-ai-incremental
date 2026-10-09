@@ -216,9 +216,22 @@ function buildShell() {
     const c = Challenges.getChallenge(cid);
     const card = el('div', 'tech-card');
     card.dataset.ch = cid;
-    const name = el('div', 'tech-name', c.name);
-    const desc = el('div', 'tech-desc', c.description);
-    const reward = el('div', 'tech-cost', c.rewardDescription || '');
+    card.append(el('div', 'tech-name', c.name));
+    card.append(el('div', 'tech-desc', c.description));
+    const goalsList = el('div', 'ch-goals');
+    for (let i = 0; i < (c.goals?.length ?? 0); i++) {
+      const g = c.goals[i];
+      const row = el('div', 'ch-goal');
+      row.dataset.goal = i;
+      row.append(
+        el('span', 'ch-goal-target', `目标 ${i + 1}：质能 ${g.target} J`),
+        el('span', 'ch-goal-reward', g.rewardDescription)
+      );
+      goalsList.append(row);
+    }
+    card.append(goalsList);
+    const progress = el('div', 'tech-cost', '');
+    card.append(progress);
     const btn = el('button', 'btn', '');
     btn.type = 'button';
     btn.dataset.ch = cid;
@@ -233,7 +246,7 @@ function buildShell() {
       }
       markDirty();
     };
-    card.append(name, desc, reward, btn);
+    card.append(btn);
     chGrid.append(card);
   }
   expPanel.append(chGrid);
@@ -577,9 +590,15 @@ function updateExpand() {
     for (const card of refs.chGrid.querySelectorAll('.tech-card')) {
       const btn = card.querySelector('.btn');
       const cid = btn.dataset.ch;
+      const done = Challenges.goalsDoneCount(cid);
+      const total = Challenges.getGoalCount(cid);
       const completed = Challenges.isCompleted(cid);
       const active = Challenges.getActiveChallenge() === cid;
       card.classList.toggle('owned', completed);
+      for (const row of card.querySelectorAll('.ch-goal')) {
+        row.classList.toggle('done', Number(row.dataset.goal) < done);
+      }
+      card.querySelector('.tech-cost').textContent = `进度 ${done}/${total} 目标`;
       if (completed) {
         btn.textContent = '已完成';
         btn.disabled = true;

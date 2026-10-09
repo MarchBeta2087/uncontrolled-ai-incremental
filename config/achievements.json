@@ -12,6 +12,7 @@
     { "id": "first_prestige", "name": "第一次回卷", "description": "完成首次时空穿梭", "condition": { "type": "prestige_count_ge", "value": 1 } },
     { "id": "prestige_3", "name": "时间线过客", "description": "完成 3 次时空穿梭", "condition": { "type": "prestige_count_ge", "value": 3 } },
     { "id": "crystals_20", "name": "因果残骸", "description": "累计持有 20 时间晶体", "condition": { "type": "crystals_ge", "value": "20" } },
-    { "id": "year_100", "name": "百年孤独", "description": "游戏内时间达到公元 2128 年", "condition": { "type": "time_years_ge", "value": "2128" } }
+    { "id": "year_100", "name": "百年孤独", "description": "游戏内时间达到公元 2128 年", "condition": { "type": "time_years_ge", "value": "2128" } },
+    { "id": "float64_limit", "name": "实数之界", "description": "质能超越 float64 上限（1.79e308 J）", "condition": { "type": "resource_ge", "target": "mass_energy", "value": "1.79e308" } }
   ]
 }

@@ -90,16 +90,25 @@ async function bootstrap() {
         Events.emit('ui:toast', { text: `导入失败：${err.message}` });
       }
     });
-    // 穿梭后：完成挑战判定 + 重新应用永久升级/挑战奖励
+    // 穿梭后：重新应用永久升级/挑战奖励（挑战完成由每 tick 的 checkProgress 处理）
     Events.on('prestige:done', () => {
-      Challenges.onPrestige();
       Upgrades.applyAll();
       Challenges.applyAll();
     });
-    // 每 tick 轮询成就与碎片条件
+    // 退出/完成挑战后，重新应用永久升级与挑战奖励（挑战期间被清空）
+    Events.on('challenge:exited', () => {
+      Upgrades.applyAll();
+      Challenges.applyAll();
+    });
+    Events.on('challenge:completed', () => {
+      Upgrades.applyAll();
+      Challenges.applyAll();
+    });
+    // 每 tick 轮询成就、碎片与挑战目标
     Events.on('tick', () => {
       Achievements.checkAll();
       Fragments.checkAll();
+      Challenges.checkProgress();
     });
   } catch (err) {
     console.error('[main] 启动失败：', err);
@@ -149,13 +158,29 @@ function restoreFromSnapshot(snap) {
 
 function settleOffline(snap) {
   const last = snap.meta?.lastSaveAt;
-  if (!last) return;
+  if (!last) return null;
   const now = Date.now();
   let offlineReal = (now - last) / 1000;
-  if (offlineReal <= 0) return; // 系统时间回拨
+  if (offlineReal <= 0) return null; // 系统时间回拨
   offlineReal = Math.min(offlineReal, MAX_OFFLINE_SECONDS);
   const offlineGame = Num.mul(Num.parse(offlineReal * offlineDiscount), Time.getRate());
+
+  // 记录离线前各资源量
+  const before = new Map();
+  for (const rid of Resources.getResourceIds()) before.set(rid, Resources.getResource(rid));
+
   Resources.tick(offlineGame);
+
+  // 计算各资源产出增量
+  const gains = [];
+  for (const rid of Resources.getResourceIds()) {
+    const gain = Num.sub(Resources.getResource(rid), before.get(rid));
+    if (Num.gt(gain, 0)) {
+      gains.push({ id: rid, name: Resources.getResourceDef(rid).name, gain });
+    }
+  }
+
+  return { offlineRealSeconds: offlineReal, gains };
 }
 
 function buildSnapshot() {

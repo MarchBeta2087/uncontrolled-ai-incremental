@@ -182,8 +182,10 @@ export function validateConfig(cfg) {
     for (const r of c.restrictions ?? []) {
       if (!RESTRICTION_TYPES.has(r.type)) errors.push(`挑战 ${c.id} 的 restriction 类型未注册: ${r.type}`);
     }
-    if (!c.reward || !EFFECT_TYPES.has(c.reward.type)) {
-      errors.push(`挑战 ${c.id} 的 reward 类型未注册: ${c.reward?.type}`);
+    for (const g of c.goals ?? []) {
+      if (!g.reward || !EFFECT_TYPES.has(g.reward.type)) {
+        errors.push(`挑战 ${c.id} 的目标奖励类型未注册: ${g.reward?.type}`);
+      }
     }
   }
 
