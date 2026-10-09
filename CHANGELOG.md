@@ -24,6 +24,8 @@
   - `js/ui/platform.js` + `js/ui/app.js`：外壳判定与桌面外壳 UI（脏标记 + rAF 节流渲染）。
   - `js/main.js`：入口（配置加载→注入→init→存档恢复→离线结算→自动存档）。
   - `index.html` + `css/core.css` + `css/shell-desktop.css`：静态入口与桌面外壳样式。
+- **时间晶体升级树**（`config/upgrades.json` + `js/sim/upgrades.js`）：6 项永久升级（全产出乘子 + 时间速率乘子），穿梭后保留；Resources 新增全局乘子（永久全产出）。
+- **MAX ALL / MAX 购买**：`Resources.buyMaxGenerator` / `buyMaxAll`（几何级数反解最大可买数量），UI 生成器卡片加 ×1 / MAX 按钮，面板加 MAX ALL 按钮。
 - `config/balance.json`：全局可调参数初值（时间、宇宙锚点、膨胀、穿梭、格式化档位阈值、离线）。
 - **M1 数值模型推演**（`docs/失控AI增量-数值模型-v1.0.md`）：单周目 e-folding 膨胀骨架（τ₁=3 游戏年，第一周目约 428 游戏年触顶）、τ 减半的周目加速模型、时间晶体穿梭结算公式（首次校准为 2 晶体）、时间速率调节机制。
 - **`vendor/MegotaNum.js`**：按设计说明书 §1.2 vendor 化大数库，附 MIT 许可证文本。
@@ -33,6 +35,7 @@
 
 ### 变更（Changed）
 
+- **技术树扩充到 14 项**（`config/techs.json`）：后期技术以 ×1e8 乘子驱动质能指数膨胀；经平衡模拟校准：质能 1e12@16s、触顶 1e70@307s（第一周目约 5 分钟）。
 - **生成器参数重平衡**（`config/resources.json`）：新增「投资组合」资金生成器（解决资金只靠点击、链式增长被点击速率卡死的问题）；每层产出递增（1/10/100/1e4）；成本增长率 1.15→1.12；点击产出 1→10。经平衡模拟校准：质能到 1e12（恒星工业阶段）约 2 分钟。
 
 ### 修复（Fixed）

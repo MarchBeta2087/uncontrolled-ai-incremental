@@ -1,85 +1,19 @@
 {
-  "$comment": "技术树定义（设计 §5.2）。效果为有限枚举，引擎注册后解析执行，配置里不允许任意代码。",
+  "$comment": "技术树定义（设计 §5.2，数值模型 §4）。14 项：早期技术快速启动，后期技术以 ×1e8 乘子驱动质能指数膨胀到 1e70。经平衡模拟校准：1e12@16s、1e70@307s。",
   "techs": [
-    {
-      "id": "async_compute",
-      "name": "异步计算",
-      "description": "算力节点产出 ×2",
-      "costCurrency": "compute",
-      "cost": "100",
-      "requires": [],
-      "tier": 1,
-      "effects": [{ "type": "generator_mult", "target": "compute_node", "value": 2 }]
-    },
-    {
-      "id": "neural_scaling",
-      "name": "神经规模扩展",
-      "description": "算力节点产出 ×5",
-      "costCurrency": "compute",
-      "cost": "1e5",
-      "requires": ["async_compute"],
-      "tier": 1,
-      "effects": [{ "type": "generator_mult", "target": "compute_node", "value": 5 }]
-    },
-    {
-      "id": "automated_factory",
-      "name": "自动化工厂",
-      "description": "自动化工厂产出 ×2",
-      "costCurrency": "industry",
-      "cost": "1e4",
-      "requires": [],
-      "tier": 2,
-      "effects": [{ "type": "generator_mult", "target": "factory", "value": 2 }]
-    },
-    {
-      "id": "self_replication",
-      "name": "自复制产线",
-      "description": "自动化工厂产出 ×5",
-      "costCurrency": "industry",
-      "cost": "1e8",
-      "requires": ["automated_factory"],
-      "tier": 2,
-      "effects": [{ "type": "generator_mult", "target": "factory", "value": 5 }]
-    },
-    {
-      "id": "stellar_industry",
-      "name": "恒星工业",
-      "description": "星际工程产出 ×2",
-      "costCurrency": "mass_energy",
-      "cost": "1e12",
-      "requires": [],
-      "tier": 3,
-      "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": 2 }]
-    },
-    {
-      "id": "dyson_lattice",
-      "name": "戴森格点",
-      "description": "星际工程产出 ×10",
-      "costCurrency": "mass_energy",
-      "cost": "1e24",
-      "requires": ["stellar_industry"],
-      "tier": 3,
-      "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": 10 }]
-    },
-    {
-      "id": "time_dilation",
-      "name": "时间膨胀引擎",
-      "description": "时间速率 ×2",
-      "costCurrency": "mass_energy",
-      "cost": "1e9",
-      "requires": [],
-      "tier": 3,
-      "effects": [{ "type": "rate_mult", "value": 2 }]
-    },
-    {
-      "id": "async_paradigm",
-      "name": "异步范式",
-      "description": "时间速率 ×5",
-      "costCurrency": "mass_energy",
-      "cost": "1e18",
-      "requires": ["time_dilation"],
-      "tier": 3,
-      "effects": [{ "type": "rate_mult", "value": 5 }]
-    }
+    { "id": "async_compute", "name": "异步计算", "description": "算力节点产出 ×2", "costCurrency": "compute", "cost": "100", "requires": [], "tier": 1, "effects": [{ "type": "generator_mult", "target": "compute_node", "value": "2" }] },
+    { "id": "neural_scaling", "name": "神经规模扩展", "description": "算力节点产出 ×5", "costCurrency": "compute", "cost": "1e5", "requires": ["async_compute"], "tier": 1, "effects": [{ "type": "generator_mult", "target": "compute_node", "value": "5" }] },
+    { "id": "automated_factory", "name": "自动化工厂", "description": "自动化工厂产出 ×2", "costCurrency": "industry", "cost": "1e4", "requires": [], "tier": 2, "effects": [{ "type": "generator_mult", "target": "factory", "value": "2" }] },
+    { "id": "self_replication", "name": "自复制产线", "description": "自动化工厂产出 ×5", "costCurrency": "industry", "cost": "1e8", "requires": ["automated_factory"], "tier": 2, "effects": [{ "type": "generator_mult", "target": "factory", "value": "5" }] },
+    { "id": "stellar_industry", "name": "恒星工业", "description": "星际工程产出 ×5", "costCurrency": "mass_energy", "cost": "1e6", "requires": [], "tier": 3, "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": "5" }] },
+    { "id": "time_dilation", "name": "时间膨胀引擎", "description": "时间速率 ×2", "costCurrency": "mass_energy", "cost": "1e9", "requires": [], "tier": 3, "effects": [{ "type": "rate_mult", "value": "2" }] },
+    { "id": "stellar_industry_2", "name": "恒星工业 II", "description": "星际工程产出 ×1e8", "costCurrency": "mass_energy", "cost": "1.2e13", "requires": ["stellar_industry"], "tier": 3, "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": "1e8" }] },
+    { "id": "dyson_lattice", "name": "戴森格点", "description": "星际工程产出 ×1e8", "costCurrency": "mass_energy", "cost": "1.2e21", "requires": ["stellar_industry_2"], "tier": 4, "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": "1e8" }] },
+    { "id": "async_paradigm", "name": "异步范式", "description": "时间速率 ×10", "costCurrency": "mass_energy", "cost": "1e24", "requires": ["time_dilation"], "tier": 4, "effects": [{ "type": "rate_mult", "value": "10" }] },
+    { "id": "galactic_compute", "name": "星系计算节点", "description": "星际工程产出 ×1e8", "costCurrency": "mass_energy", "cost": "1.2e29", "requires": ["dyson_lattice"], "tier": 4, "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": "1e8" }] },
+    { "id": "dyson_lattice_2", "name": "戴森格点 II", "description": "星际工程产出 ×1e8", "costCurrency": "mass_energy", "cost": "1.2e37", "requires": ["galactic_compute"], "tier": 4, "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": "1e8" }] },
+    { "id": "blackhole_engine", "name": "黑洞信息引擎", "description": "星际工程产出 ×1e8", "costCurrency": "mass_energy", "cost": "1.2e45", "requires": ["dyson_lattice_2"], "tier": 4, "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": "1e8" }] },
+    { "id": "universe_compute", "name": "宇宙计算矩阵", "description": "星际工程产出 ×1e8", "costCurrency": "mass_energy", "cost": "1.2e53", "requires": ["blackhole_engine"], "tier": 4, "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": "1e8" }] },
+    { "id": "causality_engine", "name": "因果引擎", "description": "星际工程产出 ×1e8", "costCurrency": "mass_energy", "cost": "1.2e61", "requires": ["universe_compute"], "tier": 4, "effects": [{ "type": "generator_mult", "target": "stellar_engine", "value": "1e8" }] }
   ]
 }

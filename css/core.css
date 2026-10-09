@@ -115,6 +115,9 @@ body {
 .gen-name { font-weight: 600; }
 .gen-meta { font-size: 12px; color: var(--text-dim); }
 .gen-count { font-family: var(--mono); font-size: 15px; margin-left: 4px; color: var(--accent); }
+.gen-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.gen-header .panel-title { margin-bottom: 0; }
+.gen-btns { display: flex; gap: 6px; flex-shrink: 0; }
 
 /* ---- 技术卡片 ---- */
 .tech-grid {

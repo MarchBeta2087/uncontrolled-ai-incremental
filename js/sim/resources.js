@@ -13,6 +13,7 @@ const resources = new Map();       // id -> { amount: Num, def: Object }
 const generators = new Map();      // id -> { count: Num, def: Object }
 const generatorMults = new Map();  // genId -> Map(sourceId -> Num)
 const clickMults = new Map();      // sourceId -> Num
+const globalMults = new Map();     // sourceId -> Num（永久全产出乘子，穿梭保留）
 
 let clickProduction = Num.parse(0);
 let clickResourceId = 'funds'; // MVP：点击产出资金
@@ -71,11 +72,12 @@ export function getGeneratorMultiplier(genId) {
 /** 某资源的总产出速率（游戏秒），用于 UI 展示 */
 export function getProductionPerSecond(resourceId) {
   let total = Num.parse(0);
+  const globalMult = getGlobalMultiplier();
   for (const [genId, g] of generators) {
     if (g.def.produces !== resourceId) continue;
     const perSec = Num.mul(
-      Num.mul(Num.parse(g.def.baseProduction), g.count),
-      getGeneratorMultiplier(genId)
+      Num.mul(Num.mul(Num.parse(g.def.baseProduction), g.count), getGeneratorMultiplier(genId)),
+      globalMult
     );
     total = Num.add(total, perSec);
   }
@@ -88,6 +90,18 @@ export function getClickMultiplier() {
   let m = Num.parse(1);
   for (const v of clickMults.values()) m = Num.mul(m, v);
   return m;
+}
+/** 永久全产出乘子（时间晶体升级等，穿梭后由升级重新应用） */
+export function setGlobalMultiplier(sourceId, value) {
+  globalMults.set(sourceId, Num.parse(value));
+}
+export function getGlobalMultiplier() {
+  let m = Num.parse(1);
+  for (const v of globalMults.values()) m = Num.mul(m, v);
+  return m;
+}
+export function clearGlobalMultipliers() {
+  globalMults.clear();
 }
 /** 清空所有技术乘子（穿梭回卷 / 重新加载周目内状态时用） */
 export function clearMultipliers() {
@@ -144,13 +158,45 @@ export function buyGenerator(genId, n = 1) {
   return { ok: true, cost, count: g.count };
 }
 
-/** 每 tick 生产结算：产出 = 基础产量 × 数量 × 乘子，再 × 游戏秒增量 */
+/** 当前资源能买的最大数量（几何级数反解） */
+export function maxAffordable(genId) {
+  const g = generators.get(genId);
+  if (!g) return Num.parse(0);
+  const currency = resources.get(g.def.costCurrency);
+  if (!currency) return Num.parse(0);
+  const base = Num.parse(g.def.baseCost);
+  const growth = Num.parse(g.def.costGrowth);
+  const firstCost = Num.mul(base, Num.pow(growth, g.count));
+  const ratio = Num.div(Num.mul(currency.amount, Num.sub(growth, Num.parse(1))), firstCost);
+  const inside = Num.add(ratio, Num.parse(1));
+  if (Num.lte(inside, 1)) return Num.parse(0);
+  const n = Num.floor(Num.div(Num.log10(inside), Num.log10(growth)));
+  return Num.max(n, Num.parse(0));
+}
+
+export function buyMaxGenerator(genId) {
+  const n = maxAffordable(genId);
+  if (Num.lte(n, 0)) return { ok: false, reason: '资源不足' };
+  return buyGenerator(genId, n);
+}
+
+/** MAX ALL：对每个生成器各买最大数量，返回实际购买次数 */
+export function buyMaxAll() {
+  let bought = 0;
+  for (const gid of generators.keys()) {
+    if (buyMaxGenerator(gid).ok) bought++;
+  }
+  return bought;
+}
+
+/** 每 tick 生产结算：产出 = 基础产量 × 数量 × 技术乘子 × 全局乘子，再 × 游戏秒增量 */
 export function tick(dtGameSeconds) {
   const dt = Num.parse(dtGameSeconds);
+  const globalMult = getGlobalMultiplier();
   for (const [genId, g] of generators) {
     const perSec = Num.mul(
-      Num.mul(Num.parse(g.def.baseProduction), g.count),
-      getGeneratorMultiplier(genId)
+      Num.mul(Num.mul(Num.parse(g.def.baseProduction), g.count), getGeneratorMultiplier(genId)),
+      globalMult
     );
     const produced = Num.mul(perSec, dt);
     const res = resources.get(g.def.produces);
@@ -188,4 +234,5 @@ export function reset() {
     g.count = Num.parse(0);
   }
   clearMultipliers();
+  globalMults.clear(); // 永久乘子也清（穿梭后由升级 applyAll 重新应用）
 }

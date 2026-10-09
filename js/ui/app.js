@@ -8,6 +8,7 @@ import { Time } from '../core/time.js';
 import * as Resources from '../sim/resources.js';
 import * as Techs from '../sim/techs.js';
 import * as Prestige from '../sim/prestige.js';
+import * as Upgrades from '../sim/upgrades.js';
 import { platformClass } from './platform.js';
 
 const refs = {};
@@ -84,7 +85,13 @@ function buildShell() {
 
   // 生成器面板
   const genPanel = el('div', 'panel');
-  genPanel.append(el('div', 'panel-title', '扩张基建'));
+  const genHeader = el('div', 'gen-header');
+  genHeader.append(el('div', 'panel-title', '扩张基建'));
+  const maxAllBtn = el('button', 'btn', 'MAX ALL');
+  maxAllBtn.type = 'button';
+  maxAllBtn.onclick = () => { Resources.buyMaxAll(); markDirty(); };
+  genHeader.append(maxAllBtn);
+  genPanel.append(genHeader);
   const genList = el('div', '');
   for (const gid of Resources.getGeneratorIds()) {
     const def = Resources.getGeneratorDef(gid);
@@ -96,15 +103,25 @@ function buildShell() {
     );
     const countSpan = el('span', 'gen-count num', '0');
     countSpan.dataset.gen = gid;
-    const costBtn = el('button', 'btn', '');
-    costBtn.type = 'button';
-    costBtn.dataset.gen = gid;
-    costBtn.onclick = () => {
+    const btnGroup = el('div', 'gen-btns');
+    const buyOneBtn = el('button', 'btn', '×1');
+    buyOneBtn.type = 'button';
+    buyOneBtn.dataset.gen = gid;
+    buyOneBtn.onclick = () => {
       const r = Resources.buyGenerator(gid, 1);
       if (!r.ok) showToast(r.reason || '无法购买');
       markDirty();
     };
-    card.append(info, countSpan, costBtn);
+    const maxBtn = el('button', 'btn', 'MAX');
+    maxBtn.type = 'button';
+    maxBtn.dataset.genmax = gid;
+    maxBtn.onclick = () => {
+      const r = Resources.buyMaxGenerator(gid);
+      if (!r.ok) showToast(r.reason || '无法购买');
+      markDirty();
+    };
+    btnGroup.append(buyOneBtn, maxBtn);
+    card.append(info, countSpan, btnGroup);
     genList.append(card);
   }
   genPanel.append(genList);
@@ -163,6 +180,30 @@ function buildShell() {
     markDirty();
   };
   expPanel.append(massBig, progress, progressLabel, status, crystalInfo, prestigeBtn);
+
+  // 时间晶体升级列表
+  expPanel.append(el('div', 'panel-title', '时间晶体升级'));
+  const upgGrid = el('div', 'tech-grid');
+  for (const uid of Upgrades.getUpgradeIds()) {
+    const u = Upgrades.getUpgrade(uid);
+    const card = el('div', 'tech-card');
+    const name = el('div', 'tech-name', u.name);
+    const desc = el('div', 'tech-desc', u.description || '');
+    const cost = el('div', 'tech-cost', '');
+    const btn = el('button', 'btn', '购买');
+    btn.type = 'button';
+    btn.dataset.upg = uid;
+    btn.onclick = () => {
+      const r = Upgrades.buyUpgrade(uid);
+      if (!r.ok) showToast(r.reason || '无法购买');
+      markDirty();
+    };
+    card.append(name, desc, cost, btn);
+    upgGrid.append(card);
+  }
+  expPanel.append(upgGrid);
+  refs.upgGrid = upgGrid;
+
   viewExpand.append(expPanel);
   refs.massBig = massBig;
   refs.progressFill = progressFill;
@@ -203,6 +244,8 @@ function bindEvents() {
   Events.on('resources:tick', () => markDirty());
   Events.on('generators:changed', () => markDirty());
   Events.on('tech:owned', () => markDirty());
+  Events.on('upgrade:owned', () => markDirty());
+  Events.on('crystals:changed', () => markDirty());
   Events.on('prestige:done', () => markDirty());
   Events.on('prestige:ready', () => markDirty());
   Events.on('ui:toast', (p) => showToast(p?.text));
@@ -259,19 +302,23 @@ function updateResources() {
 
 function updateGenerators() {
   for (const card of refs.genList.querySelectorAll('.gen-card')) {
-    const btn = card.querySelector('.btn');
-    const gid = btn.dataset.gen;
+    const buyOneBtn = card.querySelector('.btn[data-gen]');
+    const maxBtn = card.querySelector('.btn[data-genmax]');
+    const gid = buyOneBtn.dataset.gen;
     const def = Resources.getGeneratorDef(gid);
     const count = Resources.getGenerator(gid);
     const cost = Resources.buyCost(gid, 1);
     const currency = Resources.getResource(def.costCurrency);
     const afford = currency !== null && Num.gte(currency, cost);
     const perOne = Num.mul(Num.parse(def.baseProduction), Resources.getGeneratorMultiplier(gid));
+    const maxN = Resources.maxAffordable(gid);
     card.querySelector('.gen-count').textContent = count ? Num.format(count) : '0';
     card.querySelector('.gen-meta').textContent =
       `每个 +${Num.format(perOne)} ${Resources.getResourceDef(def.produces).name}/秒`;
-    btn.textContent = `×1 · ${Num.format(cost)} ${Resources.getResourceDef(def.costCurrency).name}`;
-    btn.disabled = !afford;
+    buyOneBtn.textContent = `×1 · ${Num.format(cost)}`;
+    buyOneBtn.disabled = !afford;
+    maxBtn.textContent = `MAX ×${Num.format(maxN)}`;
+    maxBtn.disabled = Num.lte(maxN, 0);
   }
 }
 
@@ -307,4 +354,23 @@ function updateExpand() {
   refs.status.textContent = ready ? '宇宙质能已耗尽，可撕开因果闭环的裂缝' : '尚未触顶';
   refs.prestigeBtn.disabled = !ready;
   refs.crystalInfo.textContent = `时间晶体：${Num.format(Prestige.getTimeCrystals())}`;
+
+  // 时间晶体升级卡片
+  if (refs.upgGrid) {
+    for (const card of refs.upgGrid.querySelectorAll('.tech-card')) {
+      const btn = card.querySelector('.btn');
+      const uid = btn.dataset.upg;
+      const u = Upgrades.getUpgrade(uid);
+      const owned = Upgrades.isOwned(uid);
+      card.classList.toggle('owned', owned);
+      card.querySelector('.tech-cost').textContent = `成本：${Num.format(Num.parse(u.cost))} 晶体`;
+      if (owned) {
+        btn.textContent = '已购买';
+        btn.disabled = true;
+      } else {
+        btn.textContent = '购买';
+        btn.disabled = !Upgrades.canBuy(uid);
+      }
+    }
+  }
 }

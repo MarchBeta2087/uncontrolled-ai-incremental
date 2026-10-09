@@ -16,6 +16,7 @@ const DEFAULT_PATHS = {
   balance: 'config/balance.json',
   resources: 'config/resources.json',
   techs: 'config/techs.json',
+  upgrades: 'config/upgrades.json',
 };
 
 async function fetchJSON(path) {
@@ -25,13 +26,14 @@ async function fetchJSON(path) {
 }
 
 export async function loadConfig(paths = DEFAULT_PATHS) {
-  const [balance, resources, techs] = await Promise.all([
+  const [balance, resources, techs, upgrades] = await Promise.all([
     fetchJSON(paths.balance),
     fetchJSON(paths.resources),
     fetchJSON(paths.techs),
+    fetchJSON(paths.upgrades),
   ]);
-  validateConfig({ balance, resources, techs });
-  return { balance, resources, techs };
+  validateConfig({ balance, resources, techs, upgrades });
+  return { balance, resources, techs, upgrades };
 }
 
 /** 校验配置合法性：id 唯一、引用存在、requires 无环、effect 类型已注册 */
@@ -90,6 +92,26 @@ export function validateConfig(cfg) {
   // requires 无环（DFS）
   if (hasRequireCycle(cfg.techs?.techs ?? [])) {
     errors.push('技术 requires 存在环');
+  }
+
+  // 升级
+  const upgradeIds = new Set();
+  for (const u of cfg.upgrades?.upgrades ?? []) {
+    if (!u.id) {
+      errors.push('存在缺少 id 的升级');
+      continue;
+    }
+    if (upgradeIds.has(u.id)) errors.push(`升级 id 重复: ${u.id}`);
+    upgradeIds.add(u.id);
+    for (const req of u.requires ?? []) {
+      if (!upgradeIds.has(req)) errors.push(`升级 ${u.id} 的 requires 引用不存在/未定义的升级: ${req}`);
+    }
+    for (const e of u.effects ?? []) {
+      if (!EFFECT_TYPES.has(e.type)) errors.push(`升级 ${u.id} 的 effect 类型未注册: ${e.type}`);
+    }
+  }
+  if (hasRequireCycle(cfg.upgrades?.upgrades ?? [])) {
+    errors.push('升级 requires 存在环');
   }
 
   if (errors.length) {

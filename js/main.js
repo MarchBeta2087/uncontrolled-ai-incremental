@@ -8,6 +8,7 @@ import { Events } from './core/events.js';
 import * as Resources from './sim/resources.js';
 import * as Techs from './sim/techs.js';
 import * as Prestige from './sim/prestige.js';
+import * as Upgrades from './sim/upgrades.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
@@ -36,6 +37,7 @@ async function bootstrap() {
     Resources.initResources(cfg.resources);
     Techs.initTechs(cfg.techs);
     Prestige.initPrestige();
+    Upgrades.initUpgrades(cfg.upgrades);
 
     // 恢复存档（含离线结算）
     restoreSave();
@@ -60,6 +62,8 @@ async function bootstrap() {
       Save.exportSave(buildSnapshot());
       Events.emit('ui:toast', { text: '已导出存档文件' });
     });
+    // 穿梭后重新应用永久升级效果
+    Events.on('prestige:done', () => Upgrades.applyAll());
   } catch (err) {
     console.error('[main] 启动失败：', err);
     const app = document.getElementById('app');
@@ -90,6 +94,7 @@ function restoreSave() {
     timeCrystals: snap.metaProgress?.timeCrystals,
     prestigeCount: snap.meta?.prestigeCount,
   });
+  Upgrades.load(snap.metaProgress?.upgrades);
 
   // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣
   settleOffline(snap);
@@ -127,7 +132,7 @@ function buildSnapshot() {
     },
     metaProgress: {
       timeCrystals: prestige.timeCrystals,
-      upgrades: [],
+      upgrades: Upgrades.serialize(),
       achievements: [],
       fragments: [],
     },

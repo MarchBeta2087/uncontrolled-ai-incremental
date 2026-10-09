@@ -1,0 +1,11 @@
+{
+  "$comment": "时间晶体升级树（设计 §5.3，数值模型 §8 定价）。穿梭后永久保留；首次穿梭 2 晶体恰购 2 个一级升级。",
+  "upgrades": [
+    { "id": "causal_residue_1", "name": "因果残响 I", "description": "全产出 ×2", "cost": "1", "requires": [], "effects": [{ "type": "all_generator_mult", "value": "2" }] },
+    { "id": "causal_residue_2", "name": "因果残响 II", "description": "全产出 ×2", "cost": "3", "requires": ["causal_residue_1"], "effects": [{ "type": "all_generator_mult", "value": "2" }] },
+    { "id": "causal_residue_3", "name": "因果残响 III", "description": "全产出 ×4", "cost": "6", "requires": ["causal_residue_2"], "effects": [{ "type": "all_generator_mult", "value": "4" }] },
+    { "id": "rate_resonance_1", "name": "时间晶体谐振 I", "description": "时间速率 ×10", "cost": "2", "requires": [], "effects": [{ "type": "rate_mult", "value": "10" }] },
+    { "id": "rate_resonance_2", "name": "时间晶体谐振 II", "description": "时间速率 ×100", "cost": "8", "requires": ["rate_resonance_1"], "effects": [{ "type": "rate_mult", "value": "100" }] },
+    { "id": "rate_resonance_3", "name": "时间晶体谐振 III", "description": "时间速率 ×1000", "cost": "20", "requires": ["rate_resonance_2"], "effects": [{ "type": "rate_mult", "value": "1000" }] }
+  ]
+}

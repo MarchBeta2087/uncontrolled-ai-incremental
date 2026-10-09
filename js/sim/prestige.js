@@ -34,6 +34,14 @@ export function initPrestige() {
 export function getTimeCrystals() {
   return timeCrystals;
 }
+/** 扣除时间晶体（购买升级用），不足返回 false */
+export function spendCrystals(amount) {
+  const a = Num.parse(amount);
+  if (Num.lt(timeCrystals, a)) return false;
+  timeCrystals = Num.sub(timeCrystals, a);
+  Events.emit('crystals:changed', { amount: timeCrystals });
+  return true;
+}
 export function getPrestigeCount() {
   return prestigeCount;
 }
