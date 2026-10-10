@@ -11,6 +11,15 @@
   --highlight: #f85149;
   --success: #3fb950;
   --warning: #d29922;
+  /* 派生色（主题可覆盖；自定义强调色由 JS 覆写 --accent/--accent-strong/--accent-contrast） */
+  --btn-hover: #2d3748;
+  --accent-contrast: #04121f;
+  --danger-contrast: #fff;
+  --click-bg1: #1c3a5e;
+  --click-bg2: #14263e;
+  --click-hover1: #234a76;
+  --click-hover2: #1a3050;
+  --overlay: rgba(0, 0, 0, 0.6);
   --font: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
   --mono: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
 }
@@ -46,12 +55,12 @@ body {
   transition: background 0.15s, border-color 0.15s, opacity 0.15s;
   white-space: nowrap;
 }
-.btn:hover:not(:disabled) { background: #2d3748; border-color: var(--accent); }
+.btn:hover:not(:disabled) { background: var(--btn-hover); border-color: var(--accent); }
 .btn:active:not(:disabled) { transform: translateY(1px); }
 .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: #04121f; font-weight: 600; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); font-weight: 600; }
 .btn-primary:hover:not(:disabled) { background: var(--accent-strong); }
-.btn-danger { background: var(--highlight); border-color: var(--highlight); color: #fff; }
+.btn-danger { background: var(--highlight); border-color: var(--highlight); color: var(--danger-contrast); }
 
 /* ---- 面板 ---- */
 .panel {
@@ -90,13 +99,13 @@ body {
   font-weight: 700;
   border-radius: 8px;
   border: 1px solid var(--accent);
-  background: linear-gradient(180deg, #1c3a5e, #14263e);
+  background: linear-gradient(180deg, var(--click-bg1), var(--click-bg2));
   color: var(--text);
   cursor: pointer;
   user-select: none;
   transition: transform 0.05s, background 0.15s;
 }
-.click-btn:hover { background: linear-gradient(180deg, #234a76, #1a3050); }
+.click-btn:hover { background: linear-gradient(180deg, var(--click-hover1), var(--click-hover2)); }
 .click-btn:active { transform: scale(0.98); }
 
 /* ---- 生成器卡片 ---- */
@@ -263,7 +272,7 @@ body.phase2 .phase-lock { display: none; }
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
