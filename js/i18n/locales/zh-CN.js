@@ -35,6 +35,9 @@ export default {
   'tech.buy': '研发',
   'tech.owned': '已研发',
   'tech.cost': '成本：{cost} {currency}',
+  'tech.phase1': '第一阶段',
+  'tech.phase2': '第二阶段 · 越过本宇宙',
+  'tech.phase2LockNotice': '第二阶段：需当前持有 {n} 时间晶体解锁',
 
   // 扩张视图
   'expand.panel': '宇宙吞噬',
@@ -81,6 +84,7 @@ export default {
   'toast.cannotEnterChallenge': '无法进入挑战',
   'toast.challengeExit': '已退出挑战',
   'toast.challengeEntered': '已进入挑战：{name}',
+  'toast.phase2Unlocked': '第二阶段已解锁：越过本宇宙',
 
   // 离线收益报告
   'offline.title': '离线收益报告',

@@ -26,6 +26,7 @@ let toastTimer = 0;
 
 export function initUI() {
   document.body.classList.add(platformClass());
+  if (Prestige.isPhase2Unlocked()) document.body.classList.add('phase2');
   buildShell();
   bindEvents();
   switchView('resources');
@@ -80,9 +81,10 @@ function buildShell() {
   const resPanel = el('div', 'panel');
   resPanel.append(el('div', 'panel-title', t('res.panel')));
   const resList = el('div', '');
-  for (const rid of Resources.getResourceIds()) {
+  for (const rid of Resources.getAllResourceIds()) {
     const def = Resources.getResourceDef(rid);
     const row = el('div', 'res-row');
+    if (def.phase === 2) row.dataset.phase = '2';
     const name = el('span', 'res-name', tc('resource', rid, 'name', def.name));
     const value = el('span', 'res-value num', '0');
     value.dataset.res = rid;
@@ -105,9 +107,10 @@ function buildShell() {
   genHeader.append(maxAllBtn);
   genPanel.append(genHeader);
   const genList = el('div', '');
-  for (const gid of Resources.getGeneratorIds()) {
+  for (const gid of Resources.getAllGeneratorIds()) {
     const def = Resources.getGeneratorDef(gid);
     const card = el('div', 'gen-card');
+    if (def.phase === 2) card.dataset.phase = '2';
     const info = el('div', 'gen-info');
     info.append(
       el('div', 'gen-name', tc('generator', gid, 'name', def.name)),
@@ -146,10 +149,18 @@ function buildShell() {
   const viewTechs = el('div', 'view');
   const techPanel = el('div', 'panel');
   techPanel.append(el('div', 'panel-title', t('tech.panel')));
-  const techGrid = el('div', 'tech-grid');
+  const techWrap = el('div', '');
+  const p1Heading = el('div', 'phase-heading', t('tech.phase1'));
+  const p1Grid = el('div', 'tech-grid');
+  const p2Lock = el('div', 'phase-lock', t('tech.phase2LockNotice', { n: Num.format(Prestige.getPhase2UnlockCrystals()) }));
+  const p2Heading = el('div', 'phase-heading', t('tech.phase2'));
+  p2Heading.dataset.phase = '2';
+  const p2Grid = el('div', 'tech-grid');
+  p2Grid.dataset.phase = '2';
   for (const tid of Techs.getTechIds()) {
     const def = Techs.getTech(tid);
     const card = el('div', 'tech-card');
+    if (def.phase === 2) card.dataset.phase = '2';
     const name = el('div', 'tech-name', tc('tech', tid, 'name', def.name));
     const desc = el('div', 'tech-desc', tc('tech', tid, 'description', def.description || ''));
     const cost = el('div', 'tech-cost', '');
@@ -162,11 +173,12 @@ function buildShell() {
       markDirty();
     };
     card.append(name, desc, cost, btn);
-    techGrid.append(card);
+    (def.phase === 2 ? p2Grid : p1Grid).append(card);
   }
-  techPanel.append(techGrid);
+  techWrap.append(p1Heading, p1Grid, p2Lock, p2Heading, p2Grid);
+  techPanel.append(techWrap);
   viewTechs.append(techPanel);
-  refs.techGrid = techGrid;
+  refs.techGrid = techWrap;
 
   // 扩张视图
   const viewExpand = el('div', 'view');
@@ -201,6 +213,7 @@ function buildShell() {
   for (const uid of Upgrades.getUpgradeIds()) {
     const u = Upgrades.getUpgrade(uid);
     const card = el('div', 'tech-card');
+    if (u.phase === 2) card.dataset.phase = '2';
     const name = el('div', 'tech-name', tc('upgrade', uid, 'name', u.name));
     const desc = el('div', 'tech-desc', tc('upgrade', uid, 'description', u.description || ''));
     const cost = el('div', 'tech-cost', '');
@@ -447,6 +460,11 @@ function bindEvents() {
   Events.on('ui:offline-report', (report) => showOfflineReport(report));
   Events.on('prestige:done', () => markDirty());
   Events.on('prestige:ready', () => markDirty());
+  Events.on('phase2:unlocked', () => {
+    document.body.classList.add('phase2');
+    showToast(t('toast.phase2Unlocked'));
+    renderNow();
+  });
   Events.on('ui:toast', (p) => showToast(p?.text));
 }
 

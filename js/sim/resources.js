@@ -63,6 +63,14 @@ export function getResourceIds() {
 export function getGeneratorIds() {
   return [...generators.entries()].filter(([, g]) => !isLocked(g.def)).map(([id]) => id);
 }
+
+/** 含被第二阶段锁定的条目（供 UI 预构建，解锁后由 CSS 显示） */
+export function getAllResourceIds() {
+  return [...resources.keys()];
+}
+export function getAllGeneratorIds() {
+  return [...generators.keys()];
+}
 export function getResourceDef(id) {
   return resources.get(id)?.def ?? null;
 }
