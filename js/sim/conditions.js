@@ -10,6 +10,7 @@ import * as Resources from './resources.js';
 import * as Techs from './techs.js';
 import * as Prestige from './prestige.js';
 import * as Upgrades from './upgrades.js';
+import * as Progress from './progress.js';
 
 /** 判定单个条件是否满足 */
 export function checkCondition(cond) {
@@ -37,6 +38,14 @@ export function checkCondition(cond) {
       return Num.gte(Prestige.getTotalTimeCrystals(), Num.parse(cond.value));
     case 'time_years_ge':
       return Num.gte(Time.getCurrentYear(), Num.parse(cond.value));
+    case 'phase2_unlocked':
+      return Progress.isPhase2Unlocked();
+    case 'prestige_gain_ge':
+      return Num.gte(Prestige.getLastPrestigeCrystals(), Num.parse(cond.value));
+    case 'cap_ge':
+      return Num.gte(Prestige.getUniverseCap(), Num.parse(cond.value));
+    case 'dark_energy_ge':
+      return Num.gte(Resources.getResource('dark_energy') ?? Num.parse(0), Num.parse(cond.value));
     default:
       return false;
   }

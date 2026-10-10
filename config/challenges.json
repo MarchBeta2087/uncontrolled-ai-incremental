@@ -36,6 +36,31 @@
         { "target": "1e30", "rewardDescription": "时间速率 ×3", "reward": { "type": "rate_mult", "value": "3" } },
         { "target": "1e70", "rewardDescription": "时间速率 ×5", "reward": { "type": "rate_mult", "value": "5" } }
       ]
+    },
+
+    {
+      "id": "challenge_p2_drought",
+      "name": "晶体枯竭",
+      "description": "晶体产出 ×0.1",
+      "unlockCondition": { "type": "phase2_unlocked" },
+      "restrictions": [{ "type": "crystal_mult", "value": "0.1" }],
+      "goals": [
+        { "target": "1e70", "rewardDescription": "晶体 ×2", "reward": { "type": "crystal_mult", "value": "2" } },
+        { "target": "1e150", "rewardDescription": "晶体 ×3", "reward": { "type": "crystal_mult", "value": "3" } },
+        { "target": "1e250", "rewardDescription": "晶体 ×5", "reward": { "type": "crystal_mult", "value": "5" } }
+      ]
+    },
+    {
+      "id": "challenge_p2_zero",
+      "name": "绝对零度",
+      "description": "时间速率 ÷1000",
+      "unlockCondition": { "type": "phase2_unlocked" },
+      "restrictions": [{ "type": "rate_div", "value": "1000" }],
+      "goals": [
+        { "target": "1e70", "rewardDescription": "时间速率 ×2", "reward": { "type": "rate_mult", "value": "2" } },
+        { "target": "1e150", "rewardDescription": "时间速率 ×3", "reward": { "type": "rate_mult", "value": "3" } },
+        { "target": "1e250", "rewardDescription": "时间速率 ×5", "reward": { "type": "rate_mult", "value": "5" } }
+      ]
     }
   ]
 }

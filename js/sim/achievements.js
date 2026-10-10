@@ -5,6 +5,7 @@
 import { Num } from '../core/num.js';
 import { Time } from '../core/time.js';
 import * as Resources from './resources.js';
+import * as Mults from './mults.js';
 import { Events } from '../core/events.js';
 import { checkCondition } from './conditions.js';
 
@@ -57,6 +58,9 @@ function applyReward(id) {
       break;
     case 'generator_mult':
       Resources.setGeneratorMultiplier(r.target, 'achievement:' + id, r.value);
+      break;
+    case 'crystal_mult':
+      Mults.setCrystalMultiplier('achievement:' + id, r.value);
       break;
   }
 }
