@@ -43,12 +43,17 @@ python -m http.server 8000
 | [可行性分析](docs/失控AI增量-可行性分析-v1.1.md) | 能不能做 |
 | [设计说明书](docs/失控AI增量-设计说明书-v1.2.md) | 怎么做 |
 | [数值模型](docs/失控AI增量-数值模型-v1.0.md) | 膨胀曲线、时间速率、穿梭结算 |
-| [素材与授权规则](docs/素材与授权规则-v1.0.md) | 素材入库规范 |
+| [素材与授权规则](docs/素材与授权规则-v1.1.md) | 素材入库规范、禁用来源黑名单、素材征集 |
+| [分支与发布流程](docs/分支与发布流程.md) | dev / PR / 发布流程 |
 | [待办事项](TODO.md) | 路线图 |
 
 ## 贡献
 
-欢迎 Issue 和 PR，见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+欢迎 Issue 和 PR。请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)：所有改动通过 PR 合入 `dev` 分支（规则见[分支与发布流程](docs/分支与发布流程.md)）。
+
+- 参与社区即表示遵守 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)（贡献者公约）。
+- 安全漏洞请走 [SECURITY.md](SECURITY.md) 的私密渠道，**勿公开提交 Issue**。
+- 想投稿美术/音乐/音效？见[素材与授权规则 §7 素材征集](docs/素材与授权规则-v1.1.md)。
 
 ## 许可证
 
