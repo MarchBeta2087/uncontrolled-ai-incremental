@@ -50,6 +50,15 @@ const fmtTime = (sec) => {
   return `${(sec / 3600).toFixed(2)}h`;
 };
 
+const DEBUG = process.argv.includes('--debug');
+function dumpState(label) {
+  if (!DEBUG) return;
+  const mass = resMod.getResource('mass_energy');
+  const prod = resMod.getProductionPerSecond('mass_energy');
+  const rate = timeMod.Time.getRate();
+  console.log(`      [${label}] 质能=${Num.format(mass)} 上限=${Num.format(prestigeMod.getUniverseCap())} 产能=${Num.format(prod)}/游戏秒 速率=${Num.format(rate)} 物理=${fmtTime(physical)}`);
+}
+
 function buyGreedy() {
   for (const tid of techMod.getTechIds()) {
     if (techMod.canBuy(tid)) techMod.buyTech(tid);
@@ -119,12 +128,14 @@ while (physical < MAX_PHYSICAL && iterations < MAX_ITER) {
     phase2WasUnlocked = true;
     phase2At = physical;
     console.log(`第二阶段解锁（持有 100 晶体）：${fmtTime(physical)}（已穿梭 ${prestiges} 次）`);
+    dumpState('unlock');
   }
 
   for (const fid of folds) {
     if (!foldSeen.has(fid) && techMod.isOwned(fid)) {
       foldSeen.add(fid);
       console.log(`  ${techsCfg.techs.find((t) => t.id === fid).name}：${fmtTime(physical)}`);
+      dumpState(fid);
     }
   }
   if (foldSeen.size >= folds.length) break;

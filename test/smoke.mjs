@@ -148,9 +148,9 @@ resMod.load({ resources: { mass_energy: Num.toJSON('1e80') }, generators: {} });
 assert('解锁后：第二阶段技术可购', techMod.canBuy('p2_hyper_1') === true);
 techMod.buyTech('p2_hyper_1');
 techMod.buyTech('p2_fold_1');
-assert('维度折叠 I：上限 1e70 → 1e90', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e90')));
+assert('维度折叠 I：上限 1e70 → 1e98', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e98')));
 techMod.reset();
-assert('穿梭后永久折叠仍保留', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e90')));
+assert('穿梭后永久折叠仍保留', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e98')));
 
 console.log('== 第二阶段引擎地基（cap_mult / crystal_mult / 解锁 / 迁移）==');
 multsMod.clearCapMultipliers();
