@@ -16,6 +16,7 @@ export default {
   'nav.save': 'セーブ',
   'nav.export': '書き出し',
   'nav.settings': '設定',
+  'nav.endgame': '終局',
 
   // 資源ビュー
   'res.click': '研究に投資',
@@ -84,6 +85,7 @@ export default {
   'toast.challengeExit': 'チャレンジを退出しました',
   'toast.challengeEntered': 'チャレンジ開始：{name}',
   'toast.phase2Unlocked': 'フェーズ 2 解放：この宇宙の彼方',
+  'toast.endgameReached': '終局に到達：この宇宙の果て',
 
   // オフライン収益レポート
   'offline.title': 'オフライン収益レポート',
@@ -117,6 +119,13 @@ export default {
   'settings.aboutOrdinal': '設計は Ordinal Markup を参照（メカニクスのみ。コード/素材は未使用）',
   'settings.aboutRepo': 'リポジトリ：github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '閉じる',
+
+  // 終局
+  'endgame.title': '続報をお待ちください',
+  'endgame.comingSoon': 'この宇宙は搾り尽くされた。さらに遠い多元宇宙が、まもなくやってくる。',
+  'endgame.license': '本作は GPL-3.0-or-later で公開されています。fork・改変・再配布は自由です。',
+  'endgame.contribute': '新コンテンツを追加したい？ PR 歓迎——貢献ガイドをご覧ください。',
+  'endgame.repo': 'リポジトリ：github.com/MarchBeta2087/uncontrolled-ai-incremental',
 
   // 単位
   'unit.perSecond': '/秒',

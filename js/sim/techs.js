@@ -112,6 +112,17 @@ function removeEffects(id, def) {
   }
 }
 
+/** 第二阶段技术是否已全部研发（Endgame 触发条件） */
+export function allPhase2Researched() {
+  let count = 0;
+  for (const t of techs.values()) {
+    if (t.def.phase !== 2) continue;
+    count += 1;
+    if (!t.owned) return false;
+  }
+  return count > 0;
+}
+
 /** 重放所有已研发的永久技术效果（重置后调用） */
 export function applyPermanent(skipRate = false) {
   for (const [id, t] of techs) {

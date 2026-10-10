@@ -236,5 +236,12 @@ assert('挑战限制 crystal_mult ×0.1 生效', Num.eq(multsMod.getCrystalMulti
 chMod.exitChallenge();
 assert('退出挑战后晶体限制清除', Num.eq(multsMod.getCrystalMultiplier(), Num.parse(1)));
 
+console.log('== Endgame 条件 ==');
+techMod.initTechs(techsCfg);
+techMod.load(p1TechIds);
+assert('allPhase2Researched：未全研发为否', techMod.allPhase2Researched() === false);
+techMod.load(techsCfg.techs.map((t) => t.id));
+assert('allPhase2Researched：全部研发为是', techMod.allPhase2Researched() === true);
+
 console.log(`\n通过 ${passed} 项，失败 ${failed} 项`);
 if (failed > 0) process.exit(1);

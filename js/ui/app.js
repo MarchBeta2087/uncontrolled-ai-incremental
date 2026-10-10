@@ -320,7 +320,22 @@ function buildShell() {
   refs.fragList = fragList;
   refs.fragTitle = fragTitle;
 
-  viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords);
+  // 终局视图（第二阶段技术全部研发后，由任务栏按钮进入）
+  const viewEndgame = el('div', 'view');
+  const egPanel = el('div', 'panel');
+  egPanel.append(el('div', 'panel-title', t('nav.endgame')));
+  egPanel.append(el('p', 'endgame-title', t('endgame.title')));
+  egPanel.append(el('p', 'modal-text', t('endgame.comingSoon')));
+  egPanel.append(el('p', 'modal-text', t('endgame.license')));
+  egPanel.append(el('p', 'modal-text', t('endgame.contribute')));
+  const egRepo = el('a', 'modal-text', t('endgame.repo'));
+  egRepo.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental';
+  egRepo.target = '_blank';
+  egRepo.rel = 'noopener noreferrer';
+  egPanel.append(egRepo);
+  viewEndgame.append(egPanel);
+
+  viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewEndgame);
 
   // ---- 任务栏 ----
   const taskbar = el('div', 'taskbar');
@@ -328,11 +343,16 @@ function buildShell() {
   const btnTech = el('button', 'task-btn', t('nav.techs'));
   const btnExpand = el('button', 'task-btn', t('nav.expand'));
   const btnRecords = el('button', 'task-btn', t('nav.records'));
+  const btnEndgame = el('button', 'task-btn', t('nav.endgame'));
   btnRes.onclick = () => switchView('resources');
   btnTech.onclick = () => switchView('techs');
   btnExpand.onclick = () => switchView('expand');
   btnRecords.onclick = () => switchView('records');
-  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords };
+  btnEndgame.onclick = () => switchView('endgame');
+  refs.endgameReady = Techs.allPhase2Researched();
+  btnEndgame.hidden = !refs.endgameReady;
+  refs.endgameBtn = btnEndgame;
+  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords, endgame: btnEndgame };
   const spacer = el('div', 'taskbar-spacer');
   const saveBtn = el('button', 'task-btn', t('nav.save'));
   saveBtn.onclick = () => Events.emit('save:request');
@@ -340,7 +360,7 @@ function buildShell() {
   exportBtn.onclick = () => Events.emit('export:request');
   const settingsBtn = el('button', 'task-btn', t('nav.settings'));
   settingsBtn.onclick = () => openModal();
-  taskbar.append(btnRes, btnTech, btnExpand, btnRecords, spacer, saveBtn, exportBtn, settingsBtn);
+  taskbar.append(btnRes, btnTech, btnExpand, btnRecords, btnEndgame, spacer, saveBtn, exportBtn, settingsBtn);
 
   const toast = el('div', 'toast');
   refs.toast = toast;
@@ -471,7 +491,7 @@ function buildShell() {
 
   shell.append(titlebar, viewContainer, taskbar, toast, modalOverlay, offlineOverlay);
   app.append(shell);
-  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords };
+  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords, endgame: viewEndgame };
 }
 
 function bindEvents() {
@@ -581,6 +601,15 @@ function render() {
   safeUpdate(updateTechs, 'updateTechs');
   safeUpdate(updateExpand, 'updateExpand');
   safeUpdate(updateRecords, 'updateRecords');
+  safeUpdate(updateEndgame, 'updateEndgame');
+}
+
+function updateEndgame() {
+  if (refs.endgameReady || !Techs.allPhase2Researched()) return;
+  refs.endgameReady = true;
+  if (refs.endgameBtn) refs.endgameBtn.hidden = false;
+  showToast(t('toast.endgameReached'));
+  switchView('endgame');
 }
 
 function updateTitlebar() {
