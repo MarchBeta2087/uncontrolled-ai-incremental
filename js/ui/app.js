@@ -17,7 +17,7 @@ import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
-const VERSION = '0.3.0';
+const VERSION = '0.4.0';
 
 const refs = {};
 let dirty = false;
