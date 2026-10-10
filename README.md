@@ -1,6 +1,6 @@
 # 失控 AI 增量（Uncontrolled AI Incremental）
 
-> 🎮 **当前状态：v0.3.0 可玩版本** —— 已部署于 GitHub Pages：[https://marchbeta2087.github.io/uncontrolled-ai-incremental/](https://marchbeta2087.github.io/uncontrolled-ai-incremental/)，点开即玩。
+> 🎮 **当前状态：v0.4.0 可玩版本** —— 已部署于 GitHub Pages：[https://marchbeta2087.github.io/uncontrolled-ai-incremental/](https://marchbeta2087.github.io/uncontrolled-ai-incremental/)，点开即玩。
 >
 > 📦 **仓库地址**：<https://github.com/MarchBeta2087/uncontrolled-ai-incremental>
 
