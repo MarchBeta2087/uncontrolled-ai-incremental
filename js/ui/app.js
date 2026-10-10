@@ -14,6 +14,7 @@ import * as Fragments from '../sim/fragments.js';
 import * as Challenges from '../sim/challenges.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
+import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
 const VERSION = '0.3.0';
@@ -403,6 +404,35 @@ function buildShell() {
     langRow.append(langBtn);
   }
   modalBody.append(langRow);
+
+  // 配色主题
+  modalBody.append(el('div', 'modal-section', t('settings.themeSection')));
+  const themeRow = el('div', 'modal-row');
+  const themeBtns = {};
+  for (const id of THEMES) {
+    const themeBtn = el('button', 'btn', t('theme.' + id));
+    themeBtn.type = 'button';
+    if (id === getTheme()) themeBtn.classList.add('btn-primary');
+    themeBtn.onclick = () => {
+      setTheme(id);
+      for (const [tid, b] of Object.entries(themeBtns)) b.classList.toggle('btn-primary', tid === id);
+    };
+    themeBtns[id] = themeBtn;
+    themeRow.append(themeBtn);
+  }
+  modalBody.append(themeRow);
+
+  const accentRow = el('div', 'modal-row');
+  accentRow.append(el('span', 'modal-text', t('settings.accent')));
+  const accentInput = el('input', '');
+  accentInput.type = 'color';
+  accentInput.value = getAccent() || '#58a6ff';
+  accentInput.oninput = () => setAccent(accentInput.value);
+  const accentReset = el('button', 'btn', t('settings.accentReset'));
+  accentReset.type = 'button';
+  accentReset.onclick = () => { setAccent(''); accentInput.value = '#58a6ff'; };
+  accentRow.append(accentInput, accentReset);
+  modalBody.append(accentRow);
 
   modalBody.append(el('div', 'modal-section', t('settings.aboutSection')));
   modalBody.append(el('p', 'modal-text', t('settings.aboutGame')));
