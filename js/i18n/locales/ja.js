@@ -140,4 +140,5 @@ export default {
   'reason.readFileFailed': 'ファイルの読み取りに失敗しました',
   'reason.saveVersionTooNew': 'セーブのバージョン v{version} はサポートされている v{current} より新しいため、読み込みを拒否します',
   'reason.missingMigration': '移行関数 {key} がありません',
+  'reason.phase2Locked': 'フェーズ 2 はまだ解放されていません',
 };

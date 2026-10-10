@@ -140,4 +140,5 @@ export default {
   'reason.readFileFailed': '讀取檔案失敗',
   'reason.saveVersionTooNew': '存檔版本 v{version} 高於目前支援的 v{current}，拒絕載入',
   'reason.missingMigration': '缺少遷移函式 {key}',
+  'reason.phase2Locked': '第二階段尚未解鎖',
 };

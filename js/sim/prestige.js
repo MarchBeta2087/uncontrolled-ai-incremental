@@ -11,6 +11,7 @@ import { Events } from '../core/events.js';
 import * as Resources from './resources.js';
 import * as Techs from './techs.js';
 import * as Mults from './mults.js';
+import * as Progress from './progress.js';
 import { t } from '../i18n/index.js';
 
 let timeCrystals = Num.parse(0);        // 当前持有（可消费）
@@ -22,8 +23,7 @@ let crystalBase = Num.parse(2);
 let exponent = Num.parse(0.5);
 let prestigeExponent = Num.parse(0.5);
 
-// 第二阶段（越过本宇宙）
-let phase2Unlocked = false;
+// 第二阶段（越过本宇宙）：解锁标志存于 progress 模块
 let phase2UnlockCrystals = Num.parse(100);
 
 export function configurePrestige(cfg = {}) {
@@ -38,7 +38,7 @@ export function initPrestige() {
   timeCrystals = Num.parse(0);
   totalTimeCrystals = Num.parse(0);
   prestigeCount = 0;
-  phase2Unlocked = false;
+  Progress.setPhase2Unlocked(false);
 }
 
 export function getTimeCrystals() {
@@ -66,20 +66,19 @@ export function getUniverseCap() {
 
 /** 第二阶段是否已解锁（一次性） */
 export function isPhase2Unlocked() {
-  return phase2Unlocked;
+  return Progress.isPhase2Unlocked();
 }
 
 /** 解锁第二阶段；返回是否本次真正解锁 */
 export function unlockPhase2() {
-  if (phase2Unlocked) return false;
-  phase2Unlocked = true;
-  Events.emit('phase2:unlocked', {});
-  return true;
+  return Progress.unlockPhase2();
 }
 
 /** 每 tick 检查解锁条件（当前持有 ≥ 阈值） */
 export function checkPhase2Unlock() {
-  if (!phase2Unlocked && Num.gte(timeCrystals, phase2UnlockCrystals)) unlockPhase2();
+  if (!Progress.isPhase2Unlocked() && Num.gte(timeCrystals, phase2UnlockCrystals)) {
+    Progress.unlockPhase2();
+  }
 }
 
 export function canPrestige() {
@@ -92,9 +91,9 @@ export function calculateCrystals() {
   const mass = Resources.getResource('mass_energy') ?? Num.parse(0);
   // 宇宙消耗度：触顶 = 1（超出的部分按 1 计，保持 D ∈ [0,1]）
   const D = Num.min(Num.div(mass, getUniverseCap()), Num.parse(1));
-  // 研发深度：已研发技术 / 技术总数
+  // 研发深度：已研发技术 / 当前可用技术总数（不含未解锁的第二阶段技术）
   const researched = Num.parse(Techs.ownedCount());
-  const total = Num.parse(Techs.getTechIds().length);
+  const total = Num.parse(Techs.getAvailableTechIds().length);
   const K = Num.eq(total, 0) ? Num.parse(1) : Num.div(researched, total);
   // 本次穿梭后的周目数
   const n = Num.parse(prestigeCount + 1);
@@ -125,7 +124,7 @@ export function serialize() {
     timeCrystals: Num.toJSON(timeCrystals),
     totalTimeCrystals: Num.toJSON(totalTimeCrystals),
     prestigeCount,
-    phase2Unlocked,
+    phase2Unlocked: Progress.isPhase2Unlocked(),
   };
 }
 
@@ -136,5 +135,5 @@ export function load(state = {}) {
     ? Num.fromJSON(state.totalTimeCrystals)
     : timeCrystals;
   prestigeCount = state.prestigeCount ?? 0;
-  phase2Unlocked = !!state.phase2Unlocked;
+  Progress.setPhase2Unlocked(!!state.phase2Unlocked);
 }

@@ -27,6 +27,8 @@ const upgradesCfg = JSON.parse(fs.readFileSync('config/upgrades.json', 'utf8'));
 const achCfg = JSON.parse(fs.readFileSync('config/achievements.json', 'utf8'));
 const fragCfg = JSON.parse(fs.readFileSync('config/fragments.json', 'utf8'));
 const chCfg = JSON.parse(fs.readFileSync('config/challenges.json', 'utf8'));
+// 第一阶段技术 id（校验第一阶段行为时只加载这些，排除第二阶段的永久乘子）
+const p1TechIds = techsCfg.techs.filter((t) => t.phase !== 2).map((t) => t.id);
 
 const numMod = await import('../js/core/num.js');
 const timeMod = await import('../js/core/time.js');
@@ -38,6 +40,7 @@ const upgMod = await import('../js/sim/upgrades.js');
 const achMod = await import('../js/sim/achievements.js');
 const chMod = await import('../js/sim/challenges.js');
 const multsMod = await import('../js/sim/mults.js');
+const progressMod = await import('../js/sim/progress.js');
 const saveMod = await import('../js/data/save.js');
 const Num = numMod.Num;
 
@@ -69,7 +72,7 @@ chMod.configureChallenges(balance);
 
 console.log('== 穿梭结算 ==');
 resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
-techMod.load(techsCfg.techs.map((t) => t.id));
+techMod.load(p1TechIds);
 prestigeMod.load({ timeCrystals: Num.toJSON('0'), prestigeCount: 0 });
 assert('首次穿梭结算 2 晶体', Num.eq(prestigeMod.calculateCrystals(), 2));
 
@@ -118,12 +121,33 @@ resMod.initResources(resourcesCfg);
 techMod.initTechs(techsCfg);
 prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0 });
 resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
-techMod.load(techsCfg.techs.map((t) => t.id));
+techMod.load(p1TechIds);
 prestigeMod.prestige();
 assert('穿梭后当前持有 = 累计', Num.eq(prestigeMod.getTimeCrystals(), prestigeMod.getTotalTimeCrystals()));
 const totalAfterPrestige = prestigeMod.getTotalTimeCrystals();
 prestigeMod.spendCrystals(Num.parse(1));
 assert('消费后当前持有 < 累计，且累计不变', Num.lt(prestigeMod.getTimeCrystals(), totalAfterPrestige) && Num.eq(prestigeMod.getTotalTimeCrystals(), totalAfterPrestige));
+
+console.log('== 第二阶段内容与门控 ==');
+resMod.initResources(resourcesCfg);
+techMod.initTechs(techsCfg);
+upgMod.initUpgrades(upgradesCfg);
+progressMod.setPhase2Unlocked(false);
+assert('未解锁：暗能量资源隐藏', !resMod.getResourceIds().includes('dark_energy'));
+assert('未解锁：奇点生成器隐藏', !resMod.getGeneratorIds().includes('singularity'));
+assert('未解锁：第二阶段技术不可购', techMod.canBuy('p2_hyper_1') === false);
+assert('未解锁：第二阶段升级不可购', upgMod.canBuy('crystal_resonance_u1') === false);
+progressMod.setPhase2Unlocked(true);
+assert('解锁后：暗能量资源出现', resMod.getResourceIds().includes('dark_energy'));
+assert('解锁后：奇点生成器出现', resMod.getGeneratorIds().includes('singularity'));
+multsMod.clearCapMultipliers();
+resMod.load({ resources: { mass_energy: Num.toJSON('1e80') }, generators: {} });
+assert('解锁后：第二阶段技术可购', techMod.canBuy('p2_hyper_1') === true);
+techMod.buyTech('p2_hyper_1');
+techMod.buyTech('p2_fold_1');
+assert('维度折叠 I：上限 1e70 → 1e90', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e90')));
+techMod.reset();
+assert('穿梭后永久折叠仍保留', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e90')));
 
 console.log('== 第二阶段引擎地基（cap_mult / crystal_mult / 解锁 / 迁移）==');
 multsMod.clearCapMultipliers();
@@ -139,7 +163,7 @@ assert('清空后回到基准 1e70', Num.eq(prestigeMod.getUniverseCap(), Num.pa
 prestigeMod.initPrestige();
 resMod.initResources(resourcesCfg);
 techMod.initTechs(techsCfg);
-techMod.load(techsCfg.techs.map((t) => t.id));
+techMod.load(p1TechIds);
 prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0, phase2Unlocked: false });
 resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
 multsMod.setCrystalMultiplier('t1', '3');

@@ -8,6 +8,7 @@ import { Num } from '../core/num.js';
 import { Time } from '../core/time.js';
 import * as Resources from './resources.js';
 import * as Mults from './mults.js';
+import * as Progress from './progress.js';
 import { Events } from '../core/events.js';
 import { t } from '../i18n/index.js';
 
@@ -30,10 +31,18 @@ export function getTechIds() {
   return [...techs.keys()];
 }
 
+/** 当前可用（未因阶段锁定）的技术 id；用于晶体结算的研发深度分母 */
+export function getAvailableTechIds() {
+  return [...techs.entries()]
+    .filter(([, t]) => !(t.def.phase === 2 && !Progress.isPhase2Unlocked()))
+    .map(([id]) => id);
+}
+
 /** 是否满足购买条件（前置 + 资源） */
 export function canBuy(id) {
   const tech = techs.get(id);
   if (!tech || tech.owned) return false;
+  if (tech.def.phase === 2 && !Progress.isPhase2Unlocked()) return false;
   for (const req of tech.def.requires ?? []) {
     if (!techs.get(req)?.owned) return false;
   }
@@ -45,6 +54,9 @@ export function canBuy(id) {
 export function buyTech(id) {
   const tech = techs.get(id);
   if (!tech) return { ok: false, reason: t('reason.techNotFound') };
+  if (tech.def.phase === 2 && !Progress.isPhase2Unlocked()) {
+    return { ok: false, reason: t('reason.phase2Locked') };
+  }
   if (tech.owned) return { ok: false, reason: t('reason.alreadyResearched') };
   for (const req of tech.def.requires ?? []) {
     if (!techs.get(req)?.owned) return { ok: false, reason: t('reason.prereqMissing', { id: req }) };

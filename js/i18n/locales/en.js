@@ -141,4 +141,5 @@ export default {
   'reason.readFileFailed': 'Failed to read file',
   'reason.saveVersionTooNew': 'Save version v{version} is newer than supported v{current}, refusing to load',
   'reason.missingMigration': 'Missing migration function {key}',
+  'reason.phase2Locked': 'Phase 2 is not unlocked yet',
 };

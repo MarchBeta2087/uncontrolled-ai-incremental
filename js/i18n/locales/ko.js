@@ -140,4 +140,5 @@ export default {
   'reason.readFileFailed': '파일 읽기 실패',
   'reason.saveVersionTooNew': '세이브 버전 v{version} 이(가) 지원되는 v{current} 보다 높음, 로드 거부',
   'reason.missingMigration': '마이그레이션 함수 누락: {key}',
+  'reason.phase2Locked': '2단계가 아직 해금되지 않았습니다',
 };
