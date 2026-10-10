@@ -21,7 +21,8 @@ export const CONDITION_TYPES = new Set([
   'tech_count_ge',       // 已研发技术数 >= value
   'tech_owned',          // 已研发指定技术（target）
   'upgrade_owned',       // 已购指定升级（target）
-  'crystals_ge',         // 时间晶体 >= value
+  'crystals_ge',         // 当前持有时间晶体 >= value
+  'total_crystals_ge',   // 历史累计时间晶体 >= value
   'time_years_ge',       // 游戏内年份 >= value
 ]);
 

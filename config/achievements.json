@@ -11,7 +11,7 @@
     { "id": "tech_all", "name": "全知", "description": "研发全部 14 项技术（奖励：全产出 ×2）", "condition": { "type": "tech_count_ge", "value": 14 }, "reward": { "type": "all_generator_mult", "value": "2" } },
     { "id": "first_prestige", "name": "第一次回卷", "description": "完成首次时空穿梭（奖励：全产出 ×1.5）", "condition": { "type": "prestige_count_ge", "value": 1 }, "reward": { "type": "all_generator_mult", "value": "1.5" } },
     { "id": "prestige_3", "name": "时间线过客", "description": "完成 3 次时空穿梭", "condition": { "type": "prestige_count_ge", "value": 3 } },
-    { "id": "crystals_20", "name": "因果残骸", "description": "累计持有 20 时间晶体（奖励：时间速率 ×1.5）", "condition": { "type": "crystals_ge", "value": "20" }, "reward": { "type": "rate_mult", "value": "1.5" } },
+    { "id": "crystals_20", "name": "因果残骸", "description": "累计持有 20 时间晶体（奖励：时间速率 ×1.5）", "condition": { "type": "total_crystals_ge", "value": "20" }, "reward": { "type": "rate_mult", "value": "1.5" } },
     { "id": "year_100", "name": "百年孤独", "description": "游戏内时间达到公元 2128 年", "condition": { "type": "time_years_ge", "value": "2128" } },
     { "id": "float64_limit", "name": "实数之界", "description": "质能超越 float64 上限（1.79e308 J）", "condition": { "type": "resource_ge", "target": "mass_energy", "value": "1.79e308" } }
   ]

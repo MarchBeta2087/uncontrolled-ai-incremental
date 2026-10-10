@@ -12,7 +12,8 @@ import * as Resources from './resources.js';
 import * as Techs from './techs.js';
 import { t } from '../i18n/index.js';
 
-let timeCrystals = Num.parse(0);
+let timeCrystals = Num.parse(0);        // 当前持有（可消费）
+let totalTimeCrystals = Num.parse(0);   // 历史累计获得（只增不减）
 let prestigeCount = 0;
 
 let universeCap = Num.parse('1e70');
@@ -29,11 +30,16 @@ export function configurePrestige(cfg = {}) {
 
 export function initPrestige() {
   timeCrystals = Num.parse(0);
+  totalTimeCrystals = Num.parse(0);
   prestigeCount = 0;
 }
 
 export function getTimeCrystals() {
   return timeCrystals;
+}
+/** 历史累计获得的时间晶体（只增不减，含已花费） */
+export function getTotalTimeCrystals() {
+  return totalTimeCrystals;
 }
 /** 扣除时间晶体（购买升级用），不足返回 false */
 export function spendCrystals(amount) {
@@ -76,6 +82,7 @@ export function prestige() {
   if (!canPrestige()) return { ok: false, reason: t('reason.notAtCap') };
   const crystals = calculateCrystals();
   timeCrystals = Num.add(timeCrystals, crystals);
+  totalTimeCrystals = Num.add(totalTimeCrystals, crystals);
   prestigeCount += 1;
 
   Resources.reset();
@@ -89,10 +96,18 @@ export function prestige() {
 
 // ---- 存档 ----
 export function serialize() {
-  return { timeCrystals: Num.toJSON(timeCrystals), prestigeCount };
+  return {
+    timeCrystals: Num.toJSON(timeCrystals),
+    totalTimeCrystals: Num.toJSON(totalTimeCrystals),
+    prestigeCount,
+  };
 }
 
 export function load(state = {}) {
   timeCrystals = state.timeCrystals !== undefined ? Num.fromJSON(state.timeCrystals) : Num.parse(0);
+  // 迁移前的旧存档没有 totalTimeCrystals：回退为当前持有量
+  totalTimeCrystals = state.totalTimeCrystals !== undefined
+    ? Num.fromJSON(state.totalTimeCrystals)
+    : timeCrystals;
   prestigeCount = state.prestigeCount ?? 0;
 }

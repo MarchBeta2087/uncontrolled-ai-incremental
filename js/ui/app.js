@@ -181,7 +181,7 @@ function buildShell() {
   const labelRight = el('span', 'num', '0');
   progressLabel.append(el('span', '', t('expand.progress')), labelRight);
   const status = el('div', '', t('expand.notReady'));
-  const crystalInfo = el('div', '', t('expand.crystals', { n: '--' }));
+  const crystalInfo = el('div', '', t('expand.crystals', { n: '--', total: '--' }));
   const prestigeBtn = el('button', 'btn btn-primary', t('expand.prestigeBtn'));
   prestigeBtn.type = 'button';
   prestigeBtn.disabled = true;
@@ -617,9 +617,11 @@ function updateExpand() {
   const preview = Prestige.calculateCrystals();
   refs.status.textContent = ready ? t('expand.ready') : t('expand.notReady');
   refs.prestigeBtn.disabled = !ready;
+  const crystalsHeld = Num.format(Prestige.getTimeCrystals());
+  const crystalsTotal = Num.format(Prestige.getTotalTimeCrystals());
   refs.crystalInfo.textContent = ready
-    ? t('expand.crystalsPreview', { n: Num.format(Prestige.getTimeCrystals()), preview: Num.toString(preview) })
-    : t('expand.crystals', { n: Num.format(Prestige.getTimeCrystals()) });
+    ? t('expand.crystalsPreview', { n: crystalsHeld, total: crystalsTotal, preview: Num.toString(preview) })
+    : t('expand.crystals', { n: crystalsHeld, total: crystalsTotal });
 
   // 升级标题：挑战中显示削弱提示
   if (refs.upgTitle) {
