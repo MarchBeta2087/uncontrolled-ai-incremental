@@ -9,10 +9,13 @@
 - **时间晶体「当前持有 / 历史累计」区分**：新增 `totalTimeCrystals`（只增不减，含已花费），存档 `schemaVersion` 升至 2 并带迁移（旧档累计值回退为当前持有量）；扩张视图同时显示当前持有与累计；成就「因果残骸」改用累计条件 `total_crystals_ge`。
 - **仓库治理（v0.4 基础）**：引入 `dev` 分支 + PR 流程（`docs/分支与发布流程.md`）；新增 `CODE_OF_CONDUCT.md`（Contributor Covenant 2.1）、`SECURITY.md`、Issue / PR 模板；CI 触发分支加入 `dev`。
 - **素材与授权规则 v1.1**：明确「兼容 CC BY-SA 4.0」许可集合；新增禁用来源黑名单（Pixabay、Silverman Sound）；新增素材征集章节。
+- **第二阶段引擎地基**（PR-A）：宇宙上限改为动态（`cap_mult`，`getUniverseCap() = 基准 × Π乘子`）；新增晶体产出乘子 `crystal_mult`；技术支持 `permanent`（穿梭保留并重放）；`phase2Unlocked` 一次性解锁（当前持有 ≥100 晶体，`schemaVersion` 2 → 3 + 迁移）；扩张进度条改用动态上限。
 
 ### 待办（v0.4 进行中）
 
-- 第二阶段技术树（解锁条件：当前持有 100 时间晶体）与时间晶体增益内容。
+- 第二阶段内容（PR-B）：35 项技术 + 暗能量系统（资源 / 生成器 / 技术）+ 时间晶体新升级。
+- 第二阶段 UI 与 i18n（PR-C）。
+- 第二阶段成就 / 碎片 / 挑战 + 平衡校准（PR-D）。
 - 设置界面配色调节。
 - Endgame 画面（触发条件：第二阶段技术全部研发完成）。
 - 多宇宙（远期）。

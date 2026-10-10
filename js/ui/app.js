@@ -609,7 +609,8 @@ function updateExpand() {
   const cap = Prestige.getUniverseCap();
   refs.massBig.textContent = `${Num.format(mass)} J`;
   // log 尺度进度（数值跨 70 个数量级，线性条不可读）
-  const ratio = Num.div(Num.log10(Num.add(mass, 1)), Num.parse(70));
+  const capLog = Num.log10(Prestige.getUniverseCap());
+  const ratio = Num.div(Num.log10(Num.add(mass, 1)), capLog);
   const pct = Math.min(100, Num.toNumber(Num.mul(ratio, 100)));
   refs.progressFill.style.width = `${pct.toFixed(1)}%`;
   refs.labelRight.textContent = `${Num.format(mass)} / ${Num.format(cap)} J`;

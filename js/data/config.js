@@ -11,6 +11,8 @@ export const EFFECT_TYPES = new Set([
   'click_mult',          // 点击产出 ×value
   'rate_mult',           // 时间速率 ×value
   'offline_mult',        // 离线收益 ×value
+  'cap_mult',            // 宇宙上限 ×value
+  'crystal_mult',        // 穿梭晶体 ×value
 ]);
 
 // 成就/碎片条件类型（有限枚举，见 js/sim/conditions.js）
