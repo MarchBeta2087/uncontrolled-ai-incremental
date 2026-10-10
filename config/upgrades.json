@@ -8,6 +8,11 @@
     { "id": "rate_resonance_2", "name": "时间晶体谐振 II", "description": "时间速率 ×100", "cost": "8", "requires": ["rate_resonance_1"], "effects": [{ "type": "rate_mult", "value": "100" }] },
     { "id": "rate_resonance_3", "name": "时间晶体谐振 III", "description": "时间速率 ×1000", "cost": "20", "requires": ["rate_resonance_2"], "effects": [{ "type": "rate_mult", "value": "1000" }] },
     { "id": "offline_efficiency_1", "name": "离线收益 I", "description": "离线收益 ×2", "cost": "4", "requires": [], "effects": [{ "type": "offline_mult", "value": "2" }] },
-    { "id": "offline_efficiency_2", "name": "离线收益 II", "description": "离线收益 ×5", "cost": "12", "requires": ["offline_efficiency_1"], "effects": [{ "type": "offline_mult", "value": "5" }] }
+    { "id": "offline_efficiency_2", "name": "离线收益 II", "description": "离线收益 ×5", "cost": "12", "requires": ["offline_efficiency_1"], "effects": [{ "type": "offline_mult", "value": "5" }] },
+    { "id": "crystal_resonance_u1", "name": "晶体谐振 I", "description": "穿梭晶体 ×2", "cost": "40", "requires": ["causal_residue_1"], "phase": 2, "effects": [{ "type": "crystal_mult", "value": "2" }] },
+    { "id": "offline_efficiency_3", "name": "离线收益 III", "description": "离线收益 ×10", "cost": "60", "requires": ["offline_efficiency_2"], "phase": 2, "effects": [{ "type": "offline_mult", "value": "10" }] },
+    { "id": "dimensional_echo", "name": "维度回响", "description": "时间速率 ×2", "cost": "100", "requires": ["rate_resonance_1"], "phase": 2, "effects": [{ "type": "rate_mult", "value": "2" }] },
+    { "id": "singularity_engine", "name": "奇点引擎", "description": "全产出 ×1e6", "cost": "120", "requires": ["causal_residue_2"], "phase": 2, "effects": [{ "type": "all_generator_mult", "value": "1e6" }] },
+    { "id": "crystal_resonance_u2", "name": "晶体谐振 II", "description": "穿梭晶体 ×5", "cost": "200", "requires": ["crystal_resonance_u1"], "phase": 2, "effects": [{ "type": "crystal_mult", "value": "5" }] }
   ]
 }

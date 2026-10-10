@@ -78,7 +78,7 @@
   transition: background 0.15s, color 0.15s;
 }
 .task-btn:hover { background: var(--panel); color: var(--text); }
-.task-btn.active { background: var(--accent); color: #04121f; font-weight: 600; }
+.task-btn.active { background: var(--accent); color: var(--accent-contrast); font-weight: 600; }
 .taskbar-spacer { flex: 1; }
 
 /* ---- 资源视图布局 ---- */

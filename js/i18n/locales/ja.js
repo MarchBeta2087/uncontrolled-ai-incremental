@@ -16,6 +16,7 @@ export default {
   'nav.save': 'セーブ',
   'nav.export': '書き出し',
   'nav.settings': '設定',
+  'nav.endgame': '終局',
 
   // 資源ビュー
   'res.click': '研究に投資',
@@ -34,6 +35,9 @@ export default {
   'tech.buy': '研究',
   'tech.owned': '研究済み',
   'tech.cost': 'コスト：{cost} {currency}',
+  'tech.phase1': 'フェーズ 1',
+  'tech.phase2': 'フェーズ 2 · この宇宙の彼方',
+  'tech.phase2LockNotice': 'フェーズ 2：時間結晶を {n} 保有で解放',
 
   // 拡張ビュー
   'expand.panel': '宇宙喰らい',
@@ -80,6 +84,8 @@ export default {
   'toast.cannotEnterChallenge': 'チャレンジを開始できません',
   'toast.challengeExit': 'チャレンジを退出しました',
   'toast.challengeEntered': 'チャレンジ開始：{name}',
+  'toast.phase2Unlocked': 'フェーズ 2 解放：この宇宙の彼方',
+  'toast.endgameReached': '終局に到達：この宇宙の果て',
 
   // オフライン収益レポート
   'offline.title': 'オフライン収益レポート',
@@ -91,6 +97,14 @@ export default {
   'settings.title': '設定',
   'settings.languageSection': '言語 / Language',
   'settings.languageTodo': 'この言語はまだ実装されていません（TODO）',
+  'settings.themeSection': '配色 / Theme',
+  'settings.accent': 'アクセントカラー',
+  'settings.accentReset': 'リセット',
+  'theme.default': 'デフォルト',
+  'theme.solarized': 'Solarized',
+  'theme.dracula': 'Dracula',
+  'theme.contrast': 'ハイコントラスト',
+  'theme.light': 'ライト',
   'settings.saveSection': 'セーブ管理',
   'settings.save': 'セーブ',
   'settings.export': 'セーブを書き出し',
@@ -105,6 +119,13 @@ export default {
   'settings.aboutOrdinal': '設計は Ordinal Markup を参照（メカニクスのみ。コード/素材は未使用）',
   'settings.aboutRepo': 'リポジトリ：github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '閉じる',
+
+  // 終局
+  'endgame.title': '続報をお待ちください',
+  'endgame.comingSoon': 'この宇宙は搾り尽くされた。さらに遠い多元宇宙が、まもなくやってくる。',
+  'endgame.license': '本作は GPL-3.0-or-later で公開されています。fork・改変・再配布は自由です。',
+  'endgame.contribute': '新コンテンツを追加したい？ PR 歓迎——貢献ガイドをご覧ください。',
+  'endgame.repo': 'リポジトリ：github.com/MarchBeta2087/uncontrolled-ai-incremental',
 
   // 単位
   'unit.perSecond': '/秒',
@@ -140,4 +161,5 @@ export default {
   'reason.readFileFailed': 'ファイルの読み取りに失敗しました',
   'reason.saveVersionTooNew': 'セーブのバージョン v{version} はサポートされている v{current} より新しいため、読み込みを拒否します',
   'reason.missingMigration': '移行関数 {key} がありません',
+  'reason.phase2Locked': 'フェーズ 2 はまだ解放されていません',
 };

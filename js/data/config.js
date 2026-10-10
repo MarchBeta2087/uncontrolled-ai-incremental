@@ -11,6 +11,8 @@ export const EFFECT_TYPES = new Set([
   'click_mult',          // 点击产出 ×value
   'rate_mult',           // 时间速率 ×value
   'offline_mult',        // 离线收益 ×value
+  'cap_mult',            // 宇宙上限 ×value
+  'crystal_mult',        // 穿梭晶体 ×value
 ]);
 
 // 成就/碎片条件类型（有限枚举，见 js/sim/conditions.js）
@@ -24,6 +26,10 @@ export const CONDITION_TYPES = new Set([
   'crystals_ge',         // 当前持有时间晶体 >= value
   'total_crystals_ge',   // 历史累计时间晶体 >= value
   'time_years_ge',       // 游戏内年份 >= value
+  'phase2_unlocked',     // 第二阶段已解锁
+  'prestige_gain_ge',    // 单次穿梭晶体 >= value
+  'cap_ge',              // 宇宙上限 >= value
+  'dark_energy_ge',      // 暗能量 >= value
 ]);
 
 // 挑战限制类型（有限枚举，见 js/sim/challenges.js）
@@ -31,6 +37,7 @@ export const RESTRICTION_TYPES = new Set([
   'disable_generator',   // 禁用某生成器（target）
   'all_cost_mult',       // 所有生成器成本 ×value
   'rate_div',            // 时间速率 ÷value
+  'crystal_mult',        // 晶体产出 ×value（挑战限制）
 ]);
 
 const DEFAULT_PATHS = {

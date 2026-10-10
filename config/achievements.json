@@ -13,6 +13,15 @@
     { "id": "prestige_3", "name": "时间线过客", "description": "完成 3 次时空穿梭", "condition": { "type": "prestige_count_ge", "value": 3 } },
     { "id": "crystals_20", "name": "因果残骸", "description": "累计持有 20 时间晶体（奖励：时间速率 ×1.5）", "condition": { "type": "total_crystals_ge", "value": "20" }, "reward": { "type": "rate_mult", "value": "1.5" } },
     { "id": "year_100", "name": "百年孤独", "description": "游戏内时间达到公元 2128 年", "condition": { "type": "time_years_ge", "value": "2128" } },
-    { "id": "float64_limit", "name": "实数之界", "description": "质能超越 float64 上限（1.79e308 J）", "condition": { "type": "resource_ge", "target": "mass_energy", "value": "1.79e308" } }
+    { "id": "float64_limit", "name": "实数之界", "description": "质能超越 float64 上限（1.79e308 J）", "condition": { "type": "resource_ge", "target": "mass_energy", "value": "1.79e308" } },
+
+    { "id": "p2_unlocked", "name": "越过边界", "description": "解锁第二阶段", "condition": { "type": "phase2_unlocked" } },
+    { "id": "p2_fold_first", "name": "第一次折叠", "description": "研发「维度折叠 I」", "condition": { "type": "tech_owned", "target": "p2_fold_1" } },
+    { "id": "p2_fold_mid", "name": "中层折叠", "description": "研发「维度折叠 VI」", "condition": { "type": "tech_owned", "target": "p2_fold_6" } },
+    { "id": "p2_crystal_burst", "name": "晶体洪流", "description": "单次穿梭获得 ≥100 时间晶体（奖励：晶体 ×1.5）", "condition": { "type": "prestige_gain_ge", "value": "100" }, "reward": { "type": "crystal_mult", "value": "1.5" } },
+    { "id": "p2_cap_150", "name": "百五十界", "description": "宇宙上限达到 1e150 J", "condition": { "type": "cap_ge", "value": "1e150" } },
+    { "id": "p2_cap_250", "name": "二百五十界", "description": "宇宙上限达到 1e250 J", "condition": { "type": "cap_ge", "value": "1e250" } },
+    { "id": "p2_dark_flow", "name": "暗流", "description": "当前暗能量达到 1e12", "condition": { "type": "dark_energy_ge", "value": "1e12" } },
+    { "id": "p2_float64", "name": "实数终结", "description": "宇宙上限达到 float64 上限（1.79e308 J）（奖励：晶体 ×2）", "condition": { "type": "cap_ge", "value": "1.79e308" }, "reward": { "type": "crystal_mult", "value": "2" } }
   ]
 }

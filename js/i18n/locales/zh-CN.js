@@ -17,6 +17,7 @@ export default {
   'nav.save': '存档',
   'nav.export': '导出',
   'nav.settings': '设置',
+  'nav.endgame': '终局',
 
   // 资源视图
   'res.click': '投入研发',
@@ -35,6 +36,9 @@ export default {
   'tech.buy': '研发',
   'tech.owned': '已研发',
   'tech.cost': '成本：{cost} {currency}',
+  'tech.phase1': '第一阶段',
+  'tech.phase2': '第二阶段 · 越过本宇宙',
+  'tech.phase2LockNotice': '第二阶段：需当前持有 {n} 时间晶体解锁',
 
   // 扩张视图
   'expand.panel': '宇宙吞噬',
@@ -81,6 +85,8 @@ export default {
   'toast.cannotEnterChallenge': '无法进入挑战',
   'toast.challengeExit': '已退出挑战',
   'toast.challengeEntered': '已进入挑战：{name}',
+  'toast.phase2Unlocked': '第二阶段已解锁：越过本宇宙',
+  'toast.endgameReached': '终局已达成：本宇宙的尽头',
 
   // 离线收益报告
   'offline.title': '离线收益报告',
@@ -92,6 +98,14 @@ export default {
   'settings.title': '设置',
   'settings.languageSection': '语言 / Language',
   'settings.languageTodo': '该语言尚未实装（待办）',
+  'settings.themeSection': '配色 / Theme',
+  'settings.accent': '强调色',
+  'settings.accentReset': '重置',
+  'theme.default': '默认',
+  'theme.solarized': 'Solarized',
+  'theme.dracula': 'Dracula',
+  'theme.contrast': '高对比',
+  'theme.light': '浅色',
   'settings.saveSection': '存档管理',
   'settings.save': '保存存档',
   'settings.export': '导出存档',
@@ -106,6 +120,13 @@ export default {
   'settings.aboutOrdinal': '设计参照 Ordinal Markup（机制理念，未复用其代码/素材）',
   'settings.aboutRepo': '项目仓库：github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '关闭',
+
+  // 终局
+  'endgame.title': '敬请期待',
+  'endgame.comingSoon': '本宇宙已被彻底榨干。更遥远的多元宇宙，正在赶来的路上。',
+  'endgame.license': '本游戏以 GPL-3.0-or-later 发布：你可以自由地 fork、修改、再发布。',
+  'endgame.contribute': '想加入新内容？欢迎提交 PR——见贡献指南。',
+  'endgame.repo': '项目仓库：github.com/MarchBeta2087/uncontrolled-ai-incremental',
 
   // 单位
   'unit.perSecond': '/秒',
@@ -141,4 +162,5 @@ export default {
   'reason.readFileFailed': '读取文件失败',
   'reason.saveVersionTooNew': '存档版本 v{version} 高于当前支持的 v{current}，拒绝加载',
   'reason.missingMigration': '缺少迁移函数 {key}',
+  'reason.phase2Locked': '第二阶段尚未解锁',
 };

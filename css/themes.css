@@ -1,0 +1,91 @@
+/* css/themes.css —— 配色主题（设置面板可切换；见 js/ui/theme.js）
+   默认主题即 core.css 的 :root；其余通过 <html data-theme="..."> 覆盖。
+   自定义强调色由 JS 内联覆写 --accent / --accent-strong / --accent-contrast。 */
+
+:root[data-theme="solarized"] {
+  --bg: #002b36;
+  --panel: #073642;
+  --panel-2: #0a4a5a;
+  --border: #586e75;
+  --text: #eee8d5;
+  --text-dim: #93a1a1;
+  --accent: #268bd2;
+  --accent-strong: #2aa198;
+  --highlight: #dc322f;
+  --success: #859900;
+  --warning: #b58900;
+  --btn-hover: #0d5a6e;
+  --accent-contrast: #002b36;
+  --danger-contrast: #fff;
+  --click-bg1: #12495c;
+  --click-bg2: #0a3441;
+  --click-hover1: #1a5e74;
+  --click-hover2: #0d4150;
+  --overlay: rgba(0, 20, 25, 0.7);
+}
+
+:root[data-theme="dracula"] {
+  --bg: #282a36;
+  --panel: #343746;
+  --panel-2: #44475a;
+  --border: #6272a4;
+  --text: #f8f8f2;
+  --text-dim: #9aa2c0;
+  --accent: #bd93f9;
+  --accent-strong: #ff79c6;
+  --highlight: #ff5555;
+  --success: #50fa7b;
+  --warning: #f1fa8c;
+  --btn-hover: #4d5066;
+  --accent-contrast: #282a36;
+  --danger-contrast: #fff;
+  --click-bg1: #4a3f6b;
+  --click-bg2: #352f4d;
+  --click-hover1: #5a4d82;
+  --click-hover2: #423a5e;
+  --overlay: rgba(20, 20, 30, 0.7);
+}
+
+:root[data-theme="contrast"] {
+  --bg: #000000;
+  --panel: #0d0d0d;
+  --panel-2: #1a1a1a;
+  --border: #9a9a9a;
+  --text: #ffffff;
+  --text-dim: #d0d0d0;
+  --accent: #ffe100;
+  --accent-strong: #fff45c;
+  --highlight: #ff3b3b;
+  --success: #39ff6a;
+  --warning: #ffb300;
+  --btn-hover: #2a2a2a;
+  --accent-contrast: #000000;
+  --danger-contrast: #000000;
+  --click-bg1: #2a2a2a;
+  --click-bg2: #111111;
+  --click-hover1: #3a3a3a;
+  --click-hover2: #1a1a1a;
+  --overlay: rgba(0, 0, 0, 0.85);
+}
+
+:root[data-theme="light"] {
+  --bg: #f2f3f5;
+  --panel: #ffffff;
+  --panel-2: #e9ecef;
+  --border: #c4c9ce;
+  --text: #1a1d21;
+  --text-dim: #5c6570;
+  --accent: #0b62c4;
+  --accent-strong: #0a4f9e;
+  --highlight: #c0392b;
+  --success: #1a7f37;
+  --warning: #9a6700;
+  --btn-hover: #dde3e9;
+  --accent-contrast: #ffffff;
+  --danger-contrast: #ffffff;
+  --click-bg1: #cfe0f5;
+  --click-bg2: #b9d3f0;
+  --click-hover1: #bdd5f2;
+  --click-hover2: #a6c6ec;
+  --overlay: rgba(0, 0, 0, 0.35);
+}

@@ -9,6 +9,7 @@ import { Time } from '../core/time.js';
 import { Events } from '../core/events.js';
 import * as Resources from './resources.js';
 import * as Techs from './techs.js';
+import * as Mults from './mults.js';
 import { checkCondition } from './conditions.js';
 import { t } from '../i18n/index.js';
 
@@ -138,6 +139,9 @@ function applyRestrictions(id) {
       case 'rate_div':
         Time.setChallengeRateDiv(r.value);
         break;
+      case 'crystal_mult':
+        Mults.setCrystalMultiplier('challenge', r.value);
+        break;
     }
   }
 }
@@ -146,6 +150,7 @@ function clearRestrictions() {
   Resources.clearGeneratorDisabled();
   Resources.clearChallengeCostMult();
   Time.clearChallengeRateDiv();
+  Mults.removeCrystalMultiplier('challenge');
 }
 
 function applyNerf() {
@@ -172,6 +177,9 @@ function applyGoalReward(id, goalIndex) {
       break;
     case 'generator_mult':
       Resources.setGeneratorMultiplier(r.target, sourceId, r.value);
+      break;
+    case 'crystal_mult':
+      Mults.setCrystalMultiplier(sourceId, r.value);
       break;
   }
 }

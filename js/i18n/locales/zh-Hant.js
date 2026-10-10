@@ -16,6 +16,7 @@ export default {
   'nav.save': '存檔',
   'nav.export': '匯出',
   'nav.settings': '設定',
+  'nav.endgame': '終局',
 
   // 資源視圖
   'res.click': '投入研發',
@@ -34,6 +35,9 @@ export default {
   'tech.buy': '研發',
   'tech.owned': '已研發',
   'tech.cost': '成本：{cost} {currency}',
+  'tech.phase1': '第一階段',
+  'tech.phase2': '第二階段 · 越過本宇宙',
+  'tech.phase2LockNotice': '第二階段：需目前持有 {n} 時間晶體解鎖',
 
   // 擴張視圖
   'expand.panel': '宇宙吞噬',
@@ -80,6 +84,8 @@ export default {
   'toast.cannotEnterChallenge': '無法進入挑戰',
   'toast.challengeExit': '已退出挑戰',
   'toast.challengeEntered': '已進入挑戰：{name}',
+  'toast.phase2Unlocked': '第二階段已解鎖：越過本宇宙',
+  'toast.endgameReached': '終局已達成：本宇宙的盡頭',
 
   // 離線收益報告
   'offline.title': '離線收益報告',
@@ -91,6 +97,14 @@ export default {
   'settings.title': '設定',
   'settings.languageSection': '語言 / Language',
   'settings.languageTodo': '該語言尚未實裝（待辦）',
+  'settings.themeSection': '配色 / Theme',
+  'settings.accent': '強調色',
+  'settings.accentReset': '重設',
+  'theme.default': '預設',
+  'theme.solarized': 'Solarized',
+  'theme.dracula': 'Dracula',
+  'theme.contrast': '高對比',
+  'theme.light': '淺色',
   'settings.saveSection': '存檔管理',
   'settings.save': '儲存存檔',
   'settings.export': '匯出存檔',
@@ -105,6 +119,13 @@ export default {
   'settings.aboutOrdinal': '設計參照 Ordinal Markup（機制理念，未複用其程式碼/素材）',
   'settings.aboutRepo': '專案倉庫：github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '關閉',
+
+  // 終局
+  'endgame.title': '敬請期待',
+  'endgame.comingSoon': '本宇宙已被徹底榨乾。更遙遠的多元宇宙，正在趕來的路上。',
+  'endgame.license': '本遊戲以 GPL-3.0-or-later 發布：你可以自由地 fork、修改、再發布。',
+  'endgame.contribute': '想加入新內容？歡迎提交 PR——見貢獻指南。',
+  'endgame.repo': '專案倉庫：github.com/MarchBeta2087/uncontrolled-ai-incremental',
 
   // 單位
   'unit.perSecond': '/秒',
@@ -140,4 +161,5 @@ export default {
   'reason.readFileFailed': '讀取檔案失敗',
   'reason.saveVersionTooNew': '存檔版本 v{version} 高於目前支援的 v{current}，拒絕載入',
   'reason.missingMigration': '缺少遷移函式 {key}',
+  'reason.phase2Locked': '第二階段尚未解鎖',
 };

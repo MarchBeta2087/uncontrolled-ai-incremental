@@ -8,6 +8,7 @@
 
 import { Num } from '../core/num.js';
 import { Events } from '../core/events.js';
+import * as Progress from './progress.js';
 import { t } from '../i18n/index.js';
 
 const resources = new Map();       // id -> { amount: Num, def: Object }
@@ -43,6 +44,11 @@ export function initResources(cfg) {
 }
 
 // ---- 读取 ----
+/** 第二阶段资源/生成器：未解锁时隐藏且不可购买 */
+function isLocked(def) {
+  return def.phase === 2 && !Progress.isPhase2Unlocked();
+}
+
 export function getResource(id) {
   const r = resources.get(id);
   return r ? r.amount : null;
@@ -52,9 +58,17 @@ export function getGenerator(id) {
   return g ? g.count : null;
 }
 export function getResourceIds() {
-  return [...resources.keys()];
+  return [...resources.entries()].filter(([, r]) => !isLocked(r.def)).map(([id]) => id);
 }
 export function getGeneratorIds() {
+  return [...generators.entries()].filter(([, g]) => !isLocked(g.def)).map(([id]) => id);
+}
+
+/** 含被第二阶段锁定的条目（供 UI 预构建，解锁后由 CSS 显示） */
+export function getAllResourceIds() {
+  return [...resources.keys()];
+}
+export function getAllGeneratorIds() {
   return [...generators.keys()];
 }
 export function getResourceDef(id) {
@@ -178,6 +192,7 @@ export function buyCost(genId, n) {
 export function buyGenerator(genId, n = 1) {
   const g = generators.get(genId);
   if (!g) return { ok: false, reason: t('reason.generatorNotFound') };
+  if (isLocked(g.def)) return { ok: false, reason: t('reason.phase2Locked') };
   if (disabledGenerators.has(genId)) return { ok: false, reason: t('reason.generatorDisabled') };
   const count = Num.parse(n);
   if (Num.lte(count, 0)) return { ok: false, reason: t('reason.countPositive') };
@@ -197,7 +212,7 @@ export function buyGenerator(genId, n = 1) {
 export function maxAffordable(genId) {
   if (disabledGenerators.has(genId)) return Num.parse(0);
   const g = generators.get(genId);
-  if (!g) return Num.parse(0);
+  if (!g || isLocked(g.def)) return Num.parse(0);
   const currency = resources.get(g.def.costCurrency);
   if (!currency) return Num.parse(0);
   const base = Num.mul(Num.parse(g.def.baseCost), challengeCostMult);

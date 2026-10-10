@@ -16,6 +16,7 @@ export default {
   'nav.save': '저장',
   'nav.export': '내보내기',
   'nav.settings': '설정',
+  'nav.endgame': '종국',
 
   // 자원 뷰
   'res.click': '연구 투자',
@@ -34,6 +35,9 @@ export default {
   'tech.buy': '연구',
   'tech.owned': '연구 완료',
   'tech.cost': '비용：{cost} {currency}',
+  'tech.phase1': '1단계',
+  'tech.phase2': '2단계 · 이 우주 너머',
+  'tech.phase2LockNotice': '2단계: 시간 결정 {n}개 보유 시 해금',
 
   // 확장 뷰
   'expand.panel': '우주 삼키기',
@@ -80,6 +84,8 @@ export default {
   'toast.cannotEnterChallenge': '도전을 시작할 수 없음',
   'toast.challengeExit': '도전을 나감',
   'toast.challengeEntered': '도전 시작：{name}',
+  'toast.phase2Unlocked': '2단계 해금: 이 우주 너머',
+  'toast.endgameReached': '종국 달성: 이 우주의 끝',
 
   // 오프라인 수익 보고
   'offline.title': '오프라인 수익 보고',
@@ -91,6 +97,14 @@ export default {
   'settings.title': '설정',
   'settings.languageSection': '언어 / Language',
   'settings.languageTodo': '이 언어는 아직 구현되지 않았습니다（TODO）',
+  'settings.themeSection': '테마 / Theme',
+  'settings.accent': '강조색',
+  'settings.accentReset': '초기화',
+  'theme.default': '기본',
+  'theme.solarized': 'Solarized',
+  'theme.dracula': 'Dracula',
+  'theme.contrast': '고대비',
+  'theme.light': '라이트',
   'settings.saveSection': '저장 관리',
   'settings.save': '저장',
   'settings.export': '세이브 내보내기',
@@ -105,6 +119,13 @@ export default {
   'settings.aboutOrdinal': 'Ordinal Markup 의 설계를 참고（메커니즘만, 코드/에셋 미사용）',
   'settings.aboutRepo': '저장소: github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '닫기',
+
+  // 종국
+  'endgame.title': '기대해 주세요',
+  'endgame.comingSoon': '이 우주는 완전히 짜냈다. 더 먼 다중우주가 곧 찾아온다.',
+  'endgame.license': '이 게임은 GPL-3.0-or-later로 배포됩니다. 자유롭게 fork, 수정, 재배포할 수 있습니다.',
+  'endgame.contribute': '새 콘텐츠를 추가하고 싶나요? PR을 환영합니다——기여 가이드를 보세요.',
+  'endgame.repo': '저장소: github.com/MarchBeta2087/uncontrolled-ai-incremental',
 
   // 단위
   'unit.perSecond': '/초',
@@ -140,4 +161,5 @@ export default {
   'reason.readFileFailed': '파일 읽기 실패',
   'reason.saveVersionTooNew': '세이브 버전 v{version} 이(가) 지원되는 v{current} 보다 높음, 로드 거부',
   'reason.missingMigration': '마이그레이션 함수 누락: {key}',
+  'reason.phase2Locked': '2단계가 아직 해금되지 않았습니다',
 };

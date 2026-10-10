@@ -17,6 +17,7 @@ export default {
   'nav.save': 'Save',
   'nav.export': 'Export',
   'nav.settings': 'Settings',
+  'nav.endgame': 'Endgame',
 
   // Resources view
   'res.click': 'Invest in R&D',
@@ -35,6 +36,9 @@ export default {
   'tech.buy': 'Research',
   'tech.owned': 'Researched',
   'tech.cost': 'Cost: {cost} {currency}',
+  'tech.phase1': 'Phase 1',
+  'tech.phase2': 'Phase 2 · Beyond This Universe',
+  'tech.phase2LockNotice': 'Phase 2: hold {n} Time Crystals to unlock',
 
   // Expand view
   'expand.panel': 'Devour the Universe',
@@ -81,6 +85,8 @@ export default {
   'toast.cannotEnterChallenge': 'Cannot enter challenge',
   'toast.challengeExit': 'Challenge exited',
   'toast.challengeEntered': 'Challenge started: {name}',
+  'toast.phase2Unlocked': 'Phase 2 unlocked: Beyond This Universe',
+  'toast.endgameReached': 'Endgame reached: the edge of this universe',
 
   // Offline earnings report
   'offline.title': 'Offline Earnings Report',
@@ -92,6 +98,14 @@ export default {
   'settings.title': 'Settings',
   'settings.languageSection': 'Language',
   'settings.languageTodo': 'This language is not implemented yet (TODO)',
+  'settings.themeSection': 'Theme',
+  'settings.accent': 'Accent color',
+  'settings.accentReset': 'Reset',
+  'theme.default': 'Default',
+  'theme.solarized': 'Solarized',
+  'theme.dracula': 'Dracula',
+  'theme.contrast': 'High Contrast',
+  'theme.light': 'Light',
   'settings.saveSection': 'Save Management',
   'settings.save': 'Save',
   'settings.export': 'Export save',
@@ -106,6 +120,13 @@ export default {
   'settings.aboutOrdinal': 'Design references Ordinal Markup (mechanics only; no code/assets reused)',
   'settings.aboutRepo': 'Repository: github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': 'Close',
+
+  // Endgame
+  'endgame.title': 'To Be Continued',
+  'endgame.comingSoon': 'This universe has been squeezed dry. More distant multiverses are on their way.',
+  'endgame.license': 'This game is released under GPL-3.0-or-later: you are free to fork, modify, and republish it.',
+  'endgame.contribute': 'Want to add new content? PRs are welcome — see the contributing guide.',
+  'endgame.repo': 'Repository: github.com/MarchBeta2087/uncontrolled-ai-incremental',
 
   // Units
   'unit.perSecond': '/sec',
@@ -141,4 +162,5 @@ export default {
   'reason.readFileFailed': 'Failed to read file',
   'reason.saveVersionTooNew': 'Save version v{version} is newer than supported v{current}, refusing to load',
   'reason.missingMigration': 'Missing migration function {key}',
+  'reason.phase2Locked': 'Phase 2 is not unlocked yet',
 };

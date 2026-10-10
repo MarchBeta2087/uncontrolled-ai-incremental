@@ -14,9 +14,10 @@ import * as Fragments from '../sim/fragments.js';
 import * as Challenges from '../sim/challenges.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
+import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
-const VERSION = '0.3.0';
+const VERSION = '0.4.0';
 
 const refs = {};
 let dirty = false;
@@ -26,6 +27,7 @@ let toastTimer = 0;
 
 export function initUI() {
   document.body.classList.add(platformClass());
+  if (Prestige.isPhase2Unlocked()) document.body.classList.add('phase2');
   buildShell();
   bindEvents();
   switchView('resources');
@@ -80,9 +82,10 @@ function buildShell() {
   const resPanel = el('div', 'panel');
   resPanel.append(el('div', 'panel-title', t('res.panel')));
   const resList = el('div', '');
-  for (const rid of Resources.getResourceIds()) {
+  for (const rid of Resources.getAllResourceIds()) {
     const def = Resources.getResourceDef(rid);
     const row = el('div', 'res-row');
+    if (def.phase === 2) row.dataset.phase = '2';
     const name = el('span', 'res-name', tc('resource', rid, 'name', def.name));
     const value = el('span', 'res-value num', '0');
     value.dataset.res = rid;
@@ -105,9 +108,10 @@ function buildShell() {
   genHeader.append(maxAllBtn);
   genPanel.append(genHeader);
   const genList = el('div', '');
-  for (const gid of Resources.getGeneratorIds()) {
+  for (const gid of Resources.getAllGeneratorIds()) {
     const def = Resources.getGeneratorDef(gid);
     const card = el('div', 'gen-card');
+    if (def.phase === 2) card.dataset.phase = '2';
     const info = el('div', 'gen-info');
     info.append(
       el('div', 'gen-name', tc('generator', gid, 'name', def.name)),
@@ -146,10 +150,18 @@ function buildShell() {
   const viewTechs = el('div', 'view');
   const techPanel = el('div', 'panel');
   techPanel.append(el('div', 'panel-title', t('tech.panel')));
-  const techGrid = el('div', 'tech-grid');
+  const techWrap = el('div', '');
+  const p1Heading = el('div', 'phase-heading', t('tech.phase1'));
+  const p1Grid = el('div', 'tech-grid');
+  const p2Lock = el('div', 'phase-lock', t('tech.phase2LockNotice', { n: Num.format(Prestige.getPhase2UnlockCrystals()) }));
+  const p2Heading = el('div', 'phase-heading', t('tech.phase2'));
+  p2Heading.dataset.phase = '2';
+  const p2Grid = el('div', 'tech-grid');
+  p2Grid.dataset.phase = '2';
   for (const tid of Techs.getTechIds()) {
     const def = Techs.getTech(tid);
     const card = el('div', 'tech-card');
+    if (def.phase === 2) card.dataset.phase = '2';
     const name = el('div', 'tech-name', tc('tech', tid, 'name', def.name));
     const desc = el('div', 'tech-desc', tc('tech', tid, 'description', def.description || ''));
     const cost = el('div', 'tech-cost', '');
@@ -162,11 +174,12 @@ function buildShell() {
       markDirty();
     };
     card.append(name, desc, cost, btn);
-    techGrid.append(card);
+    (def.phase === 2 ? p2Grid : p1Grid).append(card);
   }
-  techPanel.append(techGrid);
+  techWrap.append(p1Heading, p1Grid, p2Lock, p2Heading, p2Grid);
+  techPanel.append(techWrap);
   viewTechs.append(techPanel);
-  refs.techGrid = techGrid;
+  refs.techGrid = techWrap;
 
   // 扩张视图
   const viewExpand = el('div', 'view');
@@ -201,6 +214,7 @@ function buildShell() {
   for (const uid of Upgrades.getUpgradeIds()) {
     const u = Upgrades.getUpgrade(uid);
     const card = el('div', 'tech-card');
+    if (u.phase === 2) card.dataset.phase = '2';
     const name = el('div', 'tech-name', tc('upgrade', uid, 'name', u.name));
     const desc = el('div', 'tech-desc', tc('upgrade', uid, 'description', u.description || ''));
     const cost = el('div', 'tech-cost', '');
@@ -306,7 +320,22 @@ function buildShell() {
   refs.fragList = fragList;
   refs.fragTitle = fragTitle;
 
-  viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords);
+  // 终局视图（第二阶段技术全部研发后，由任务栏按钮进入）
+  const viewEndgame = el('div', 'view');
+  const egPanel = el('div', 'panel');
+  egPanel.append(el('div', 'panel-title', t('nav.endgame')));
+  egPanel.append(el('p', 'endgame-title', t('endgame.title')));
+  egPanel.append(el('p', 'modal-text', t('endgame.comingSoon')));
+  egPanel.append(el('p', 'modal-text', t('endgame.license')));
+  egPanel.append(el('p', 'modal-text', t('endgame.contribute')));
+  const egRepo = el('a', 'modal-text', t('endgame.repo'));
+  egRepo.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental';
+  egRepo.target = '_blank';
+  egRepo.rel = 'noopener noreferrer';
+  egPanel.append(egRepo);
+  viewEndgame.append(egPanel);
+
+  viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewEndgame);
 
   // ---- 任务栏 ----
   const taskbar = el('div', 'taskbar');
@@ -314,11 +343,16 @@ function buildShell() {
   const btnTech = el('button', 'task-btn', t('nav.techs'));
   const btnExpand = el('button', 'task-btn', t('nav.expand'));
   const btnRecords = el('button', 'task-btn', t('nav.records'));
+  const btnEndgame = el('button', 'task-btn', t('nav.endgame'));
   btnRes.onclick = () => switchView('resources');
   btnTech.onclick = () => switchView('techs');
   btnExpand.onclick = () => switchView('expand');
   btnRecords.onclick = () => switchView('records');
-  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords };
+  btnEndgame.onclick = () => switchView('endgame');
+  refs.endgameReady = Techs.allPhase2Researched();
+  btnEndgame.hidden = !refs.endgameReady;
+  refs.endgameBtn = btnEndgame;
+  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords, endgame: btnEndgame };
   const spacer = el('div', 'taskbar-spacer');
   const saveBtn = el('button', 'task-btn', t('nav.save'));
   saveBtn.onclick = () => Events.emit('save:request');
@@ -326,7 +360,7 @@ function buildShell() {
   exportBtn.onclick = () => Events.emit('export:request');
   const settingsBtn = el('button', 'task-btn', t('nav.settings'));
   settingsBtn.onclick = () => openModal();
-  taskbar.append(btnRes, btnTech, btnExpand, btnRecords, spacer, saveBtn, exportBtn, settingsBtn);
+  taskbar.append(btnRes, btnTech, btnExpand, btnRecords, btnEndgame, spacer, saveBtn, exportBtn, settingsBtn);
 
   const toast = el('div', 'toast');
   refs.toast = toast;
@@ -391,6 +425,35 @@ function buildShell() {
   }
   modalBody.append(langRow);
 
+  // 配色主题
+  modalBody.append(el('div', 'modal-section', t('settings.themeSection')));
+  const themeRow = el('div', 'modal-row');
+  const themeBtns = {};
+  for (const id of THEMES) {
+    const themeBtn = el('button', 'btn', t('theme.' + id));
+    themeBtn.type = 'button';
+    if (id === getTheme()) themeBtn.classList.add('btn-primary');
+    themeBtn.onclick = () => {
+      setTheme(id);
+      for (const [tid, b] of Object.entries(themeBtns)) b.classList.toggle('btn-primary', tid === id);
+    };
+    themeBtns[id] = themeBtn;
+    themeRow.append(themeBtn);
+  }
+  modalBody.append(themeRow);
+
+  const accentRow = el('div', 'modal-row');
+  accentRow.append(el('span', 'modal-text', t('settings.accent')));
+  const accentInput = el('input', '');
+  accentInput.type = 'color';
+  accentInput.value = getAccent() || '#58a6ff';
+  accentInput.oninput = () => setAccent(accentInput.value);
+  const accentReset = el('button', 'btn', t('settings.accentReset'));
+  accentReset.type = 'button';
+  accentReset.onclick = () => { setAccent(''); accentInput.value = '#58a6ff'; };
+  accentRow.append(accentInput, accentReset);
+  modalBody.append(accentRow);
+
   modalBody.append(el('div', 'modal-section', t('settings.aboutSection')));
   modalBody.append(el('p', 'modal-text', t('settings.aboutGame')));
   modalBody.append(el('p', 'modal-text', t('settings.aboutVersion', { version: VERSION })));
@@ -428,7 +491,7 @@ function buildShell() {
 
   shell.append(titlebar, viewContainer, taskbar, toast, modalOverlay, offlineOverlay);
   app.append(shell);
-  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords };
+  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords, endgame: viewEndgame };
 }
 
 function bindEvents() {
@@ -447,6 +510,11 @@ function bindEvents() {
   Events.on('ui:offline-report', (report) => showOfflineReport(report));
   Events.on('prestige:done', () => markDirty());
   Events.on('prestige:ready', () => markDirty());
+  Events.on('phase2:unlocked', () => {
+    document.body.classList.add('phase2');
+    showToast(t('toast.phase2Unlocked'));
+    renderNow();
+  });
   Events.on('ui:toast', (p) => showToast(p?.text));
 }
 
@@ -533,6 +601,15 @@ function render() {
   safeUpdate(updateTechs, 'updateTechs');
   safeUpdate(updateExpand, 'updateExpand');
   safeUpdate(updateRecords, 'updateRecords');
+  safeUpdate(updateEndgame, 'updateEndgame');
+}
+
+function updateEndgame() {
+  if (refs.endgameReady || !Techs.allPhase2Researched()) return;
+  refs.endgameReady = true;
+  if (refs.endgameBtn) refs.endgameBtn.hidden = false;
+  showToast(t('toast.endgameReached'));
+  switchView('endgame');
 }
 
 function updateTitlebar() {
@@ -609,7 +686,8 @@ function updateExpand() {
   const cap = Prestige.getUniverseCap();
   refs.massBig.textContent = `${Num.format(mass)} J`;
   // log 尺度进度（数值跨 70 个数量级，线性条不可读）
-  const ratio = Num.div(Num.log10(Num.add(mass, 1)), Num.parse(70));
+  const capLog = Num.log10(Prestige.getUniverseCap());
+  const ratio = Num.div(Num.log10(Num.add(mass, 1)), capLog);
   const pct = Math.min(100, Num.toNumber(Num.mul(ratio, 100)));
   refs.progressFill.style.width = `${pct.toFixed(1)}%`;
   refs.labelRight.textContent = `${Num.format(mass)} / ${Num.format(cap)} J`;
