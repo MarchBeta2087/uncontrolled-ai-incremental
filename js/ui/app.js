@@ -181,7 +181,7 @@ function buildShell() {
   const labelRight = el('span', 'num', '0');
   progressLabel.append(el('span', '', t('expand.progress')), labelRight);
   const status = el('div', '', t('expand.notReady'));
-  const crystalInfo = el('div', '', t('expand.crystals', { n: '--' }));
+  const crystalInfo = el('div', '', t('expand.crystals', { n: '--', total: '--' }));
   const prestigeBtn = el('button', 'btn btn-primary', t('expand.prestigeBtn'));
   prestigeBtn.type = 'button';
   prestigeBtn.disabled = true;
