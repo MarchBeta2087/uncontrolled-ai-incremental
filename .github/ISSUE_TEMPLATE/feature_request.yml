@@ -1,0 +1,42 @@
+name: 功能建议
+description: 提出一个新功能、内容或改进
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        想直接动手实现？欢迎阅读 [CONTRIBUTING.md](../blob/dev/CONTRIBUTING.md) 并提 PR 到 `dev` 分支。
+  - type: textarea
+    id: problem
+    attributes:
+      label: 想解决的问题 / 背景
+      description: 这个建议针对什么痛点或空缺？
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: 建议方案
+      description: 你希望它如何工作？
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 备选方案 / 补充说明
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: 涉及范围
+      options:
+        - 数值 / 平衡
+        - 内容（资源 / 科技 / 升级 / 挑战 / 成就 / 碎片）
+        - 界面 / 交互
+        - 多语言
+        - 工程 / CI / 文档
+        - 其他
+    validations:
+      required: true

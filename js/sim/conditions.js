@@ -33,6 +33,8 @@ export function checkCondition(cond) {
       return Upgrades.isOwned(cond.target);
     case 'crystals_ge':
       return Num.gte(Prestige.getTimeCrystals(), Num.parse(cond.value));
+    case 'total_crystals_ge':
+      return Num.gte(Prestige.getTotalTimeCrystals(), Num.parse(cond.value));
     case 'time_years_ge':
       return Num.gte(Time.getCurrentYear(), Num.parse(cond.value));
     default:

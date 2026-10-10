@@ -11,12 +11,18 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
-  // 示例（未来 schemaVersion 升级时补充）：
-  // 1: (s) => ({ ...s, schemaVersion: 2, newField: 'default' }),
+  // v1 → v2：区分「当前持有时间晶体」与「历史累计时间晶体」；旧档的累计值回退为当前持有量
+  1: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.totalTimeCrystals === undefined) {
+      mp.totalTimeCrystals = mp.timeCrystals ?? Num.toJSON(Num.parse(0));
+    }
+    return { ...s, schemaVersion: 2, metaProgress: mp };
+  },
 };
 
 /** 生成初始存档快照（纯 JSON，Num 字段已是 MegotaNum JSON 表示） */
@@ -39,6 +45,7 @@ export function createInitialSnapshot() {
     },
     metaProgress: {
       timeCrystals: Num.toJSON(Num.parse(0)),
+      totalTimeCrystals: Num.toJSON(Num.parse(0)),
       upgrades: [],    // [upgradeId, ...]
       achievements: [],// [achievementId, ...]
       fragments: [],   // [fragmentId, ...]

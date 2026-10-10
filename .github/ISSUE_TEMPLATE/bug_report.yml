@@ -1,0 +1,84 @@
+name: Bug 报告
+description: 报告一个可复现的问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！请尽量填写完整。
+        ⚠️ 安全漏洞请勿在此公开，改用 [SECURITY.md](../blob/main/SECURITY.md) 的私密渠道。
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 问题描述
+      description: 发生了什么？你期望发生什么？
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开 ...
+        2. 点击 ...
+        3. 看到 ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 游戏版本
+      description: 设置面板「关于」中的版本号
+      placeholder: v0.3.0
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 平台
+      options:
+        - 桌面浏览器（Windows）
+        - 桌面浏览器（macOS）
+        - 桌面浏览器（Linux）
+        - 移动端浏览器（iOS）
+        - 移动端浏览器（Android）
+        - 其他
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: 浏览器与版本
+      placeholder: Chrome 130 / Safari 18 / Edge 130
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: 界面语言
+      options:
+        - 简体中文
+        - 繁體中文
+        - 繁體中文（台灣）
+        - 繁體中文（香港）
+        - English
+        - 日本語
+        - 한국어
+    validations:
+      required: true
+  - type: textarea
+    id: save
+    attributes:
+      label: 存档（可选）
+      description: 如与存档相关，请粘贴导出存档的 JSON。注意：可能包含你的游戏进度，但不含个人身份信息。
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: 控制台报错（可选）
+      description: 浏览器开发者工具 Console 中的报错信息
+      render: shell
+    validations:
+      required: false
