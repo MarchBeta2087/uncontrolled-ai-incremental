@@ -58,6 +58,8 @@ assert('roundtrip 1e70', Num.eq(Num.fromJSON(Num.toJSON('1e70')), '1e70'));
 assert('千分位 999999', Num.format(999999) === '999,999');
 assert('科学记数 1e6', Num.format('1e6') === '1.000e6');
 assert('舍入进位 999999999', Num.format(999999999) === '1.000e9');
+assert('ban 记法截断 3 位小数', Num.format(Num.parse('1.7976931348623157e318'), { mode: 'ban' }) === '1.798e318');
+assert('ban 记法 1e400', Num.format(Num.parse('1e400'), { mode: 'ban' }) === '1.000e400');
 
 console.log('== 初始化 ==');
 timeMod.configureTime(balance.time);
@@ -159,6 +161,9 @@ multsMod.setCapMultiplier('t2', '1e10');
 assert('cap_mult 叠加：× 1e10 = 1e100', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e100')));
 multsMod.clearCapMultipliers();
 assert('清空后回到基准 1e70', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e70')));
+multsMod.setCapMultiplier('t3', '1e400');
+assert('cap_mult 超过 float64 被封顶', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1.7976931348623157e308')));
+multsMod.clearCapMultipliers();
 
 prestigeMod.initPrestige();
 resMod.initResources(resourcesCfg);

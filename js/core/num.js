@@ -41,6 +41,22 @@ function formatFull(n, decimals) {
   return decPart !== undefined ? `${intWithSep}.${decPart}` : intWithSep;
 }
 
+/** 超大数记法（MegotaNum）：把 "1.7976931348623277e318" 这类尾数截断到 decimals 位；层记法（如 10^^N）保持原样 */
+function formatBan(n, decimals) {
+  const s = n.toString();
+  const m = s.match(/^(-?\d+(?:\.\d+)?)e(-?\d+)$/);
+  if (!m) return s;
+  let mant = Number(m[1]);
+  let exp = Number(m[2]);
+  const factor = Math.pow(10, decimals);
+  mant = Math.round(mant * factor) / factor;
+  if (Math.abs(mant) >= 10) {
+    mant /= 10;
+    exp += 1;
+  }
+  return `${mant.toFixed(decimals)}e${exp}`;
+}
+
 /** 科学记数：1.2345e6 -> "1.235e6"（style=times 时为 "1.235×10^6"） */
 function formatScientific(n, decimals, style) {
   const sign = n.sign === -1 ? '-' : '';
@@ -189,9 +205,9 @@ export const Num = {
       case 'scientific':
         return formatScientific(n, decimals, opts.scientificStyle);
       case 'ban':
-        return n.toString();
+        return formatBan(n, decimals);
       default:
-        return n.toString();
+        return formatBan(n, decimals);
     }
   },
 

@@ -60,8 +60,12 @@ export function getPrestigeCount() {
   return prestigeCount;
 }
 /** 动态宇宙上限 = 基准上限 × 所有 cap_mult 之积 */
+// float64 上限：宇宙质能天花板（超过即不可表示）
+const FLOAT64_MAX = Num.parse('1.7976931348623157e308');
+
+/** 动态宇宙上限 = min(基准上限 × 所有 cap_mult 之积, float64 上限) */
 export function getUniverseCap() {
-  return Num.mul(baseCap, Mults.getCapMultiplier());
+  return Num.min(Num.mul(baseCap, Mults.getCapMultiplier()), FLOAT64_MAX);
 }
 
 /** 第二阶段是否已解锁（一次性） */
