@@ -30,7 +30,7 @@ body:
     attributes:
       label: 游戏版本
       description: 设置面板「关于」中的版本号
-      placeholder: v0.3.0
+      placeholder: v0.4.0
     validations:
       required: true
   - type: dropdown
