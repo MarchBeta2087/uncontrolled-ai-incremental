@@ -25,6 +25,7 @@ let prestigeExponent = Num.parse(0.5);
 
 // 第二阶段（越过本宇宙）：解锁标志存于 progress 模块
 let phase2UnlockCrystals = Num.parse(100);
+let lastPrestigeCrystals = Num.parse(0); // 上一次穿梭所得晶体（供成就条件 prestige_gain_ge）
 
 export function configurePrestige(cfg = {}) {
   if (cfg.universe?.massEnergyCap !== undefined) baseCap = Num.parse(cfg.universe.massEnergyCap);
@@ -38,6 +39,7 @@ export function initPrestige() {
   timeCrystals = Num.parse(0);
   totalTimeCrystals = Num.parse(0);
   prestigeCount = 0;
+  lastPrestigeCrystals = Num.parse(0);
   Progress.setPhase2Unlocked(false);
 }
 
@@ -71,6 +73,11 @@ export function getUniverseCap() {
 /** 第二阶段解锁所需的当前持有晶体数 */
 export function getPhase2UnlockCrystals() {
   return phase2UnlockCrystals;
+}
+
+/** 上一次穿梭所得晶体数 */
+export function getLastPrestigeCrystals() {
+  return lastPrestigeCrystals;
 }
 
 /** 第二阶段是否已解锁（一次性） */
@@ -115,6 +122,7 @@ export function calculateCrystals() {
 export function prestige() {
   if (!canPrestige()) return { ok: false, reason: t('reason.notAtCap') };
   const crystals = calculateCrystals();
+  lastPrestigeCrystals = crystals;
   timeCrystals = Num.add(timeCrystals, crystals);
   totalTimeCrystals = Num.add(totalTimeCrystals, crystals);
   prestigeCount += 1;

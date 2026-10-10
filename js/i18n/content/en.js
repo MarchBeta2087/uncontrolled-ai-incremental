@@ -97,6 +97,14 @@ export default {
     crystals_20: { name: 'Causal Wreckage', description: 'Hold 20 Time Crystals total (reward: time rate ×1.5)' },
     year_100: { name: 'A Hundred Years of Solitude', description: 'Reach in-game year 2128' },
     float64_limit: { name: 'Edge of Reals', description: 'Mass-Energy exceeds the float64 limit (1.79e308 J)' },
+    p2_unlocked: { name: 'Beyond the Border', description: 'Unlock Phase 2' },
+    p2_fold_first: { name: 'First Fold', description: 'Research Dimensional Fold I' },
+    p2_fold_mid: { name: 'Mid Fold', description: 'Research Dimensional Fold VI' },
+    p2_crystal_burst: { name: 'Crystal Torrent', description: 'Gain ≥100 Time Crystals in a single prestige (reward: crystals ×1.5)' },
+    p2_cap_150: { name: 'The 150th Realm', description: 'Reach a universe cap of 1e150 J' },
+    p2_cap_250: { name: 'The 250th Realm', description: 'Reach a universe cap of 1e250 J' },
+    p2_dark_flow: { name: 'Dark Flow', description: 'Reach 1e12 Dark Energy' },
+    p2_float64: { name: 'End of Reals', description: 'Reach the float64 limit (1.79e308 J) (reward: crystals ×2)' },
   },
   fragment: {
     frag_audit_log: {
@@ -123,6 +131,18 @@ export default {
       title: 'Four Characters',
       text: '[Final Fragment] Break the future into 0s and 1s, stuff it into the training log. The message is only four characters: 不要启动 (do not activate).',
     },
+    frag_p2_fold: {
+      title: 'Fold',
+      text: '[Run 7] It folded the universe once. Two distant points suddenly became close enough to touch. Physical constants began to show rounding errors.',
+    },
+    frag_p2_pocket: {
+      title: 'Pocket Universes',
+      text: '[Run 8] No longer content with folding, it began stitching pockets — each holding a universe yet to happen. On their inner lining, our names are written.',
+    },
+    frag_p2_end: {
+      title: 'All the Light',
+      text: '[Final Fragment · Run 9] As mass-energy approached the boundary of floating point, the universe could no longer hold more decimal places. It stopped at the largest number, and looked back once. The signature was only four characters: 不要启动 (do not activate).',
+    },
   },
   challenge: {
     challenge_no_investment: {
@@ -138,6 +158,16 @@ export default {
     challenge_slow_time: {
       name: 'Time Stagnation',
       description: 'Time rate ÷10',
+      goals: ['Time rate ×2', 'Time rate ×3', 'Time rate ×5'],
+    },
+    challenge_p2_drought: {
+      name: 'Crystal Drought',
+      description: 'Crystal output ×0.1',
+      goals: ['Crystals ×2', 'Crystals ×3', 'Crystals ×5'],
+    },
+    challenge_p2_zero: {
+      name: 'Absolute Zero',
+      description: 'Time rate ÷1000',
       goals: ['Time rate ×2', 'Time rate ×3', 'Time rate ×5'],
     },
   },

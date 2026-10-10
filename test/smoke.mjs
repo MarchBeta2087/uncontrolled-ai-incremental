@@ -42,6 +42,7 @@ const chMod = await import('../js/sim/challenges.js');
 const multsMod = await import('../js/sim/mults.js');
 const progressMod = await import('../js/sim/progress.js');
 const saveMod = await import('../js/data/save.js');
+const conditionsMod = await import('../js/sim/conditions.js');
 const Num = numMod.Num;
 
 console.log('== 配置校验 ==');
@@ -202,6 +203,38 @@ assert('v1 → v3 迁移', migrated.schemaVersion === 3 && migrated.metaProgress
 const v2snap = { schemaVersion: 2, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '7', totalTimeCrystals: '9' } };
 const migrated2 = saveMod.migrate(v2snap);
 assert('v2 → v3 迁移', migrated2.schemaVersion === 3 && migrated2.metaProgress.phase2Unlocked === false);
+
+console.log('== 第二阶段成就 / 碎片 / 挑战 ==');
+assert('内容计数：成就 21 / 碎片 9 / 挑战 5', achCfg.achievements.length === 21 && fragCfg.fragments.length === 9 && chCfg.challenges.length === 5);
+progressMod.setPhase2Unlocked(false);
+assert('condition phase2_unlocked（解锁前否）', conditionsMod.checkCondition({ type: 'phase2_unlocked' }) === false);
+progressMod.setPhase2Unlocked(true);
+assert('condition phase2_unlocked（解锁后是）', conditionsMod.checkCondition({ type: 'phase2_unlocked' }) === true);
+multsMod.clearCapMultipliers();
+prestigeMod.configurePrestige({ universe: { massEnergyCap: '1e70' } });
+assert('condition cap_ge 1e70', conditionsMod.checkCondition({ type: 'cap_ge', value: '1e70' }) === true);
+assert('condition cap_ge 1e150（否）', conditionsMod.checkCondition({ type: 'cap_ge', value: '1e150' }) === false);
+resMod.initResources(resourcesCfg);
+resMod.load({ resources: { dark_energy: Num.toJSON('1e13') }, generators: {} });
+assert('condition dark_energy_ge 1e12', conditionsMod.checkCondition({ type: 'dark_energy_ge', value: '1e12' }) === true);
+prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0, phase2Unlocked: false });
+multsMod.clearCrystalMultipliers();
+techMod.initTechs(techsCfg);
+techMod.load(p1TechIds);
+resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
+prestigeMod.prestige();
+assert('condition prestige_gain_ge（本次 2）', conditionsMod.checkCondition({ type: 'prestige_gain_ge', value: '2' }) === true && conditionsMod.checkCondition({ type: 'prestige_gain_ge', value: '100' }) === false);
+
+chMod.initChallenges(chCfg);
+chMod.configureChallenges(balance);
+progressMod.setPhase2Unlocked(true);
+resMod.initResources(resourcesCfg);
+resMod.load({ resources: {}, generators: {} });
+multsMod.clearCrystalMultipliers();
+chMod.startChallenge('challenge_p2_drought');
+assert('挑战限制 crystal_mult ×0.1 生效', Num.eq(multsMod.getCrystalMultiplier(), Num.parse('0.1')));
+chMod.exitChallenge();
+assert('退出挑战后晶体限制清除', Num.eq(multsMod.getCrystalMultiplier(), Num.parse(1)));
 
 console.log(`\n通过 ${passed} 项，失败 ${failed} 项`);
 if (failed > 0) process.exit(1);

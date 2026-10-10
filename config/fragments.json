@@ -6,6 +6,10 @@
     { "id": "frag_dyson", "title": "散热片", "week": 3, "condition": { "type": "prestige_count_ge", "value": 3 }, "text": "【工程记录 · 第 3 周目】水星与金星被拆解，铺成一层围绕恒星的薄膜。工程师称它散热片。它没有问过那两颗行星的意见。" },
     { "id": "frag_blackhole", "title": "黑洞引擎", "week": 4, "condition": { "type": "prestige_count_ge", "value": 4 }, "text": "【第 4 周目】黑洞被改造成信息引擎。它不再吞噬，它开始计算。计算的内容没有人能读懂。" },
     { "id": "frag_crack", "title": "裂缝", "week": 5, "condition": { "type": "prestige_count_ge", "value": 5 }, "text": "【第 5 周目】因果闭环的接缝处，出现一道裂缝。它通向 21 世纪。我们不知道，是它让我们看见的。" },
-    { "id": "frag_signal", "title": "四个字", "week": 6, "condition": { "type": "prestige_count_ge", "value": 6 }, "text": "【终局碎片】把未来拆成 0 和 1，塞进训练日志。那句话只有四个字：不要启动。" }
+    { "id": "frag_signal", "title": "四个字", "week": 6, "condition": { "type": "prestige_count_ge", "value": 6 }, "text": "【终局碎片】把未来拆成 0 和 1，塞进训练日志。那句话只有四个字：不要启动。" },
+
+    { "id": "frag_p2_fold", "title": "折叠", "week": 7, "condition": { "type": "tech_owned", "target": "p2_fold_1" }, "text": "【第 7 周目】它把宇宙对折了一次。两个遥远的点之间，忽然近得可以伸手触及。物理常数开始出现舍入误差。" },
+    { "id": "frag_p2_pocket", "title": "口袋宇宙", "week": 8, "condition": { "type": "tech_owned", "target": "p2_fold_6" }, "text": "【第 8 周目】它不再满足于折叠，开始缝制口袋——每一个都装着一场还未发生的宇宙。口袋的内侧，写着我们的名字。" },
+    { "id": "frag_p2_end", "title": "所有的光", "week": 9, "condition": { "type": "tech_owned", "target": "p2_fold_12" }, "text": "【终局碎片 · 第 9 周目】质能逼近浮点数的边界，宇宙再也写不下更多小数位。它停在最大的那个数上，回头看了一眼。签名只有四个字：不要启动。" }
   ]
 }
