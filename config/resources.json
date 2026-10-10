@@ -5,7 +5,8 @@
     { "id": "funds", "name": "资金", "unit": "¥", "tier": 1, "baseAmount": "0" },
     { "id": "compute", "name": "算力", "unit": "FLOP", "tier": 2, "baseAmount": "0" },
     { "id": "industry", "name": "工业产能", "unit": "件", "tier": 3, "baseAmount": "0" },
-    { "id": "mass_energy", "name": "质能", "unit": "J", "tier": 4, "baseAmount": "0", "capTarget": true }
+    { "id": "mass_energy", "name": "质能", "unit": "J", "tier": 4, "baseAmount": "0", "capTarget": true },
+    { "id": "dark_energy", "name": "暗能量", "unit": "DE", "tier": 5, "baseAmount": "0", "phase": 2 }
   ],
   "generators": [
     {
@@ -47,6 +48,17 @@
       "costGrowth": "1.12",
       "baseProduction": "1e4",
       "tier": 3
+    },
+    {
+      "id": "singularity",
+      "name": "奇点",
+      "costCurrency": "mass_energy",
+      "produces": "dark_energy",
+      "baseCost": "1e70",
+      "costGrowth": "1.25",
+      "baseProduction": "1",
+      "tier": 4,
+      "phase": 2
     }
   ]
 }

@@ -141,4 +141,5 @@ export default {
   'reason.readFileFailed': '读取文件失败',
   'reason.saveVersionTooNew': '存档版本 v{version} 高于当前支持的 v{current}，拒绝加载',
   'reason.missingMigration': '缺少迁移函数 {key}',
+  'reason.phase2Locked': '第二阶段尚未解锁',
 };

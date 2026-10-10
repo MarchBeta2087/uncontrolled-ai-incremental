@@ -9,6 +9,7 @@ import { Time } from '../core/time.js';
 import * as Resources from './resources.js';
 import * as Prestige from './prestige.js';
 import * as Mults from './mults.js';
+import * as Progress from './progress.js';
 import { Events } from '../core/events.js';
 import { t } from '../i18n/index.js';
 
@@ -42,6 +43,7 @@ export function getOfflineMult() {
 export function canBuy(id) {
   const u = upgrades.get(id);
   if (!u || u.owned) return false;
+  if (u.def.phase === 2 && !Progress.isPhase2Unlocked()) return false;
   for (const req of u.def.requires ?? []) {
     if (!upgrades.get(req)?.owned) return false;
   }
@@ -51,6 +53,9 @@ export function canBuy(id) {
 export function buyUpgrade(id) {
   const u = upgrades.get(id);
   if (!u) return { ok: false, reason: t('reason.upgradeNotFound') };
+  if (u.def.phase === 2 && !Progress.isPhase2Unlocked()) {
+    return { ok: false, reason: t('reason.phase2Locked') };
+  }
   if (u.owned) return { ok: false, reason: t('reason.alreadyOwned') };
   for (const req of u.def.requires ?? []) {
     if (!upgrades.get(req)?.owned) return { ok: false, reason: t('reason.prereqMissing', { id: req }) };
