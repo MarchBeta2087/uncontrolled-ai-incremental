@@ -16,6 +16,7 @@ export default {
   'nav.save': '저장',
   'nav.export': '내보내기',
   'nav.settings': '설정',
+  'nav.endgame': '종국',
 
   // 자원 뷰
   'res.click': '연구 투자',
@@ -84,6 +85,7 @@ export default {
   'toast.challengeExit': '도전을 나감',
   'toast.challengeEntered': '도전 시작：{name}',
   'toast.phase2Unlocked': '2단계 해금: 이 우주 너머',
+  'toast.endgameReached': '종국 달성: 이 우주의 끝',
 
   // 오프라인 수익 보고
   'offline.title': '오프라인 수익 보고',
@@ -117,6 +119,13 @@ export default {
   'settings.aboutOrdinal': 'Ordinal Markup 의 설계를 참고（메커니즘만, 코드/에셋 미사용）',
   'settings.aboutRepo': '저장소: github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '닫기',
+
+  // 종국
+  'endgame.title': '기대해 주세요',
+  'endgame.comingSoon': '이 우주는 완전히 짜냈다. 더 먼 다중우주가 곧 찾아온다.',
+  'endgame.license': '이 게임은 GPL-3.0-or-later로 배포됩니다. 자유롭게 fork, 수정, 재배포할 수 있습니다.',
+  'endgame.contribute': '새 콘텐츠를 추가하고 싶나요? PR을 환영합니다——기여 가이드를 보세요.',
+  'endgame.repo': '저장소: github.com/MarchBeta2087/uncontrolled-ai-incremental',
 
   // 단위
   'unit.perSecond': '/초',

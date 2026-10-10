@@ -17,6 +17,7 @@ export default {
   'nav.save': 'Save',
   'nav.export': 'Export',
   'nav.settings': 'Settings',
+  'nav.endgame': 'Endgame',
 
   // Resources view
   'res.click': 'Invest in R&D',
@@ -85,6 +86,7 @@ export default {
   'toast.challengeExit': 'Challenge exited',
   'toast.challengeEntered': 'Challenge started: {name}',
   'toast.phase2Unlocked': 'Phase 2 unlocked: Beyond This Universe',
+  'toast.endgameReached': 'Endgame reached: the edge of this universe',
 
   // Offline earnings report
   'offline.title': 'Offline Earnings Report',
@@ -118,6 +120,13 @@ export default {
   'settings.aboutOrdinal': 'Design references Ordinal Markup (mechanics only; no code/assets reused)',
   'settings.aboutRepo': 'Repository: github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': 'Close',
+
+  // Endgame
+  'endgame.title': 'To Be Continued',
+  'endgame.comingSoon': 'This universe has been squeezed dry. More distant multiverses are on their way.',
+  'endgame.license': 'This game is released under GPL-3.0-or-later: you are free to fork, modify, and republish it.',
+  'endgame.contribute': 'Want to add new content? PRs are welcome — see the contributing guide.',
+  'endgame.repo': 'Repository: github.com/MarchBeta2087/uncontrolled-ai-incremental',
 
   // Units
   'unit.perSecond': '/sec',

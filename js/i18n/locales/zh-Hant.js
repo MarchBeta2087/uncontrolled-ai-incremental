@@ -16,6 +16,7 @@ export default {
   'nav.save': '存檔',
   'nav.export': '匯出',
   'nav.settings': '設定',
+  'nav.endgame': '終局',
 
   // 資源視圖
   'res.click': '投入研發',
@@ -84,6 +85,7 @@ export default {
   'toast.challengeExit': '已退出挑戰',
   'toast.challengeEntered': '已進入挑戰：{name}',
   'toast.phase2Unlocked': '第二階段已解鎖：越過本宇宙',
+  'toast.endgameReached': '終局已達成：本宇宙的盡頭',
 
   // 離線收益報告
   'offline.title': '離線收益報告',
@@ -117,6 +119,13 @@ export default {
   'settings.aboutOrdinal': '設計參照 Ordinal Markup（機制理念，未複用其程式碼/素材）',
   'settings.aboutRepo': '專案倉庫：github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '關閉',
+
+  // 終局
+  'endgame.title': '敬請期待',
+  'endgame.comingSoon': '本宇宙已被徹底榨乾。更遙遠的多元宇宙，正在趕來的路上。',
+  'endgame.license': '本遊戲以 GPL-3.0-or-later 發布：你可以自由地 fork、修改、再發布。',
+  'endgame.contribute': '想加入新內容？歡迎提交 PR——見貢獻指南。',
+  'endgame.repo': '專案倉庫：github.com/MarchBeta2087/uncontrolled-ai-incremental',
 
   // 單位
   'unit.perSecond': '/秒',

@@ -295,3 +295,11 @@ body.phase2 .phase-lock { display: none; }
 .modal-section { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
 .modal-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .modal-text { font-size: 12px; color: var(--text-dim); }
+
+/* ---- 终局视图 ---- */
+.endgame-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 8px 0 12px;
+  color: var(--accent);
+}
