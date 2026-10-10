@@ -110,5 +110,18 @@ prestigeMod.load({ timeCrystals: Num.toJSON('0'), prestigeCount: 1 });
 achMod.checkAll();
 assert('first_prestige 奖励 ×1.5', Num.eq(resMod.getGlobalMultiplier(), 1.5));
 
+console.log('== 时间晶体：当前持有 vs 历史累计 ==');
+prestigeMod.initPrestige();
+resMod.initResources(resourcesCfg);
+techMod.initTechs(techsCfg);
+prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0 });
+resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
+techMod.load(techsCfg.techs.map((t) => t.id));
+prestigeMod.prestige();
+assert('穿梭后当前持有 = 累计', Num.eq(prestigeMod.getTimeCrystals(), prestigeMod.getTotalTimeCrystals()));
+const totalAfterPrestige = prestigeMod.getTotalTimeCrystals();
+prestigeMod.spendCrystals(Num.parse(1));
+assert('消费后当前持有 < 累计，且累计不变', Num.lt(prestigeMod.getTimeCrystals(), totalAfterPrestige) && Num.eq(prestigeMod.getTotalTimeCrystals(), totalAfterPrestige));
+
 console.log(`\n通过 ${passed} 项，失败 ${failed} 项`);
 if (failed > 0) process.exit(1);

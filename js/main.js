@@ -148,6 +148,7 @@ function restoreFromSnapshot(snap) {
   // 元进度
   Prestige.load({
     timeCrystals: snap.metaProgress?.timeCrystals,
+    totalTimeCrystals: snap.metaProgress?.totalTimeCrystals,
     prestigeCount: snap.meta?.prestigeCount,
   });
   Upgrades.load(snap.metaProgress?.upgrades);
@@ -210,6 +211,7 @@ function buildSnapshot() {
     },
     metaProgress: {
       timeCrystals: prestige.timeCrystals,
+      totalTimeCrystals: prestige.totalTimeCrystals,
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),

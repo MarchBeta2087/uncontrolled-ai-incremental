@@ -617,9 +617,11 @@ function updateExpand() {
   const preview = Prestige.calculateCrystals();
   refs.status.textContent = ready ? t('expand.ready') : t('expand.notReady');
   refs.prestigeBtn.disabled = !ready;
+  const crystalsHeld = Num.format(Prestige.getTimeCrystals());
+  const crystalsTotal = Num.format(Prestige.getTotalTimeCrystals());
   refs.crystalInfo.textContent = ready
-    ? t('expand.crystalsPreview', { n: Num.format(Prestige.getTimeCrystals()), preview: Num.toString(preview) })
-    : t('expand.crystals', { n: Num.format(Prestige.getTimeCrystals()) });
+    ? t('expand.crystalsPreview', { n: crystalsHeld, total: crystalsTotal, preview: Num.toString(preview) })
+    : t('expand.crystals', { n: crystalsHeld, total: crystalsTotal });
 
   // 升级标题：挑战中显示削弱提示
   if (refs.upgTitle) {
