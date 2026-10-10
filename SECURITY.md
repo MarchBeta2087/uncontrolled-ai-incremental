@@ -16,7 +16,7 @@
 
 1. **GitHub 私密漏洞报告（推荐）**：进入仓库 **Security → Report a vulnerability**，
    即 <https://github.com/MarchBeta2087/uncontrolled-ai-incremental/security/advisories/new>。
-2. **电子邮件**：`MarchBeta2087@users.noreply.github.com`
+2. **电子邮件**：`pixel10m28@outlook.com`
 
 报告时请尽量包含：影响范围、复现步骤、浏览器/操作系统版本、可能的修复建议。
 

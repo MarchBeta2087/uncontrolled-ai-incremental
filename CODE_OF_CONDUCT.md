@@ -1,7 +1,7 @@
 # 贡献者公约 / Contributor Covenant Code of Conduct
 
 > 本项目采用 [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/)（官方中文版见 <https://www.contributor-covenant.org/zh-cn/version/2/1/code_of_conduct/>）。
-> 举报请联系：`MarchBeta2087@users.noreply.github.com`（见下方 Enforcement）。
+> 举报请联系：`pixel10m28@outlook.com`（见下方 Enforcement）。
 
 ## Our Pledge
 
@@ -63,7 +63,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement at
-`MarchBeta2087@users.noreply.github.com`.
+`pixel10m28@outlook.com`.
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
