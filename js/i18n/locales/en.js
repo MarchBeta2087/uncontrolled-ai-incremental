@@ -35,6 +35,9 @@ export default {
   'tech.buy': 'Research',
   'tech.owned': 'Researched',
   'tech.cost': 'Cost: {cost} {currency}',
+  'tech.phase1': 'Phase 1',
+  'tech.phase2': 'Phase 2 · Beyond This Universe',
+  'tech.phase2LockNotice': 'Phase 2: hold {n} Time Crystals to unlock',
 
   // Expand view
   'expand.panel': 'Devour the Universe',
@@ -81,6 +84,7 @@ export default {
   'toast.cannotEnterChallenge': 'Cannot enter challenge',
   'toast.challengeExit': 'Challenge exited',
   'toast.challengeEntered': 'Challenge started: {name}',
+  'toast.phase2Unlocked': 'Phase 2 unlocked: Beyond This Universe',
 
   // Offline earnings report
   'offline.title': 'Offline Earnings Report',

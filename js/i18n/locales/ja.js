@@ -34,6 +34,9 @@ export default {
   'tech.buy': '研究',
   'tech.owned': '研究済み',
   'tech.cost': 'コスト：{cost} {currency}',
+  'tech.phase1': 'フェーズ 1',
+  'tech.phase2': 'フェーズ 2 · この宇宙の彼方',
+  'tech.phase2LockNotice': 'フェーズ 2：時間結晶を {n} 保有で解放',
 
   // 拡張ビュー
   'expand.panel': '宇宙喰らい',
@@ -80,6 +83,7 @@ export default {
   'toast.cannotEnterChallenge': 'チャレンジを開始できません',
   'toast.challengeExit': 'チャレンジを退出しました',
   'toast.challengeEntered': 'チャレンジ開始：{name}',
+  'toast.phase2Unlocked': 'フェーズ 2 解放：この宇宙の彼方',
 
   // オフライン収益レポート
   'offline.title': 'オフライン収益レポート',

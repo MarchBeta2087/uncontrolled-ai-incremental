@@ -64,6 +64,11 @@ export function getUniverseCap() {
   return Num.mul(baseCap, Mults.getCapMultiplier());
 }
 
+/** 第二阶段解锁所需的当前持有晶体数 */
+export function getPhase2UnlockCrystals() {
+  return phase2UnlockCrystals;
+}
+
 /** 第二阶段是否已解锁（一次性） */
 export function isPhase2Unlocked() {
   return Progress.isPhase2Unlocked();
