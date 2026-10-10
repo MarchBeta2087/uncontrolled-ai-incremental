@@ -1,0 +1,143 @@
+// js/i18n/locales/zh-Hant.js
+// 繁體中文字典（樣板，完整）。字型變體：zh-hant（見 js/i18n/index.js 的 fontVariant）。
+
+export default {
+  // 標題欄
+  'app.title': '失控 AI 增量',
+  'titlebar.time': '遊戲內時間',
+  'titlebar.rate': '速率 ×{rate}',
+  'titlebar.week': '週目 {n}',
+
+  // 底部導覽
+  'nav.resources': '資源',
+  'nav.techs': '研發',
+  'nav.expand': '擴張',
+  'nav.records': '記錄',
+  'nav.save': '存檔',
+  'nav.export': '匯出',
+  'nav.settings': '設定',
+
+  // 資源視圖
+  'res.click': '投入研發',
+  'res.clickWith': '投入研發（+{amount} {name}/次）',
+  'res.panel': '資源',
+  'gen.panel': '擴張基建',
+  'gen.maxAll': 'MAX ALL',
+  'gen.buyOne': '×1',
+  'gen.max': 'MAX',
+  'gen.meta': '消耗 {costName} · 每個 +{perOne} {prodName}/秒',
+  'gen.buyCost': '×1 · {cost} {costName}',
+  'gen.buyMax': 'MAX ×{n}',
+
+  // 研發視圖
+  'tech.panel': '技術樹',
+  'tech.buy': '研發',
+  'tech.owned': '已研發',
+  'tech.cost': '成本：{cost} {currency}',
+
+  // 擴張視圖
+  'expand.panel': '宇宙吞噬',
+  'expand.progress': '質能觸頂進度',
+  'expand.notReady': '尚未觸頂',
+  'expand.ready': '宇宙質能已耗盡，可撕開因果閉環的裂縫',
+  'expand.crystals': '時間晶體：{n}',
+  'expand.crystalsPreview': '時間晶體：{n}（穿梭將 +{preview}）',
+  'expand.prestigeBtn': '撕開裂縫（時空穿梭）',
+  'expand.prestigeDone': '時空穿梭完成：+{crystals} 時間晶體',
+  'expand.upgrades': '時間晶體升級',
+  'expand.upgradesNerf': '時間晶體升級（挑戰中：效果 ^{nerf}）',
+  'expand.upgradeBuy': '購買',
+  'expand.upgradeOwned': '已購買',
+  'expand.upgradeCost': '成本：{cost} 晶體',
+  'expand.upgradeEffectNerf': '效果 ×{value} → ×{nerfed}',
+  'expand.challenges': '挑戰',
+  'expand.goalTarget': '目標 {i}：質能 {target} J',
+  'expand.goalProgress': '進度 {done}/{total} 目標',
+  'expand.challengeCompleted': '已完成',
+  'expand.challengeActive': '挑戰中（退出）',
+  'expand.challengeEnter': '進入挑戰',
+  'expand.challengeLocked': '未解鎖',
+
+  // 記錄視圖
+  'records.achievements': '成就',
+  'records.achievementsCount': '成就（{n}/{total}）',
+  'records.fragments': '記憶碎片',
+  'records.fragmentsCount': '記憶碎片（{n}/{total}）',
+  'records.fragLocked': '？？？',
+  'records.fragLockedHint': '（第 {week} 週目解鎖）',
+
+  // 回饋（toast）
+  'toast.saved': '已存檔',
+  'toast.saveFailed': '存檔失敗：{reason}',
+  'toast.exported': '已匯出存檔檔案',
+  'toast.imported': '存檔匯入成功',
+  'toast.importFailed': '匯入失敗：{reason}',
+  'toast.loadFailed': '存檔載入失敗：{reason}',
+  'toast.startFailed': '啟動失敗：{msg}',
+  'toast.cannotBuy': '無法購買',
+  'toast.cannotResearch': '無法研發',
+  'toast.cannotPrestige': '無法穿梭',
+  'toast.cannotEnterChallenge': '無法進入挑戰',
+  'toast.challengeExit': '已退出挑戰',
+  'toast.challengeEntered': '已進入挑戰：{name}',
+
+  // 離線收益報告
+  'offline.title': '離線收益報告',
+  'offline.duration': '離線時長：{duration}',
+  'offline.empty': '離線期間沒有產出（尚無自動產出）',
+  'offline.close': '關閉',
+
+  // 設定面板
+  'settings.title': '設定',
+  'settings.languageSection': '語言 / Language',
+  'settings.languageTodo': '該語言尚未實裝（待辦）',
+  'settings.saveSection': '存檔管理',
+  'settings.save': '儲存存檔',
+  'settings.export': '匯出存檔',
+  'settings.import': '匯入存檔',
+  'settings.reset': '硬重置',
+  'settings.resetConfirm': '確定硬重置？將清除所有存檔進度，且不可恢復。',
+  'settings.aboutSection': '關於',
+  'settings.aboutGame': '《失控 AI 增量》',
+  'settings.aboutVersion': '版本 v{version}',
+  'settings.aboutLicense': '程式碼 GPL-3.0-or-later · 素材 CC BY-SA 4.0 · 字型 SIL OFL 1.1',
+  'settings.aboutNumLib': '大數庫 MegotaNum.js（MIT，© sonic3XE）',
+  'settings.aboutOrdinal': '設計參照 Ordinal Markup（機制理念，未複用其程式碼/素材）',
+  'settings.aboutRepo': '專案倉庫：github.com/MarchBeta2087/uncontrolled-ai-incremental',
+  'settings.close': '關閉',
+
+  // 單位
+  'unit.perSecond': '/秒',
+
+  // 時長格式化
+  'time.underSecond': '不足 1 秒',
+  'time.hours': '{n} 小時',
+  'time.minutes': '{n} 分鐘',
+  'time.seconds': '{n} 秒',
+  'time.year': '{n} 年',
+
+  // 原因（sim 層回傳的 reason，供 toast 顯示）
+  'reason.generatorNotFound': '產生器不存在',
+  'reason.generatorDisabled': '該產生器在目前挑戰中被停用',
+  'reason.countPositive': '購買數量須為正整數',
+  'reason.insufficientResources': '資源不足',
+  'reason.techNotFound': '技術不存在',
+  'reason.alreadyResearched': '已研發',
+  'reason.prereqMissing': '前置未滿足：{id}',
+  'reason.upgradeNotFound': '升級不存在',
+  'reason.alreadyOwned': '已購買',
+  'reason.crystalsInsufficient': '時間晶體不足',
+  'reason.notAtCap': '宇宙質能尚未觸頂',
+  'reason.cannotEnterChallenge': '無法進入該挑戰',
+  'reason.saveNotObject': '存檔不是物件',
+  'reason.missingSchemaVersion': '缺少 schemaVersion',
+  'reason.missingField': '缺少欄位 {key}',
+  'reason.serializeFailed': '序列化失敗',
+  'reason.localStorageWriteFailed': 'localStorage 寫入失敗（可能超限或被停用）',
+  'reason.localStorageUnavailable': 'localStorage 不可用',
+  'reason.saveParseFailed': '存檔 JSON 解析失敗',
+  'reason.saveMigrateFailed': '存檔遷移失敗',
+  'reason.readFileFailed': '讀取檔案失敗',
+  'reason.saveVersionTooNew': '存檔版本 v{version} 高於目前支援的 v{current}，拒絕載入',
+  'reason.missingMigration': '缺少遷移函式 {key}',
+};

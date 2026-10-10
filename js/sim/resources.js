@@ -8,6 +8,7 @@
 
 import { Num } from '../core/num.js';
 import { Events } from '../core/events.js';
+import { t } from '../i18n/index.js';
 
 const resources = new Map();       // id -> { amount: Num, def: Object }
 const generators = new Map();      // id -> { count: Num, def: Object }
@@ -176,14 +177,14 @@ export function buyCost(genId, n) {
 
 export function buyGenerator(genId, n = 1) {
   const g = generators.get(genId);
-  if (!g) return { ok: false, reason: '生成器不存在' };
-  if (disabledGenerators.has(genId)) return { ok: false, reason: '该生成器在当前挑战中被禁用' };
+  if (!g) return { ok: false, reason: t('reason.generatorNotFound') };
+  if (disabledGenerators.has(genId)) return { ok: false, reason: t('reason.generatorDisabled') };
   const count = Num.parse(n);
-  if (Num.lte(count, 0)) return { ok: false, reason: '购买数量须为正整数' };
+  if (Num.lte(count, 0)) return { ok: false, reason: t('reason.countPositive') };
   const cost = buyCost(genId, count);
   const currency = resources.get(g.def.costCurrency);
   if (Num.lt(currency.amount, cost)) {
-    return { ok: false, reason: '资源不足', cost, have: currency.amount };
+    return { ok: false, reason: t('reason.insufficientResources'), cost, have: currency.amount };
   }
   currency.amount = Num.sub(currency.amount, cost);
   g.count = Num.add(g.count, count);
@@ -211,7 +212,7 @@ export function maxAffordable(genId) {
 
 export function buyMaxGenerator(genId) {
   const n = maxAffordable(genId);
-  if (Num.lte(n, 0)) return { ok: false, reason: '资源不足' };
+  if (Num.lte(n, 0)) return { ok: false, reason: t('reason.insufficientResources') };
   return buyGenerator(genId, n);
 }
 

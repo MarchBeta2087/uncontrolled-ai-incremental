@@ -2,14 +2,18 @@
    触控目标 ≥44px、单列布局、底部 Tab 导航、穿梭动画降级为全屏渐变。 */
 
 /* 触控友好：按钮/可点元素不小于 44px */
-.shell-mobile .btn { min-height: 44px; padding: 10px 14px; font-size: 14px; }
-.shell-mobile .task-btn { flex: 1; min-height: 48px; padding: 12px 4px; font-size: 13px; }
+.shell-mobile .btn { min-height: 44px; padding: 10px 14px; font-size: 12px; }
+.shell-mobile .task-btn { flex: 1; min-height: 48px; padding: 12px 4px; font-size: 12px; }
 
-/* 底部 Tab 导航加高 */
-.shell-mobile .taskbar { height: 58px; padding: 4px 6px; gap: 4px; }
+/* 底部 Tab 导航加高，并避开 iPhone 底部手势条 */
+.shell-mobile .taskbar {
+  min-height: 58px;
+  padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px));
+  gap: 4px;
+}
 
 /* 点击大按钮 */
-.shell-mobile .click-btn { min-height: 100px; padding: 40px 16px; font-size: 20px; }
+.shell-mobile .click-btn { min-height: 100px; padding: 36px 16px; font-size: 24px; }
 
 /* 单列布局 */
 .shell-mobile .resources-layout,
@@ -17,9 +21,23 @@
 .shell-mobile .tech-grid { grid-template-columns: 1fr; }
 .shell-mobile .ach-grid { grid-template-columns: 1fr 1fr; }
 
-/* 标题栏精简 */
-.shell-mobile .titlebar { height: 46px; padding: 0 10px; }
-.shell-mobile .titlebar-right { gap: 10px; font-size: 11px; }
+/* 标题栏改为移动端三行：第一行标题 / 第二行游戏内时间 / 第三行速率+周目 */
+.shell-mobile .titlebar {
+  flex-direction: column;
+  align-items: stretch;
+  height: auto;
+  padding: 8px 10px;
+  gap: 3px;
+}
+.shell-mobile .titlebar-left { font-size: 12px; }
+.shell-mobile .titlebar-right {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  font-size: 12px;
+}
+.shell-mobile .titlebar-right .titlebar-time { white-space: nowrap; }
+.shell-mobile .titlebar-right .titlebar-meta { gap: 12px; white-space: nowrap; }
 
 /* 生成器卡片：按钮组换行到右侧 */
 .shell-mobile .gen-card { flex-wrap: wrap; }
@@ -30,4 +48,4 @@
 .shell-mobile .panel { padding: 10px; }
 
 /* 数值字号略调大，便于阅读 */
-.shell-mobile .res-value { font-size: 16px; }
+.shell-mobile .res-value { font-size: 12px; }

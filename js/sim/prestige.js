@@ -10,6 +10,7 @@ import { Time } from '../core/time.js';
 import { Events } from '../core/events.js';
 import * as Resources from './resources.js';
 import * as Techs from './techs.js';
+import { t } from '../i18n/index.js';
 
 let timeCrystals = Num.parse(0);
 let prestigeCount = 0;
@@ -72,7 +73,7 @@ export function calculateCrystals() {
 
 /** 执行时空穿梭：结算 → 应用元进度 → 清空周目内状态 → 时间归零（设计 §6.3） */
 export function prestige() {
-  if (!canPrestige()) return { ok: false, reason: '宇宙质能尚未触顶' };
+  if (!canPrestige()) return { ok: false, reason: t('reason.notAtCap') };
   const crystals = calculateCrystals();
   timeCrystals = Num.add(timeCrystals, crystals);
   prestigeCount += 1;

@@ -8,6 +8,7 @@ import { Num } from '../core/num.js';
 import { Time } from '../core/time.js';
 import * as Resources from './resources.js';
 import { Events } from '../core/events.js';
+import { t } from '../i18n/index.js';
 
 const techs = new Map(); // id -> { owned: bool, def: Object }
 
@@ -30,28 +31,28 @@ export function getTechIds() {
 
 /** 是否满足购买条件（前置 + 资源） */
 export function canBuy(id) {
-  const t = techs.get(id);
-  if (!t || t.owned) return false;
-  for (const req of t.def.requires ?? []) {
+  const tech = techs.get(id);
+  if (!tech || tech.owned) return false;
+  for (const req of tech.def.requires ?? []) {
     if (!techs.get(req)?.owned) return false;
   }
-  const currency = Resources.getResource(t.def.costCurrency);
+  const currency = Resources.getResource(tech.def.costCurrency);
   if (currency === null) return false;
-  return Num.gte(currency, Num.parse(t.def.cost));
+  return Num.gte(currency, Num.parse(tech.def.cost));
 }
 
 export function buyTech(id) {
-  const t = techs.get(id);
-  if (!t) return { ok: false, reason: '技术不存在' };
-  if (t.owned) return { ok: false, reason: '已研发' };
-  for (const req of t.def.requires ?? []) {
-    if (!techs.get(req)?.owned) return { ok: false, reason: `前置未满足: ${req}` };
+  const tech = techs.get(id);
+  if (!tech) return { ok: false, reason: t('reason.techNotFound') };
+  if (tech.owned) return { ok: false, reason: t('reason.alreadyResearched') };
+  for (const req of tech.def.requires ?? []) {
+    if (!techs.get(req)?.owned) return { ok: false, reason: t('reason.prereqMissing', { id: req }) };
   }
-  if (!Resources.spend(t.def.costCurrency, Num.parse(t.def.cost))) {
-    return { ok: false, reason: '资源不足' };
+  if (!Resources.spend(tech.def.costCurrency, Num.parse(tech.def.cost))) {
+    return { ok: false, reason: t('reason.insufficientResources') };
   }
-  t.owned = true;
-  applyEffects(t.def.effects ?? [], id);
+  tech.owned = true;
+  applyEffects(tech.def.effects ?? [], id);
   Events.emit('tech:owned', { id });
   return { ok: true };
 }

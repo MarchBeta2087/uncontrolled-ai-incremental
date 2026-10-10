@@ -10,6 +10,7 @@ import { Events } from '../core/events.js';
 import * as Resources from './resources.js';
 import * as Techs from './techs.js';
 import { checkCondition } from './conditions.js';
+import { t } from '../i18n/index.js';
 
 const challenges = new Map(); // id -> { goalsDone: Set<number>, def: Object }
 let activeChallenge = null;  // 当前进行中的挑战 id（不存档，中断需重新进入）
@@ -66,7 +67,7 @@ export function canStart(id) {
 
 /** 进入挑战：清空周目状态 + 施加限制 + 削弱永久升级（保留但打折，非完全失效） */
 export function startChallenge(id) {
-  if (!canStart(id)) return { ok: false, reason: '无法进入该挑战' };
+  if (!canStart(id)) return { ok: false, reason: t('reason.cannotEnterChallenge') };
   Resources.resetRun(); // 清资源/生成器/技术乘子，保留永久全产出乘子
   Techs.resetRun();     // 清技术及其速率乘子，保留永久速率乘子
   Time.reset();

@@ -1,6 +1,8 @@
 # 失控 AI 增量（Uncontrolled AI Incremental）
 
-> 🎮 **当前状态：v0.2.1 可玩版本** —— 已部署于 GitHub Pages：[https://marchbeta2087.github.io/uncontrolled-ai-incremental/](https://marchbeta2087.github.io/uncontrolled-ai-incremental/)，点开即玩。
+> 🎮 **当前状态：v0.3.0 可玩版本** —— 已部署于 GitHub Pages：[https://marchbeta2087.github.io/uncontrolled-ai-incremental/](https://marchbeta2087.github.io/uncontrolled-ai-incremental/)，点开即玩。
+>
+> 📦 **仓库地址**：<https://github.com/MarchBeta2087/uncontrolled-ai-incremental>
 
 一款以"失控 AI 吞掉整个宇宙"为主题的增量游戏（incremental game）。你从 UTC 2028-01-01 0:00 起步，投入研发、加速扩张，直到耗尽整个可观测宇宙的资源——然后撕开因果闭环的裂缝，把时间线回卷到起点，带着**时间晶体**进入下一周目。周目越来越快，直到信号抵达裂缝的另一端。
 
@@ -15,6 +17,8 @@
 - **时间轴**：初始速率 1 物理秒 = 10000 游戏秒；分级显示（完整日期 → 仅年份 → 科学记数 → MegotaNum 记法）
 - **离线收益**：离线结算 + 重开页面弹窗报告
 - **存档**：localStorage + 导出/导入/硬重置
+- **像素字体**：缝合像素字体（[Fusion Pixel Font](https://github.com/TakWolf/fusion-pixel-font)）12px 比例/等宽，覆盖 7 种语言字形
+- **多语言**：简体中文 / 繁體中文 / 繁體中文（台灣/香港）/ English / 日本語 / 한국어 界面
 
 ## 运行
 
@@ -29,7 +33,7 @@ python -m http.server 8000
 
 ## 技术路线
 
-原生 JavaScript（无框架、无构建链）+ [MegotaNum.js](https://github.com/sonic3XE/MegotaNum.js) 大数库；桌面外壳（仿 Windows）已完成，移动端外壳待做；存档存于浏览器 localStorage。
+原生 JavaScript（无框架、无构建链）+ [MegotaNum.js](https://github.com/sonic3XE/MegotaNum.js) 大数库；桌面外壳（仿 Windows）与移动端外壳均已完成；存档存于浏览器 localStorage。
 
 ## 文档
 

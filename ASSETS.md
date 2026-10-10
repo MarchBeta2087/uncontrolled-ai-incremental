@@ -40,6 +40,10 @@
 
 ## 字体
 
-*当前尚未引入字体。*
-
 字体以 SIL OFL 1.1 授权入库，置于 `assets/fonts/`，并附各自 OFL 许可证文本；遵守保留字体名（Reserved Font Name）条款。
+
+| 字体 | 版本 | 许可证 | 版权 | 位置 |
+|---|---|---|---|---|
+| 缝合像素字体（Fusion Pixel Font）12px 比例/等宽 · 全语言字形 | 2026.09.25 | SIL OFL 1.1 | © 2022 TakWolf | `assets/fonts/fusion-pixel/`（附 `OFL.txt`） |
+
+> 来源：<https://github.com/TakWolf/fusion-pixel-font>。已入库 12px 的 7 种语言字形（latin / zh-hans / zh-hant / zh-hk / zh-tw / ja / ko）× 比例/等宽两种模式，共 14 个 `.otf.woff2`。字体未做任何修改，故沿用原字体名（Fusion Pixel），符合 OFL 保留字体名条款。仅通过 `css/fonts.css` 按 `data-lang` 切换引用。

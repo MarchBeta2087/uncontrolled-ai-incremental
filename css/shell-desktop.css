@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh; /* 移动端动态视口，避免底栏被浏览器地址栏遮挡 */
 }
 
 /* ---- 顶部标题栏 ---- */
@@ -23,7 +24,7 @@
   align-items: center;
   gap: 8px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 12px;
   white-space: nowrap;
 }
 .titlebar-dot { color: var(--highlight); }
@@ -36,6 +37,13 @@
   white-space: nowrap;
 }
 .titlebar-right .num { color: var(--text); }
+.titlebar-right .titlebar-time,
+.titlebar-right .titlebar-meta {
+  display: flex;
+  align-items: center;
+}
+.titlebar-right .titlebar-time { gap: 4px; }
+.titlebar-right .titlebar-meta { gap: 18px; }
 
 /* ---- 视图容器 ---- */
 .view-container {
@@ -64,7 +72,7 @@
   background: transparent;
   color: var(--text-dim);
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-family: var(--font);
   user-select: none;
   transition: background 0.15s, color 0.15s;
@@ -87,4 +95,4 @@
 
 /* ---- 扩张视图 ---- */
 .prestige-panel { max-width: 720px; }
-.prestige-big { font-size: 20px; font-family: var(--mono); margin: 8px 0; }
+.prestige-big { font-size: 24px; font-family: var(--mono); margin: 8px 0; }

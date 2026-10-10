@@ -8,6 +8,7 @@
 
 import { Num } from './num.js';
 import { Events } from './events.js';
+import { t } from '../i18n/index.js';
 
 // 与 config/balance.json 初值一致，可被 configureTime 覆盖
 const DEFAULTS = {
@@ -55,7 +56,7 @@ function formatFullDate(date) {
 
 function formatYearOnly(Y) {
   const y = Num.floor(Y).toNumber();
-  return `${y.toLocaleString('en-US')} 年`;
+  return t('time.year', { n: y.toLocaleString('en-US') });
 }
 
 export const Time = {
@@ -171,7 +172,7 @@ export const Time = {
       mode,
       scientificStyle: 'times',
     });
-    return { text: `${text} 年`, mode };
+    return { text: t('time.year', { n: text }), mode };
   },
 
   // ---- 存档 ----

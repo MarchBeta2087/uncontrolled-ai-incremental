@@ -14,8 +14,9 @@ import * as Fragments from '../sim/fragments.js';
 import * as Challenges from '../sim/challenges.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
+import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
-const VERSION = '0.2.1';
+const VERSION = '0.3.0';
 
 const refs = {};
 let dirty = false;
@@ -47,12 +48,16 @@ function buildShell() {
   // ---- 标题栏 ----
   const titlebar = el('div', 'titlebar');
   const tl = el('div', 'titlebar-left');
-  tl.append(el('span', 'titlebar-dot', '●'), el('span', '', '失控 AI 增量'));
+  tl.append(el('span', 'titlebar-dot', '●'), el('span', '', t('app.title')));
   const tr = el('div', 'titlebar-right');
+  const timeLine = el('div', 'titlebar-time');
   const timeSpan = el('span', 'num', '--');
-  const rateSpan = el('span', '', '速率 ×1');
-  const weekSpan = el('span', '', '周目 1');
-  tr.append(el('span', '', '游戏内时间 '), timeSpan, rateSpan, weekSpan);
+  timeLine.append(el('span', '', t('titlebar.time')), timeSpan);
+  const metaLine = el('div', 'titlebar-meta');
+  const rateSpan = el('span', '', t('titlebar.rate', { rate: 1 }));
+  const weekSpan = el('span', '', t('titlebar.week', { n: 1 }));
+  metaLine.append(rateSpan, weekSpan);
+  tr.append(timeLine, metaLine);
   titlebar.append(tl, tr);
   refs.timeText = timeSpan;
   refs.rateText = rateSpan;
@@ -66,19 +71,19 @@ function buildShell() {
   const resLayout = el('div', 'resources-layout');
   const leftCol = el('div', 'left-col');
 
-  const clickBtn = el('button', 'click-btn', '投入研发');
+  const clickBtn = el('button', 'click-btn', t('res.click'));
   clickBtn.type = 'button';
   clickBtn.onclick = () => { Resources.click(); markDirty(); };
   leftCol.append(clickBtn);
   refs.clickBtn = clickBtn;
 
   const resPanel = el('div', 'panel');
-  resPanel.append(el('div', 'panel-title', '资源'));
+  resPanel.append(el('div', 'panel-title', t('res.panel')));
   const resList = el('div', '');
   for (const rid of Resources.getResourceIds()) {
     const def = Resources.getResourceDef(rid);
     const row = el('div', 'res-row');
-    const name = el('span', 'res-name', def.name);
+    const name = el('span', 'res-name', tc('resource', rid, 'name', def.name));
     const value = el('span', 'res-value num', '0');
     value.dataset.res = rid;
     const rate = el('span', 'res-rate num', '');
@@ -93,8 +98,8 @@ function buildShell() {
   // 生成器面板
   const genPanel = el('div', 'panel');
   const genHeader = el('div', 'gen-header');
-  genHeader.append(el('div', 'panel-title', '扩张基建'));
-  const maxAllBtn = el('button', 'btn', 'MAX ALL');
+  genHeader.append(el('div', 'panel-title', t('gen.panel')));
+  const maxAllBtn = el('button', 'btn', t('gen.maxAll'));
   maxAllBtn.type = 'button';
   maxAllBtn.onclick = () => { Resources.buyMaxAll(); markDirty(); };
   genHeader.append(maxAllBtn);
@@ -105,26 +110,26 @@ function buildShell() {
     const card = el('div', 'gen-card');
     const info = el('div', 'gen-info');
     info.append(
-      el('div', 'gen-name', def.name),
+      el('div', 'gen-name', tc('generator', gid, 'name', def.name)),
       el('div', 'gen-meta', '')
     );
     const countSpan = el('span', 'gen-count num', '0');
     countSpan.dataset.gen = gid;
     const btnGroup = el('div', 'gen-btns');
-    const buyOneBtn = el('button', 'btn', '×1');
+    const buyOneBtn = el('button', 'btn', t('gen.buyOne'));
     buyOneBtn.type = 'button';
     buyOneBtn.dataset.gen = gid;
     buyOneBtn.onclick = () => {
       const r = Resources.buyGenerator(gid, 1);
-      if (!r.ok) showToast(r.reason || '无法购买');
+      if (!r.ok) showToast(r.reason || t('toast.cannotBuy'));
       markDirty();
     };
-    const maxBtn = el('button', 'btn', 'MAX');
+    const maxBtn = el('button', 'btn', t('gen.max'));
     maxBtn.type = 'button';
     maxBtn.dataset.genmax = gid;
     maxBtn.onclick = () => {
       const r = Resources.buyMaxGenerator(gid);
-      if (!r.ok) showToast(r.reason || '无法购买');
+      if (!r.ok) showToast(r.reason || t('toast.cannotBuy'));
       markDirty();
     };
     btnGroup.append(buyOneBtn, maxBtn);
@@ -140,20 +145,20 @@ function buildShell() {
   // 研发视图
   const viewTechs = el('div', 'view');
   const techPanel = el('div', 'panel');
-  techPanel.append(el('div', 'panel-title', '技术树'));
+  techPanel.append(el('div', 'panel-title', t('tech.panel')));
   const techGrid = el('div', 'tech-grid');
   for (const tid of Techs.getTechIds()) {
     const def = Techs.getTech(tid);
     const card = el('div', 'tech-card');
-    const name = el('div', 'tech-name', def.name);
-    const desc = el('div', 'tech-desc', def.description || '');
+    const name = el('div', 'tech-name', tc('tech', tid, 'name', def.name));
+    const desc = el('div', 'tech-desc', tc('tech', tid, 'description', def.description || ''));
     const cost = el('div', 'tech-cost', '');
-    const btn = el('button', 'btn', '研发');
+    const btn = el('button', 'btn', t('tech.buy'));
     btn.type = 'button';
     btn.dataset.tech = tid;
     btn.onclick = () => {
       const r = Techs.buyTech(tid);
-      if (!r.ok) showToast(r.reason || '无法研发');
+      if (!r.ok) showToast(r.reason || t('toast.cannotResearch'));
       markDirty();
     };
     card.append(name, desc, cost, btn);
@@ -166,7 +171,7 @@ function buildShell() {
   // 扩张视图
   const viewExpand = el('div', 'view');
   const expPanel = el('div', 'panel prestige-panel');
-  expPanel.append(el('div', 'panel-title', '宇宙吞噬'));
+  expPanel.append(el('div', 'panel-title', t('expand.panel')));
   const massBig = el('div', 'prestige-big num', '0');
   const progress = el('div', 'progress');
   const progressFill = el('div', 'progress-fill');
@@ -174,37 +179,37 @@ function buildShell() {
   progress.append(progressFill);
   const progressLabel = el('div', 'progress-label');
   const labelRight = el('span', 'num', '0');
-  progressLabel.append(el('span', '', '质能触顶进度'), labelRight);
-  const status = el('div', '', '尚未触顶');
-  const crystalInfo = el('div', '', '时间晶体：--');
-  const prestigeBtn = el('button', 'btn btn-primary', '撕开裂缝（时空穿梭）');
+  progressLabel.append(el('span', '', t('expand.progress')), labelRight);
+  const status = el('div', '', t('expand.notReady'));
+  const crystalInfo = el('div', '', t('expand.crystals', { n: '--' }));
+  const prestigeBtn = el('button', 'btn btn-primary', t('expand.prestigeBtn'));
   prestigeBtn.type = 'button';
   prestigeBtn.disabled = true;
   prestigeBtn.onclick = () => {
     const r = Prestige.prestige();
-    if (!r.ok) showToast(r.reason || '无法穿梭');
-    else showToast(`时空穿梭完成：+${Num.toString(r.crystals)} 时间晶体`);
+    if (!r.ok) showToast(r.reason || t('toast.cannotPrestige'));
+    else showToast(t('expand.prestigeDone', { crystals: Num.toString(r.crystals) }));
     markDirty();
   };
   expPanel.append(massBig, progress, progressLabel, status, crystalInfo, prestigeBtn);
 
   // 时间晶体升级列表
-  const upgTitle = el('div', 'panel-title', '时间晶体升级');
+  const upgTitle = el('div', 'panel-title', t('expand.upgrades'));
   expPanel.append(upgTitle);
   refs.upgTitle = upgTitle;
   const upgGrid = el('div', 'tech-grid');
   for (const uid of Upgrades.getUpgradeIds()) {
     const u = Upgrades.getUpgrade(uid);
     const card = el('div', 'tech-card');
-    const name = el('div', 'tech-name', u.name);
-    const desc = el('div', 'tech-desc', u.description || '');
+    const name = el('div', 'tech-name', tc('upgrade', uid, 'name', u.name));
+    const desc = el('div', 'tech-desc', tc('upgrade', uid, 'description', u.description || ''));
     const cost = el('div', 'tech-cost', '');
-    const btn = el('button', 'btn', '购买');
+    const btn = el('button', 'btn', t('expand.upgradeBuy'));
     btn.type = 'button';
     btn.dataset.upg = uid;
     btn.onclick = () => {
       const r = Upgrades.buyUpgrade(uid);
-      if (!r.ok) showToast(r.reason || '无法购买');
+      if (!r.ok) showToast(r.reason || t('toast.cannotBuy'));
       markDirty();
     };
     card.append(name, desc, cost, btn);
@@ -214,22 +219,23 @@ function buildShell() {
   refs.upgGrid = upgGrid;
 
   // 挑战列表
-  expPanel.append(el('div', 'panel-title', '挑战'));
+  expPanel.append(el('div', 'panel-title', t('expand.challenges')));
   const chGrid = el('div', 'tech-grid');
   for (const cid of Challenges.getChallengeIds()) {
     const c = Challenges.getChallenge(cid);
     const card = el('div', 'tech-card');
     card.dataset.ch = cid;
-    card.append(el('div', 'tech-name', c.name));
-    card.append(el('div', 'tech-desc', c.description));
+    card.append(el('div', 'tech-name', tc('challenge', cid, 'name', c.name)));
+    card.append(el('div', 'tech-desc', tc('challenge', cid, 'description', c.description)));
     const goalsList = el('div', 'ch-goals');
+    const goalRewards = tc('challenge', cid, 'goals', null);
     for (let i = 0; i < (c.goals?.length ?? 0); i++) {
       const g = c.goals[i];
       const row = el('div', 'ch-goal');
       row.dataset.goal = i;
       row.append(
-        el('span', 'ch-goal-target', `目标 ${i + 1}：质能 ${g.target} J`),
-        el('span', 'ch-goal-reward', g.rewardDescription)
+        el('span', 'ch-goal-target', t('expand.goalTarget', { i: i + 1, target: g.target })),
+        el('span', 'ch-goal-reward', goalRewards?.[i] ?? g.rewardDescription)
       );
       goalsList.append(row);
     }
@@ -242,11 +248,11 @@ function buildShell() {
     btn.onclick = () => {
       if (Challenges.getActiveChallenge() === cid) {
         Challenges.exitChallenge();
-        showToast('已退出挑战');
+        showToast(t('toast.challengeExit'));
       } else {
         const r = Challenges.startChallenge(cid);
-        if (!r.ok) showToast(r.reason || '无法进入挑战');
-        else showToast(`已进入挑战：${c.name}`);
+        if (!r.ok) showToast(r.reason || t('toast.cannotEnterChallenge'));
+        else showToast(t('toast.challengeEntered', { name: tc('challenge', cid, 'name', c.name) }));
       }
       renderNow();
     };
@@ -268,19 +274,22 @@ function buildShell() {
   const viewRecords = el('div', 'view');
   const recordsLayout = el('div', 'records-layout');
   const achPanel = el('div', 'panel');
-  const achTitle = el('div', 'panel-title', '成就');
+  const achTitle = el('div', 'panel-title', t('records.achievements'));
   achPanel.append(achTitle);
   const achGrid = el('div', 'ach-grid');
   for (const aid of Achievements.getAchievementIds()) {
     const a = Achievements.getAchievement(aid);
     const card = el('div', 'ach-card');
     card.dataset.ach = aid;
-    card.append(el('div', 'ach-name', a.name), el('div', 'ach-desc', a.description));
+    card.append(
+      el('div', 'ach-name', tc('achievement', aid, 'name', a.name)),
+      el('div', 'ach-desc', tc('achievement', aid, 'description', a.description))
+    );
     achGrid.append(card);
   }
   achPanel.append(achGrid);
   const fragPanel = el('div', 'panel');
-  const fragTitle = el('div', 'panel-title', '记忆碎片');
+  const fragTitle = el('div', 'panel-title', t('records.fragments'));
   fragPanel.append(fragTitle);
   const fragList = el('div', 'frag-list');
   for (const fid of Fragments.getFragmentIds()) {
@@ -301,21 +310,21 @@ function buildShell() {
 
   // ---- 任务栏 ----
   const taskbar = el('div', 'taskbar');
-  const btnRes = el('button', 'task-btn active', '资源');
-  const btnTech = el('button', 'task-btn', '研发');
-  const btnExpand = el('button', 'task-btn', '扩张');
-  const btnRecords = el('button', 'task-btn', '记录');
+  const btnRes = el('button', 'task-btn active', t('nav.resources'));
+  const btnTech = el('button', 'task-btn', t('nav.techs'));
+  const btnExpand = el('button', 'task-btn', t('nav.expand'));
+  const btnRecords = el('button', 'task-btn', t('nav.records'));
   btnRes.onclick = () => switchView('resources');
   btnTech.onclick = () => switchView('techs');
   btnExpand.onclick = () => switchView('expand');
   btnRecords.onclick = () => switchView('records');
   refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords };
   const spacer = el('div', 'taskbar-spacer');
-  const saveBtn = el('button', 'task-btn', '存档');
+  const saveBtn = el('button', 'task-btn', t('nav.save'));
   saveBtn.onclick = () => Events.emit('save:request');
-  const exportBtn = el('button', 'task-btn', '导出');
+  const exportBtn = el('button', 'task-btn', t('nav.export'));
   exportBtn.onclick = () => Events.emit('export:request');
-  const settingsBtn = el('button', 'task-btn', '设置');
+  const settingsBtn = el('button', 'task-btn', t('nav.settings'));
   settingsBtn.onclick = () => openModal();
   taskbar.append(btnRes, btnTech, btnExpand, btnRecords, spacer, saveBtn, exportBtn, settingsBtn);
 
@@ -326,20 +335,20 @@ function buildShell() {
   const modalOverlay = el('div', 'modal-overlay');
   modalOverlay.style.display = 'none';
   const modal = el('div', 'modal');
-  modal.append(el('div', 'modal-title', '设置'));
+  modal.append(el('div', 'modal-title', t('settings.title')));
   const modalBody = el('div', 'modal-body');
 
-  modalBody.append(el('div', 'modal-section', '存档管理'));
+  modalBody.append(el('div', 'modal-section', t('settings.saveSection')));
   const row1 = el('div', 'modal-row');
-  const saveBtnM = el('button', 'btn', '保存存档');
+  const saveBtnM = el('button', 'btn', t('settings.save'));
   saveBtnM.onclick = () => { Events.emit('save:request'); closeModal(); };
-  const exportBtnM = el('button', 'btn', '导出存档');
+  const exportBtnM = el('button', 'btn', t('settings.export'));
   exportBtnM.onclick = () => { Events.emit('export:request'); closeModal(); };
   row1.append(saveBtnM, exportBtnM);
   modalBody.append(row1);
 
   const row2 = el('div', 'modal-row');
-  const importBtn = el('button', 'btn', '导入存档');
+  const importBtn = el('button', 'btn', t('settings.import'));
   const fileInput = el('input', '');
   fileInput.type = 'file';
   fileInput.accept = 'application/json,.json';
@@ -352,9 +361,9 @@ function buildShell() {
     }
     fileInput.value = '';
   };
-  const resetBtn = el('button', 'btn btn-danger', '硬重置');
+  const resetBtn = el('button', 'btn btn-danger', t('settings.reset'));
   resetBtn.onclick = () => {
-    if (window.confirm('确定硬重置？将清除所有存档进度，且不可恢复。')) {
+    if (window.confirm(t('settings.resetConfirm'))) {
       Save.clear();
       window.sessionStorage.setItem('uai_resetting', '1'); // 阻止 beforeunload 重新写回旧档
       window.location.reload();
@@ -363,19 +372,38 @@ function buildShell() {
   row2.append(importBtn, resetBtn, fileInput);
   modalBody.append(row2);
 
-  modalBody.append(el('div', 'modal-section', '关于'));
-  modalBody.append(el('p', 'modal-text', '《失控 AI 增量》'));
-  modalBody.append(el('p', 'modal-text', `版本 v${VERSION}`));
-  modalBody.append(el('p', 'modal-text', '代码 GPL-3.0-or-later · 素材 CC BY-SA 4.0 · 字体 SIL OFL 1.1'));
-  modalBody.append(el('p', 'modal-text', '大数库 MegotaNum.js（MIT，© sonic3XE）'));
-  modalBody.append(el('p', 'modal-text', '设计参照 Ordinal Markup（机制理念，未复用其代码/素材）'));
-  const repoLink = el('a', 'modal-text', '项目仓库：github.com/MarchBeta2087/uncontrolled-ai-incremental');
+  // 语言选择（仅 zh-CN 已实装，其余为待办）
+  modalBody.append(el('div', 'modal-section', t('settings.languageSection')));
+  const langRow = el('div', 'modal-row');
+  for (const loc of getLocales()) {
+    const langBtn = el('button', 'btn', loc.name);
+    langBtn.type = 'button';
+    if (isAvailable(loc.code)) {
+      if (loc.code === getLocale()) langBtn.classList.add('btn-primary');
+      langBtn.onclick = () => {
+        if (setLocale(loc.code)) window.location.reload();
+      };
+    } else {
+      langBtn.disabled = true;
+      langBtn.title = t('settings.languageTodo');
+    }
+    langRow.append(langBtn);
+  }
+  modalBody.append(langRow);
+
+  modalBody.append(el('div', 'modal-section', t('settings.aboutSection')));
+  modalBody.append(el('p', 'modal-text', t('settings.aboutGame')));
+  modalBody.append(el('p', 'modal-text', t('settings.aboutVersion', { version: VERSION })));
+  modalBody.append(el('p', 'modal-text', t('settings.aboutLicense')));
+  modalBody.append(el('p', 'modal-text', t('settings.aboutNumLib')));
+  modalBody.append(el('p', 'modal-text', t('settings.aboutOrdinal')));
+  const repoLink = el('a', 'modal-text', t('settings.aboutRepo'));
   repoLink.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental';
   repoLink.target = '_blank';
   repoLink.rel = 'noopener noreferrer';
   modalBody.append(repoLink);
 
-  const closeBtn = el('button', 'btn', '关闭');
+  const closeBtn = el('button', 'btn', t('settings.close'));
   closeBtn.onclick = () => closeModal();
   modal.append(modalBody, closeBtn);
   modalOverlay.append(modal);
@@ -385,12 +413,12 @@ function buildShell() {
   const offlineOverlay = el('div', 'modal-overlay');
   offlineOverlay.style.display = 'none';
   const offlineModal = el('div', 'modal');
-  offlineModal.append(el('div', 'modal-title', '离线收益报告'));
+  offlineModal.append(el('div', 'modal-title', t('offline.title')));
   const offlineBody = el('div', 'modal-body');
   const offlineTime = el('p', 'modal-text', '');
   const offlineList = el('div', 'offline-list');
   offlineBody.append(offlineTime, offlineList);
-  const offlineClose = el('button', 'btn', '关闭');
+  const offlineClose = el('button', 'btn', t('offline.close'));
   offlineClose.onclick = () => { offlineOverlay.style.display = 'none'; };
   offlineModal.append(offlineBody, offlineClose);
   offlineOverlay.append(offlineModal);
@@ -445,23 +473,23 @@ function showToast(text) {
 
 function formatDuration(seconds) {
   const s = Math.floor(seconds);
-  if (s < 1) return '不足 1 秒';
+  if (s < 1) return t('time.underSecond');
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
   const parts = [];
-  if (h > 0) parts.push(`${h} 小时`);
-  if (m > 0) parts.push(`${m} 分钟`);
-  if (sec > 0 || parts.length === 0) parts.push(`${sec} 秒`);
+  if (h > 0) parts.push(t('time.hours', { n: h }));
+  if (m > 0) parts.push(t('time.minutes', { n: m }));
+  if (sec > 0 || parts.length === 0) parts.push(t('time.seconds', { n: sec }));
   return parts.join(' ');
 }
 
 function showOfflineReport(report) {
   if (!refs.offlineOverlay || !report) return;
-  refs.offlineTime.textContent = `离线时长：${formatDuration(report.offlineRealSeconds)}`;
+  refs.offlineTime.textContent = t('offline.duration', { duration: formatDuration(report.offlineRealSeconds) });
   refs.offlineList.innerHTML = '';
   if (!report.gains || report.gains.length === 0) {
-    refs.offlineList.append(el('p', 'modal-text', '离线期间没有产出（尚无自动产出）'));
+    refs.offlineList.append(el('p', 'modal-text', t('offline.empty')));
   } else {
     for (const g of report.gains) {
       const row = el('div', 'offline-row');
@@ -508,11 +536,11 @@ function render() {
 }
 
 function updateTitlebar() {
-  const t = Time.formatGameTime();
-  refs.timeText.textContent = t.text;
+  const gt = Time.formatGameTime();
+  refs.timeText.textContent = gt.text;
   const rateMult = Num.div(Time.getRate(), Time.getBaseRate());
-  refs.rateText.textContent = `速率 ×${Num.format(rateMult)}`;
-  refs.weekText.textContent = `周目 ${Prestige.getPrestigeCount() + 1}`;
+  refs.rateText.textContent = t('titlebar.rate', { rate: Num.format(rateMult) });
+  refs.weekText.textContent = t('titlebar.week', { n: Prestige.getPrestigeCount() + 1 });
 }
 
 function updateResources() {
@@ -522,11 +550,14 @@ function updateResources() {
   }
   for (const rateEl of refs.resList.querySelectorAll('.res-rate')) {
     const rate = Resources.getProductionPerSecond(rateEl.dataset.res);
-    rateEl.textContent = Num.gt(rate, 0) ? `+${Num.format(rate)}/秒` : '';
+    rateEl.textContent = Num.gt(rate, 0) ? `+${Num.format(rate)}${t('unit.perSecond')}` : '';
   }
   if (refs.clickBtn) {
-    const resName = Resources.getResourceDef('funds')?.name ?? '资源';
-    refs.clickBtn.textContent = `投入研发（+${Num.format(Resources.getClickProduction())} ${resName}/次）`;
+    const resName = tc('resource', 'funds', 'name', Resources.getResourceDef('funds')?.name) ?? t('res.panel');
+    refs.clickBtn.textContent = t('res.clickWith', {
+      amount: Num.format(Resources.getClickProduction()),
+      name: resName,
+    });
   }
 }
 
@@ -542,14 +573,14 @@ function updateGenerators() {
     const afford = currency !== null && Num.gte(currency, cost);
     const perOne = Num.mul(Num.parse(def.baseProduction), Resources.getGeneratorMultiplier(gid));
     const maxN = Resources.maxAffordable(gid);
-    const costName = Resources.getResourceDef(def.costCurrency).name;
-    const prodName = Resources.getResourceDef(def.produces).name;
+    const costName = tc('resource', def.costCurrency, 'name', Resources.getResourceDef(def.costCurrency).name);
+    const prodName = tc('resource', def.produces, 'name', Resources.getResourceDef(def.produces).name);
     card.querySelector('.gen-count').textContent = count ? Num.format(count) : '0';
     card.querySelector('.gen-meta').textContent =
-      `消耗 ${costName} · 每个 +${Num.format(perOne)} ${prodName}/秒`;
-    buyOneBtn.textContent = `×1 · ${Num.format(cost)} ${costName}`;
+      t('gen.meta', { costName, perOne: Num.format(perOne), prodName });
+    buyOneBtn.textContent = t('gen.buyCost', { cost: Num.format(cost), costName });
     buyOneBtn.disabled = !afford;
-    maxBtn.textContent = `MAX ×${Num.format(maxN)}`;
+    maxBtn.textContent = t('gen.buyMax', { n: Num.format(maxN) });
     maxBtn.disabled = Num.lte(maxN, 0);
   }
 }
@@ -562,12 +593,12 @@ function updateTechs() {
     const owned = Techs.isOwned(tid);
     card.classList.toggle('owned', owned);
     card.querySelector('.tech-cost').textContent =
-      `成本：${Num.format(Num.parse(def.cost))} ${Resources.getResourceDef(def.costCurrency)?.name ?? ''}`;
+      t('tech.cost', { cost: Num.format(Num.parse(def.cost)), currency: tc('resource', def.costCurrency, 'name', Resources.getResourceDef(def.costCurrency)?.name ?? '') });
     if (owned) {
-      btn.textContent = '已研发';
+      btn.textContent = t('tech.owned');
       btn.disabled = true;
     } else {
-      btn.textContent = '研发';
+      btn.textContent = t('tech.buy');
       btn.disabled = !Techs.canBuy(tid);
     }
   }
@@ -584,19 +615,19 @@ function updateExpand() {
   refs.labelRight.textContent = `${Num.format(mass)} / ${Num.format(cap)} J`;
   const ready = Prestige.canPrestige();
   const preview = Prestige.calculateCrystals();
-  refs.status.textContent = ready ? '宇宙质能已耗尽，可撕开因果闭环的裂缝' : '尚未触顶';
+  refs.status.textContent = ready ? t('expand.ready') : t('expand.notReady');
   refs.prestigeBtn.disabled = !ready;
   refs.crystalInfo.textContent = ready
-    ? `时间晶体：${Num.format(Prestige.getTimeCrystals())}（穿梭将 +${Num.toString(preview)}）`
-    : `时间晶体：${Num.format(Prestige.getTimeCrystals())}`;
+    ? t('expand.crystalsPreview', { n: Num.format(Prestige.getTimeCrystals()), preview: Num.toString(preview) })
+    : t('expand.crystals', { n: Num.format(Prestige.getTimeCrystals()) });
 
   // 升级标题：挑战中显示削弱提示
   if (refs.upgTitle) {
     const active = Challenges.getActiveChallenge();
     if (active) {
-      refs.upgTitle.textContent = `时间晶体升级（挑战中：效果 ^${Challenges.getNerf().toString()}）`;
+      refs.upgTitle.textContent = t('expand.upgradesNerf', { nerf: Challenges.getNerf().toString() });
     } else {
-      refs.upgTitle.textContent = '时间晶体升级';
+      refs.upgTitle.textContent = t('expand.upgrades');
     }
   }
 
@@ -611,20 +642,20 @@ function updateExpand() {
       card.classList.toggle('owned', owned);
       const costEl = card.querySelector('.tech-cost');
       if (owned) {
-        btn.textContent = '已购买';
+        btn.textContent = t('expand.upgradeOwned');
         btn.disabled = true;
         // 挑战中显示削弱后的实际效果（乘子 ^nerf）
         if (activeChallenge && u.effects?.length) {
           const e = u.effects[0];
           const nerfed = Num.pow(Num.parse(e.value), Challenges.getNerf());
-          costEl.textContent = `效果 ×${e.value} → ×${Num.format(nerfed, { decimals: 6 })}`;
+          costEl.textContent = t('expand.upgradeEffectNerf', { value: e.value, nerfed: Num.format(nerfed, { decimals: 6 }) });
         } else {
-          costEl.textContent = `成本：${Num.format(Num.parse(u.cost))} 晶体`;
+          costEl.textContent = t('expand.upgradeCost', { cost: Num.format(Num.parse(u.cost)) });
         }
       } else {
-        btn.textContent = '购买';
+        btn.textContent = t('expand.upgradeBuy');
         btn.disabled = !Upgrades.canBuy(uid);
-        costEl.textContent = `成本：${Num.format(Num.parse(u.cost))} 晶体`;
+        costEl.textContent = t('expand.upgradeCost', { cost: Num.format(Num.parse(u.cost)) });
       }
     }
   }
@@ -642,15 +673,15 @@ function updateExpand() {
       for (const row of card.querySelectorAll('.ch-goal')) {
         row.classList.toggle('done', Number(row.dataset.goal) < done);
       }
-      card.querySelector('.tech-cost').textContent = `进度 ${done}/${total} 目标`;
+      card.querySelector('.tech-cost').textContent = t('expand.goalProgress', { done, total });
       if (completed) {
-        btn.textContent = '已完成';
+        btn.textContent = t('expand.challengeCompleted');
         btn.disabled = true;
       } else if (active) {
-        btn.textContent = '挑战中（退出）';
+        btn.textContent = t('expand.challengeActive');
         btn.disabled = false;
       } else {
-        btn.textContent = Challenges.canStart(cid) ? '进入挑战' : '未解锁';
+        btn.textContent = Challenges.canStart(cid) ? t('expand.challengeEnter') : t('expand.challengeLocked');
         btn.disabled = !Challenges.canStart(cid);
       }
     }
@@ -663,14 +694,20 @@ function updateRecords() {
   for (const card of refs.achGrid.querySelectorAll('.ach-card')) {
     card.classList.toggle('owned', Achievements.isUnlocked(card.dataset.ach));
   }
-  refs.achTitle.textContent = `成就（${Achievements.unlockedCount()}/${Achievements.getAchievementIds().length}）`;
+  refs.achTitle.textContent = t('records.achievementsCount', {
+    n: Achievements.unlockedCount(),
+    total: Achievements.getAchievementIds().length,
+  });
   // 记忆碎片
   for (const item of refs.fragList.querySelectorAll('.frag-item')) {
     const f = Fragments.getFragment(item.dataset.frag);
     const collected = Fragments.isCollected(item.dataset.frag);
     item.classList.toggle('collected', collected);
-    item.querySelector('.frag-title').textContent = collected ? f.title : '？？？';
-    item.querySelector('.frag-text').textContent = collected ? f.text : `（第 ${f.week} 周目解锁）`;
+    item.querySelector('.frag-title').textContent = collected ? tc('fragment', item.dataset.frag, 'title', f.title) : t('records.fragLocked');
+    item.querySelector('.frag-text').textContent = collected ? tc('fragment', item.dataset.frag, 'text', f.text) : t('records.fragLockedHint', { week: f.week });
   }
-  refs.fragTitle.textContent = `记忆碎片（${Fragments.collectedCount()}/${Fragments.getFragmentIds().length}）`;
+  refs.fragTitle.textContent = t('records.fragmentsCount', {
+    n: Fragments.collectedCount(),
+    total: Fragments.getFragmentIds().length,
+  });
 }

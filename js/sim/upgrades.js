@@ -9,6 +9,7 @@ import { Time } from '../core/time.js';
 import * as Resources from './resources.js';
 import * as Prestige from './prestige.js';
 import { Events } from '../core/events.js';
+import { t } from '../i18n/index.js';
 
 const upgrades = new Map(); // id -> { owned: bool, def: Object }
 const offlineMults = new Map(); // sourceId -> Num（离线收益乘子，永久）
@@ -48,13 +49,13 @@ export function canBuy(id) {
 
 export function buyUpgrade(id) {
   const u = upgrades.get(id);
-  if (!u) return { ok: false, reason: '升级不存在' };
-  if (u.owned) return { ok: false, reason: '已购买' };
+  if (!u) return { ok: false, reason: t('reason.upgradeNotFound') };
+  if (u.owned) return { ok: false, reason: t('reason.alreadyOwned') };
   for (const req of u.def.requires ?? []) {
-    if (!upgrades.get(req)?.owned) return { ok: false, reason: `前置未满足: ${req}` };
+    if (!upgrades.get(req)?.owned) return { ok: false, reason: t('reason.prereqMissing', { id: req }) };
   }
   const cost = Num.parse(u.def.cost);
-  if (!Prestige.spendCrystals(cost)) return { ok: false, reason: '时间晶体不足' };
+  if (!Prestige.spendCrystals(cost)) return { ok: false, reason: t('reason.crystalsInsufficient') };
   u.owned = true;
   applyEffects(u.def.effects ?? [], id);
   Events.emit('upgrade:owned', { id });

@@ -1,0 +1,149 @@
+/* css/fonts.css —— 缝合像素字体（Fusion Pixel Font，SIL OFL 1.1）
+   仅用 12px：比例模式作正文，等宽模式作数字。
+   字体文件在 assets/fonts/fusion-pixel/，许可证见同目录 OFL.txt。
+
+   说明：
+   - 像素字体按「语言特定字形」拆分（latin / zh_hans / zh_hant / zh_hk / zh_tw / ja / ko），
+     每个文件都已内含拉丁字母 + 该语言字形，因此按当前语言切换整个字体族即可。
+   - @font-face 是惰性加载：浏览器只会在文本实际用到时下载对应字体，
+     所以声明全部语言不会拖慢首屏（仅当前语言的 2 个 woff2 被下载）。 */
+
+/* ---- 12px 比例模式（正文） ---- */
+@font-face {
+  font-family: "Fusion Pixel 12 latin";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-proportional-latin.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 zh-hans";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-proportional-zh_hans.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 zh-hant";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-proportional-zh_hant.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 zh-hk";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-proportional-zh_hk.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 zh-tw";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-proportional-zh_tw.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 ja";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-proportional-ja.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 ko";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-proportional-ko.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---- 12px 等宽模式（数字） ---- */
+@font-face {
+  font-family: "Fusion Pixel 12 Mono latin";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-monospaced-latin.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 Mono zh-hans";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-monospaced-zh_hans.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 Mono zh-hant";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-monospaced-zh_hant.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 Mono zh-hk";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-monospaced-zh_hk.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 Mono zh-tw";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-monospaced-zh_tw.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 Mono ja";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-monospaced-ja.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Pixel 12 Mono ko";
+  src: url("../assets/fonts/fusion-pixel/fusion-pixel-12px-monospaced-ko.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---- 像素字体渲染：保持锐利（关闭抗锯齿与合成粗体/斜体） ---- */
+body {
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  font-synthesis: none;
+}
+
+/* ---- 按语言切换字体族（默认简体中文） ---- */
+:root {
+  --font: "Fusion Pixel 12 zh-hans", system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --mono: "Fusion Pixel 12 Mono zh-hans", "Fusion Pixel 12 zh-hans", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+:root[data-lang="zh-Hant"] {
+  --font: "Fusion Pixel 12 zh-hant", system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --mono: "Fusion Pixel 12 Mono zh-hant", "Fusion Pixel 12 zh-hant", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+:root[data-lang="zh-TW"] {
+  --font: "Fusion Pixel 12 zh-tw", system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --mono: "Fusion Pixel 12 Mono zh-tw", "Fusion Pixel 12 zh-tw", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+:root[data-lang="zh-HK"] {
+  --font: "Fusion Pixel 12 zh-hk", system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --mono: "Fusion Pixel 12 Mono zh-hk", "Fusion Pixel 12 zh-hk", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+:root[data-lang="ja"] {
+  --font: "Fusion Pixel 12 ja", system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --mono: "Fusion Pixel 12 Mono ja", "Fusion Pixel 12 ja", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+:root[data-lang="ko"] {
+  --font: "Fusion Pixel 12 ko", system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  --mono: "Fusion Pixel 12 Mono ko", "Fusion Pixel 12 ko", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+:root[data-lang="en"] {
+  --font: "Fusion Pixel 12 latin", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Fusion Pixel 12 Mono latin", "Fusion Pixel 12 latin", ui-monospace, "Cascadia Code", Consolas, monospace;
+}

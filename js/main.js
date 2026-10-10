@@ -15,6 +15,7 @@ import * as Challenges from './sim/challenges.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
+import { t, tc } from './i18n/index.js';
 
 const AUTO_SAVE_MS = 30_000;
 const MAX_OFFLINE_SECONDS = 8 * 3600; // 离线结算上限 8 小时
@@ -75,20 +76,20 @@ async function bootstrap() {
     // UI 触发的存档请求
     Events.on('save:request', () => {
       const r = save();
-      Events.emit('ui:toast', { text: r.ok ? '已存档' : `存档失败：${r.reason}` });
+      Events.emit('ui:toast', { text: r.ok ? t('toast.saved') : t('toast.saveFailed', { reason: r.reason }) });
     });
     Events.on('export:request', () => {
       Save.exportSave(buildSnapshot());
-      Events.emit('ui:toast', { text: '已导出存档文件' });
+      Events.emit('ui:toast', { text: t('toast.exported') });
     });
     Events.on('import:request', async (payload) => {
       try {
         const snap = await Save.importSave(payload.file);
         restoreFromSnapshot(snap);
         save();
-        Events.emit('ui:toast', { text: '存档导入成功' });
+        Events.emit('ui:toast', { text: t('toast.imported') });
       } catch (err) {
-        Events.emit('ui:toast', { text: `导入失败：${err.message}` });
+        Events.emit('ui:toast', { text: t('toast.importFailed', { reason: err.message }) });
       }
     });
     // 穿梭后：重新应用永久升级/挑战奖励/成就奖励（挑战完成由每 tick 的 checkProgress 处理）
@@ -116,7 +117,7 @@ async function bootstrap() {
     console.error('[main] 启动失败：', err);
     const app = document.getElementById('app');
     if (app) {
-      app.innerHTML = `<div style="padding:20px;color:#f85149;font-family:monospace">启动失败：${err.message}</div>`;
+      app.innerHTML = `<div style="padding:20px;color:#f85149;font-family:monospace">${t('toast.startFailed', { msg: err.message })}</div>`;
     }
   }
 }
@@ -126,7 +127,7 @@ function restoreSave() {
   if (!res.ok) {
     if (res.reason === 'no-save') return; // 首次启动
     console.warn('[main] 存档加载失败：', res.reason, res.error);
-    Events.emit('ui:toast', { text: `存档加载失败：${res.reason}` });
+    Events.emit('ui:toast', { text: t('toast.loadFailed', { reason: res.reason }) });
     return;
   }
   restoreFromSnapshot(res.snapshot);
@@ -181,7 +182,7 @@ function settleOffline(snap) {
   for (const rid of Resources.getResourceIds()) {
     const gain = Num.sub(Resources.getResource(rid), before.get(rid));
     if (Num.gt(gain, 0)) {
-      gains.push({ id: rid, name: Resources.getResourceDef(rid).name, gain });
+      gains.push({ id: rid, name: tc('resource', rid, 'name', Resources.getResourceDef(rid).name), gain });
     }
   }
 

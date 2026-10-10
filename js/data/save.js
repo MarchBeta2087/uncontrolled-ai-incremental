@@ -8,6 +8,7 @@
 //   - 存档结构见设计说明书 §7.1（schemaVersion / meta / time / run / metaProgress / theories）。
 
 import { Num } from '../core/num.js';
+import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
 export const SCHEMA_VERSION = 1;
@@ -49,14 +50,14 @@ export function createInitialSnapshot() {
 /** 基本结构校验（不深度校验 Num 字段，深度校验在 sim 层恢复时做） */
 export function validate(snapshot) {
   if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)) {
-    return { ok: false, reason: '存档不是对象' };
+    return { ok: false, reason: t('reason.saveNotObject') };
   }
   if (typeof snapshot.schemaVersion !== 'number') {
-    return { ok: false, reason: '缺少 schemaVersion' };
+    return { ok: false, reason: t('reason.missingSchemaVersion') };
   }
   for (const key of ['meta', 'time', 'run', 'metaProgress']) {
     if (!snapshot[key] || typeof snapshot[key] !== 'object' || Array.isArray(snapshot[key])) {
-      return { ok: false, reason: `缺少字段 ${key}` };
+      return { ok: false, reason: t('reason.missingField', { key }) };
     }
   }
   return { ok: true };
@@ -67,11 +68,11 @@ export function migrate(snapshot) {
   let s = snapshot;
   let v = s.schemaVersion ?? 1;
   if (v > SCHEMA_VERSION) {
-    throw new Error(`存档版本 v${v} 高于当前支持的 v${SCHEMA_VERSION}，拒绝加载`);
+    throw new Error(t('reason.saveVersionTooNew', { version: v, current: SCHEMA_VERSION }));
   }
   while (v < SCHEMA_VERSION) {
     const fn = migrations[v];
-    if (!fn) throw new Error(`缺少迁移函数 migrate_${v}to${v + 1}`);
+    if (!fn) throw new Error(t('reason.missingMigration', { key: `migrate_${v}to${v + 1}` }));
     s = fn(s);
     v = s.schemaVersion;
   }
@@ -86,14 +87,14 @@ export function save(snapshot) {
   try {
     json = JSON.stringify(snapshot);
   } catch (err) {
-    return { ok: false, reason: '序列化失败', error: err };
+    return { ok: false, reason: t('reason.serializeFailed'), error: err };
   }
   try {
     localStorage.setItem(SAVE_KEY, json);
     return { ok: true };
   } catch (err) {
     // 设计 §10：localStorage 不可用/超限 → 降级仅内存 + 提示导出备份
-    return { ok: false, reason: 'localStorage 写入失败（可能超限或被禁用）', error: err };
+    return { ok: false, reason: t('reason.localStorageWriteFailed'), error: err };
   }
 }
 
@@ -103,7 +104,7 @@ export function load() {
   try {
     raw = localStorage.getItem(SAVE_KEY);
   } catch (err) {
-    return { ok: false, reason: 'localStorage 不可用', error: err };
+    return { ok: false, reason: t('reason.localStorageUnavailable'), error: err };
   }
   if (!raw) return { ok: false, reason: 'no-save' };
 
@@ -111,7 +112,7 @@ export function load() {
   try {
     data = JSON.parse(raw);
   } catch (err) {
-    return { ok: false, reason: '存档 JSON 解析失败', error: err };
+    return { ok: false, reason: t('reason.saveParseFailed'), error: err };
   }
 
   const v = validate(data);
@@ -120,7 +121,7 @@ export function load() {
   try {
     data = migrate(data);
   } catch (err) {
-    return { ok: false, reason: '存档迁移失败', error: err };
+    return { ok: false, reason: t('reason.saveMigrateFailed'), error: err };
   }
 
   return { ok: true, snapshot: data };
@@ -166,7 +167,7 @@ export function importSave(file) {
         reject(err);
       }
     };
-    reader.onerror = () => reject(reader.error || new Error('读取文件失败'));
+    reader.onerror = () => reject(reader.error || new Error(t('reason.readFileFailed')));
     reader.readAsText(file);
   });
 }
