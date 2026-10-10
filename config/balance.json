@@ -29,6 +29,10 @@
     "prestigeExponent": 0.5
   },
 
+  "phase2": {
+    "unlockCrystals": "100"
+  },
+
   "format": {
     "numberSciThreshold": "1e6",
     "numberBanThreshold": "1.8e308",

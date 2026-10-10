@@ -37,6 +37,8 @@ const prestigeMod = await import('../js/sim/prestige.js');
 const upgMod = await import('../js/sim/upgrades.js');
 const achMod = await import('../js/sim/achievements.js');
 const chMod = await import('../js/sim/challenges.js');
+const multsMod = await import('../js/sim/mults.js');
+const saveMod = await import('../js/data/save.js');
 const Num = numMod.Num;
 
 console.log('== 配置校验 ==');
@@ -122,6 +124,55 @@ assert('穿梭后当前持有 = 累计', Num.eq(prestigeMod.getTimeCrystals(), p
 const totalAfterPrestige = prestigeMod.getTotalTimeCrystals();
 prestigeMod.spendCrystals(Num.parse(1));
 assert('消费后当前持有 < 累计，且累计不变', Num.lt(prestigeMod.getTimeCrystals(), totalAfterPrestige) && Num.eq(prestigeMod.getTotalTimeCrystals(), totalAfterPrestige));
+
+console.log('== 第二阶段引擎地基（cap_mult / crystal_mult / 解锁 / 迁移）==');
+multsMod.clearCapMultipliers();
+multsMod.clearCrystalMultipliers();
+
+multsMod.setCapMultiplier('t1', '1e20');
+assert('cap_mult：1e70 × 1e20 = 1e90', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e90')));
+multsMod.setCapMultiplier('t2', '1e10');
+assert('cap_mult 叠加：× 1e10 = 1e100', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e100')));
+multsMod.clearCapMultipliers();
+assert('清空后回到基准 1e70', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e70')));
+
+prestigeMod.initPrestige();
+resMod.initResources(resourcesCfg);
+techMod.initTechs(techsCfg);
+techMod.load(techsCfg.techs.map((t) => t.id));
+prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0, phase2Unlocked: false });
+resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
+multsMod.setCrystalMultiplier('t1', '3');
+assert('crystal_mult：基础 2 × 3 = 6', Num.eq(prestigeMod.calculateCrystals(), 6));
+multsMod.clearCrystalMultipliers();
+
+prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0, phase2Unlocked: false });
+prestigeMod.checkPhase2Unlock();
+assert('未达 100 晶体：未解锁', prestigeMod.isPhase2Unlocked() === false);
+prestigeMod.load({ timeCrystals: Num.toJSON('100'), totalTimeCrystals: Num.toJSON('100'), prestigeCount: 0, phase2Unlocked: false });
+prestigeMod.checkPhase2Unlock();
+assert('持有 100 晶体：解锁', prestigeMod.isPhase2Unlocked() === true);
+prestigeMod.load({ timeCrystals: Num.toJSON('10'), totalTimeCrystals: Num.toJSON('200'), prestigeCount: 0, phase2Unlocked: true });
+assert('已解锁后花晶体：不回锁', prestigeMod.isPhase2Unlocked() === true);
+
+const permTechCfg = { techs: [
+  { id: 'perm_test', name: 'p', costCurrency: 'mass_energy', cost: '1', requires: [], permanent: true, effects: [{ type: 'all_generator_mult', value: '10' }] },
+  { id: 'run_test', name: 'r', costCurrency: 'mass_energy', cost: '1', requires: [], effects: [{ type: 'all_generator_mult', value: '5' }] },
+] };
+techMod.initTechs(permTechCfg);
+techMod.load(['perm_test', 'run_test']);
+resMod.initResources(resourcesCfg);
+resMod.load({ resources: {}, generators: {} });
+techMod.reset();
+assert('穿梭后永久技术保留', techMod.isOwned('perm_test') === true);
+assert('穿梭后普通技术清除', techMod.isOwned('run_test') === false);
+
+const v1snap = { schemaVersion: 1, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '5', upgrades: [] } };
+const migrated = saveMod.migrate(v1snap);
+assert('v1 → v3 迁移', migrated.schemaVersion === 3 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false);
+const v2snap = { schemaVersion: 2, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '7', totalTimeCrystals: '9' } };
+const migrated2 = saveMod.migrate(v2snap);
+assert('v2 → v3 迁移', migrated2.schemaVersion === 3 && migrated2.metaProgress.phase2Unlocked === false);
 
 console.log(`\n通过 ${passed} 项，失败 ${failed} 项`);
 if (failed > 0) process.exit(1);

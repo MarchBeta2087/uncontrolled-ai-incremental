@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -22,6 +22,12 @@ const migrations = {
       mp.totalTimeCrystals = mp.timeCrystals ?? Num.toJSON(Num.parse(0));
     }
     return { ...s, schemaVersion: 2, metaProgress: mp };
+  },
+  // v2 → v3：新增第二阶段解锁标志
+  2: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.phase2Unlocked === undefined) mp.phase2Unlocked = false;
+    return { ...s, schemaVersion: 3, metaProgress: mp };
   },
 };
 
@@ -46,6 +52,7 @@ export function createInitialSnapshot() {
     metaProgress: {
       timeCrystals: Num.toJSON(Num.parse(0)),
       totalTimeCrystals: Num.toJSON(Num.parse(0)),
+      phase2Unlocked: false,
       upgrades: [],    // [upgradeId, ...]
       achievements: [],// [achievementId, ...]
       fragments: [],   // [fragmentId, ...]

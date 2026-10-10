@@ -150,6 +150,7 @@ function restoreFromSnapshot(snap) {
     timeCrystals: snap.metaProgress?.timeCrystals,
     totalTimeCrystals: snap.metaProgress?.totalTimeCrystals,
     prestigeCount: snap.meta?.prestigeCount,
+    phase2Unlocked: snap.metaProgress?.phase2Unlocked,
   });
   Upgrades.load(snap.metaProgress?.upgrades);
   Achievements.load(snap.metaProgress?.achievements);
@@ -212,6 +213,7 @@ function buildSnapshot() {
     metaProgress: {
       timeCrystals: prestige.timeCrystals,
       totalTimeCrystals: prestige.totalTimeCrystals,
+      phase2Unlocked: prestige.phase2Unlocked,
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),

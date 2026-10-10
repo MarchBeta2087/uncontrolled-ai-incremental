@@ -8,6 +8,7 @@ import { Num } from '../core/num.js';
 import { Time } from '../core/time.js';
 import * as Resources from './resources.js';
 import * as Prestige from './prestige.js';
+import * as Mults from './mults.js';
 import { Events } from '../core/events.js';
 import { t } from '../i18n/index.js';
 
@@ -79,6 +80,12 @@ function applyEffects(effects, sourceId) {
         break;
       case 'offline_mult':
         offlineMults.set(sourceId, Num.parse(e.value));
+        break;
+      case 'cap_mult':
+        Mults.setCapMultiplier(sourceId, e.value);
+        break;
+      case 'crystal_mult':
+        Mults.setCrystalMultiplier(sourceId, e.value);
         break;
       default:
         console.warn(`[Upgrades] 未知效果类型: ${e.type}`);
