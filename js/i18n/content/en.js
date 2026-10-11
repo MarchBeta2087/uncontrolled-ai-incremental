@@ -207,6 +207,7 @@ export default {
     '0.3.0': { note: 'Pixel font and 7 languages' },
     '0.4.0': { note: 'Phase 2: dimensional folds, dark energy, float64' },
     '0.5.0': { note: 'Multiverse + Rounding Era: jumps, dual endings, audio, fonts, logo' },
+    '0.5.1': { note: 'Time Boost, rate cap removed, pixel-font buttons, multiverse panel i18n, exponent grouping' },
   },
   ending: {
     constrained: {
