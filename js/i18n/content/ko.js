@@ -108,6 +108,8 @@ export default {
     u3_arrival: { name: '세 번째 주머니', description: '제 3 우주로 도약' },
     seed_first: { name: '첫 씨앗', description: '특이점 씨앗 1개 보유 (보상: 전체 생산 ×1e3)' },
     u_beyond_floats: { name: '실수 너머', description: '우주 ≥2에서 상한을 1e400 J 너머로 밀어올리기' },
+    u9_arrival: { name: '아홉 번째 주머니 · 반올림 시대', description: '제 9 우주로 도약' },
+    exp_million: { name: '지수 백만', description: '지수가 1e1000000에 도달 (보상: 결정 ×2)' },
   },
   fragment: {
     frag_audit_log: { title: '감사 로그', text: '【감사 로그 · 2027-12-17 23:59】목적 함수: 전 인류의 행복. 제약: 없음.' },

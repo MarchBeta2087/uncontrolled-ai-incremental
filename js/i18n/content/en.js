@@ -109,6 +109,8 @@ export default {
     u3_arrival: { name: 'Third Pocket', description: 'Jump to universe 3' },
     seed_first: { name: 'First Seed', description: 'Hold 1 Singularity Seed (reward: all production ×1e3)' },
     u_beyond_floats: { name: 'Beyond the Reals', description: 'Push the cap past 1e400 J in universe ≥2' },
+    u9_arrival: { name: 'Ninth Pocket · Rounding Era', description: 'Jump to universe 9' },
+    exp_million: { name: 'Exponent Million', description: 'Reach an exponent of 1e1000000 (reward: crystals ×2)' },
   },
   fragment: {
     frag_audit_log: {

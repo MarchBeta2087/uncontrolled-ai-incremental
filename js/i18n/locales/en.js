@@ -146,6 +146,7 @@ export default {
   'endgame.intro': 'All memory fragments are collected. The objective function is still running. You hold the authority for one last delivery.',
   'endgame.freeMode': 'The ending is recorded. Mechanics continue — you can keep jumping universes forever.',
   'endgame.chooseFailed': 'Cannot choose this ending.',
+  'endgame.artPending': 'Ending cutscene art pending (see asset rules §7)',
   'endgame.license': 'This game is released under GPL-3.0-or-later: you are free to fork, modify, and republish it.',
   'endgame.contribute': 'Want to add new content? PRs are welcome — see the contributing guide.',
   'endgame.repo': 'Repository: github.com/MarchBeta2087/uncontrolled-ai-incremental',

@@ -27,6 +27,8 @@
     { "id": "u2_arrival", "name": "第二口袋", "description": "跃迁到第 2 宇宙", "condition": { "type": "universe_ge", "value": 2 } },
     { "id": "u3_arrival", "name": "第三口袋", "description": "跃迁到第 3 宇宙", "condition": { "type": "universe_ge", "value": 3 } },
     { "id": "seed_first", "name": "第一枚种子", "description": "持有 1 枚奇点种子（奖励：全产出 ×1e3）", "condition": { "type": "seeds_ge", "value": "1" }, "reward": { "type": "all_generator_mult", "value": "1e3" } },
-    { "id": "u_beyond_floats", "name": "越界之后", "description": "在宇宙 ≥2 把上限推过 1e400 J", "condition": { "type": "cap_ge", "value": "1e400" } }
+    { "id": "u_beyond_floats", "name": "越界之后", "description": "在宇宙 ≥2 把上限推过 1e400 J", "condition": { "type": "cap_ge", "value": "1e400" } },
+    { "id": "u9_arrival", "name": "第九口袋 · 捨入纪", "description": "跃迁到第 9 宇宙", "condition": { "type": "universe_ge", "value": 9 } },
+    { "id": "exp_million", "name": "指数百万", "description": "质能指数达到 1e1000000（奖励：晶体 ×2）", "condition": { "type": "resource_ge", "target": "mass_energy", "value": "1e1000000" }, "reward": { "type": "crystal_mult", "value": "2" } }
   ]
 }

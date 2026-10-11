@@ -230,7 +230,7 @@ const migrated4 = saveMod.migrate(v4snap);
 assert('v4 → v5 迁移：ending=null', migrated4.schemaVersion === 5 && migrated4.metaProgress.ending === null);
 
 console.log('== 第二阶段成就 / 碎片 / 挑战 ==');
-assert('内容计数：成就 25 / 碎片 12 / 挑战 5', achCfg.achievements.length === 25 && fragCfg.fragments.length === 12 && chCfg.challenges.length === 5);
+assert('内容计数：成就 27 / 碎片 12 / 挑战 5', achCfg.achievements.length === 27 && fragCfg.fragments.length === 12 && chCfg.challenges.length === 5);
 progressMod.setPhase2Unlocked(false);
 assert('condition phase2_unlocked（解锁前否）', conditionsMod.checkCondition({ type: 'phase2_unlocked' }) === false);
 progressMod.setPhase2Unlocked(true);
