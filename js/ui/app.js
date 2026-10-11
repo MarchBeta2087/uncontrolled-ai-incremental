@@ -23,7 +23,7 @@ import { playSfx } from '../core/audio.js';
 import { getVolumePref, setVolumePref, getMutedPref, setMutedPref } from './audio.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
-const VERSION = '0.4.0';
+const VERSION = '0.5.0';
 
 const refs = {};
 let dirty = false;
