@@ -416,11 +416,16 @@ function buildShell() {
   }
   egChoice.append(egChoiceRow);
 
-  // 已选择：结局文本
+  // 已选择：结局过场图 + 文本
   const egResult = el('div', '');
+  const egArt = document.createElement('img');
+  egArt.className = 'ending-art';
+  egArt.alt = '';
+  egArt.hidden = true;
+  const egArtPlaceholder = el('div', 'ending-art-placeholder', t('endgame.artPending'));
   const egResultTitle = el('p', 'endgame-title', '');
   const egResultText = el('p', 'modal-text', '');
-  egResult.append(egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')));
+  egResult.append(egArt, egArtPlaceholder, egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')));
 
   // 通用信息
   const egMeta = el('div', '');
@@ -443,6 +448,8 @@ function buildShell() {
   refs.egResult = egResult;
   refs.egResultTitle = egResultTitle;
   refs.egResultText = egResultText;
+  refs.egArt = egArt;
+  refs.egArtPlaceholder = egArtPlaceholder;
 
   viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewEndgame);
 
@@ -970,6 +977,21 @@ function renderEndgame() {
     const e = Endings.getEnding(chosen);
     refs.egResultTitle.textContent = tc('ending', chosen, 'title', e?.title ?? '');
     refs.egResultText.textContent = tc('ending', chosen, 'text', e?.text ?? '');
+    // 结局过场图（有则显示；缺失/加载失败则显示占位）
+    if (refs.egArt && refs.egArt.dataset.ending !== chosen) {
+      refs.egArt.dataset.ending = chosen;
+      const img = e?.image || '';
+      if (img) {
+        refs.egArt.hidden = true;
+        refs.egArtPlaceholder.hidden = false;
+        refs.egArt.onload = () => { refs.egArt.hidden = false; refs.egArtPlaceholder.hidden = true; };
+        refs.egArt.onerror = () => { refs.egArt.hidden = true; refs.egArtPlaceholder.hidden = false; };
+        refs.egArt.src = img;
+      } else {
+        refs.egArt.hidden = true;
+        refs.egArtPlaceholder.hidden = false;
+      }
+    }
   }
 }
 
