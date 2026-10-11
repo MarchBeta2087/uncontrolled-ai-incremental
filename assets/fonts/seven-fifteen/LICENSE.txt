@@ -1,0 +1,19 @@
+"Seven Fifteen Font" by Douglas Vautour (Burpy Fresh) is licensed under CC-BY 4.0.
+
+素材：assets/fonts/seven-fifteen/SevenFifteenMonoRounded-Regular.woff2
+来源：https://burpyfresh.itch.io （SevenFifteen-V0_013）
+作者 / 署名：Douglas Vautour（Burpy Fresh）
+许可证：Creative Commons Attribution 4.0 International（CC BY 4.0）
+  https://creativecommons.org/licenses/by/4.0/
+版本：0.013（2024-12-17）
+
+修改说明：
+  - 由 TTF 子集化为 WOFF2（3.0 MB → 107 KB），仅保留 Fusion Pixel Font 不覆盖的脚本
+    （拉丁 / 希腊 / 西里尔 / 希伯来 / 阿拉伯含连写 / 天城文含连字 / 泰文 + 常用标点）；
+  - 字形轮廓与 OpenType 布局（GSUB/GPOS/GDEF）未改动，仅移除未用字形。
+
+署名（CC BY 4.0 要求）：
+  「Seven Fifteen Font」by Douglas Vautour (Burpy Fresh)，CC BY 4.0。
+
+合规：按 docs/素材与授权规则-v1.3.md §4（字体：优先 OFL，亦接受与 CC BY-SA 4.0 兼容的许可证）；
+登记于 ASSETS.md。

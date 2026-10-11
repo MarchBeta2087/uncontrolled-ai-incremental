@@ -2,6 +2,16 @@
 
 本项目遵循语义化版本（SemVer）。
 
+## [Unreleased]
+
+### 新增（Added）
+
+- **SevenFifteen 备用像素字体**：接入 SevenFifteen Mono Rounded（**CC BY 4.0**，Douglas Vautour / Burpy Fresh）——子集化为 WOFF2（3.0 MB → 107 KB），覆盖 Fusion 缺失的**天城文（印地语，含连字）/ 阿拉伯（含连写）**/ 希腊 / 西里尔 / 希伯来 / 泰文；字体栈改为优先级 **Fusion > SevenFifteen**；登记 `ASSETS.md` + `LICENSE.txt`。
+
+### 变更（Changed）
+
+- **素材与授权规则 v1.3**（`docs/素材与授权规则-v1.3.md`，自 v1.2 更名）：§4 字体规则扩展为「OFL 优先，兼容 CC BY-SA 4.0 的许可证（如 CC BY 4.0）亦可，须署名」；§9 检查清单同步；全仓库 v1.2 链接更新。决策见 [docs/决策记录.md](docs/决策记录.md) **ADR-002**。
+
 ## [0.5.0] - 2026-10-11
 
 > **本版说明**：v0.5.0 **整合了原计划的 v0.5（多宇宙）与 v0.6（舍入纪）全部内容**，作为一次发布。决策与理由见 [docs/决策记录.md](docs/决策记录.md) 的 **ADR-001**；自此「舍入纪」为**功能弧名称**，不再作为版本号。
