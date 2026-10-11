@@ -59,10 +59,19 @@ function formatBan(n, decimals) {
     mant /= 10;
     exp += 1;
   }
-  return `${mant.toFixed(decimals)}e${exp}`;
+  return `${mant.toFixed(decimals)}e${groupInt(exp)}`;
 }
 
-/** 科学记数：1.2345e6 -> "1.235e6"（style=times 时为 "1.235×10^6"） */
+/** 整数千分位分组（用于指数显示，提升可读性）：1000000 -> "1,000,000" */
+function groupInt(v) {
+  const s = String(v);
+  const neg = s.startsWith('-');
+  const digits = neg ? s.slice(1) : s;
+  const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return neg ? '-' + grouped : grouped;
+}
+
+/** 科学记数：1.2345e6 -> "1.235e6"（style=times 时为 "1.235×10^6"）；指数加千分位分隔 */
 function formatScientific(n, decimals, style) {
   const sign = n.sign === -1 ? '-' : '';
   const abs = n.abs();
@@ -79,9 +88,9 @@ function formatScientific(n, decimals, style) {
     expNum += 1;
   }
   if (style === 'times') {
-    return `${sign}${mantNum.toFixed(decimals)}×10^${expNum}`;
+    return `${sign}${mantNum.toFixed(decimals)}×10^${groupInt(expNum)}`;
   }
-  return `${sign}${mantNum.toFixed(decimals)}e${expNum}`;
+  return `${sign}${mantNum.toFixed(decimals)}e${groupInt(expNum)}`;
 }
 
 /** ee 记法（loglog，设计见 #19）：1e1000000 → "ee6.0000"；外层对数保留 decimals 位小数（默认 4） */
