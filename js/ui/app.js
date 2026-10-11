@@ -479,7 +479,33 @@ function buildShell() {
   modalOverlay.style.display = 'none';
   const modal = el('div', 'modal');
   modal.append(el('div', 'modal-title', t('settings.title')));
+
+  // Tab 栏：设置 / 关于 / 版本记录
+  const tabBar = el('div', 'modal-tabs');
+  const tabBtns = {};
+  const aboutBody = el('div', 'modal-body');
+  const changelogBody = el('div', 'modal-body');
+  aboutBody.hidden = true;
+  changelogBody.hidden = true;
+  const tabBodies = {};
+  function switchTab(name) {
+    for (const [k, b] of Object.entries(tabBtns)) b.classList.toggle('active', k === name);
+    for (const [k, body] of Object.entries(tabBodies)) body.hidden = k !== name;
+    if (name === 'changelog') ensureChangelog();
+  }
+  for (const [id, key] of [['settings', 'settings.tabSettings'], ['about', 'settings.tabAbout'], ['changelog', 'settings.tabChangelog']]) {
+    const tabBtn = el('button', 'modal-tab', t(key));
+    tabBtn.type = 'button';
+    tabBtn.onclick = () => switchTab(id);
+    tabBtns[id] = tabBtn;
+    tabBar.append(tabBtn);
+  }
+  modal.append(tabBar);
+
   const modalBody = el('div', 'modal-body');
+  tabBodies.settings = modalBody;
+  tabBodies.about = aboutBody;
+  tabBodies.changelog = changelogBody;
 
   modalBody.append(el('div', 'modal-section', t('settings.saveSection')));
   const row1 = el('div', 'modal-row');
@@ -606,21 +632,38 @@ function buildShell() {
   audioRow.append(muteBtn, volInput);
   modalBody.append(audioRow);
 
-  modalBody.append(el('div', 'modal-section', t('settings.aboutSection')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutGame')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutVersion', { version: VERSION })));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutLicense')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutNumLib')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutOrdinal')));
+  // ---- 关于 tab（带 Logo）----
+  const aboutLogo = document.createElement('img');
+  aboutLogo.className = 'about-logo';
+  aboutLogo.src = 'assets/images/logo.png';
+  aboutLogo.alt = t('settings.aboutGame');
+  aboutLogo.width = 64;
+  aboutLogo.height = 64;
+  aboutBody.append(aboutLogo);
+  aboutBody.append(el('div', 'modal-section', t('settings.aboutSection')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutGame')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutVersion', { version: VERSION })));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutLicense')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutNumLib')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutOrdinal')));
   const repoLink = el('a', 'modal-text', t('settings.aboutRepo'));
   repoLink.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental';
   repoLink.target = '_blank';
   repoLink.rel = 'noopener noreferrer';
-  modalBody.append(repoLink);
+  aboutBody.append(repoLink);
+
+  // ---- 版本记录 tab（UTC / 北京时间双轨甘特图）----
+  changelogBody.append(el('div', 'modal-section', t('settings.tabChangelog')));
+  const ganttHost = el('div', 'gantt-host');
+  ganttHost.append(el('p', 'modal-text', t('changelog.loading')));
+  changelogBody.append(ganttHost);
+  refs.ganttHost = ganttHost;
+  refs.changelogLoaded = false;
 
   const closeBtn = el('button', 'btn', t('settings.close'));
   closeBtn.onclick = () => closeModal();
-  modal.append(modalBody, closeBtn);
+  modal.append(modalBody, aboutBody, changelogBody, closeBtn);
+  switchTab('settings');
   modalOverlay.append(modal);
   refs.modalOverlay = modalOverlay;
 
@@ -681,6 +724,92 @@ function openModal() {
 }
 function closeModal() {
   if (refs.modalOverlay) refs.modalOverlay.style.display = 'none';
+}
+
+/** 版本记录：懒加载 config/versions.json 并渲染双轨甘特图（只执行一次） */
+async function ensureChangelog() {
+  if (refs.changelogLoaded || !refs.ganttHost) return;
+  refs.changelogLoaded = true;
+  try {
+    const resp = await fetch('config/versions.json');
+    if (!resp.ok) throw new Error(String(resp.status));
+    const data = await resp.json();
+    renderGantt(refs.ganttHost, data.versions ?? []);
+  } catch (err) {
+    console.error('[UI] 版本记录加载失败：', err);
+    refs.ganttHost.innerHTML = '';
+    refs.ganttHost.append(el('p', 'modal-text', t('changelog.loadFailed')));
+  }
+}
+
+/** 渲染 UTC / 北京时间双轨甘特图 + 版本表 */
+function renderGantt(host, versions) {
+  host.innerHTML = '';
+  const items = versions
+    .map((v) => ({ ...v, ts: Date.parse(v.releasedAt) }))
+    .filter((v) => Number.isFinite(v.ts))
+    .sort((a, b) => a.ts - b.ts);
+  if (!items.length) {
+    host.append(el('p', 'modal-text', t('changelog.empty')));
+    return;
+  }
+  const OFFSET = 8 * 3600 * 1000; // 北京时间 = UTC+8
+  const t0 = items[0].ts;
+  const t1 = items[items.length - 1].ts + OFFSET; // 给北京轨道右移留出空间
+  const span = Math.max(1, t1 - t0);
+  const pct = (ts) => ((ts - t0) / span) * 100;
+
+  const fmtOpts = { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+  const utcFmt = new Intl.DateTimeFormat(getLocale(), { ...fmtOpts, timeZone: 'UTC' });
+  const bjFmt = new Intl.DateTimeFormat(getLocale(), { ...fmtOpts, timeZone: 'Asia/Shanghai' });
+  const fmtUTC = (ts) => utcFmt.format(new Date(ts));
+  const fmtBJ = (ts) => bjFmt.format(new Date(ts));
+
+  const tracks = [
+    { label: t('changelog.utcTrack'), shift: 0, fmt: fmtUTC },
+    { label: t('changelog.beijingTrack'), shift: OFFSET, fmt: fmtBJ },
+  ];
+  for (const track of tracks) {
+    const row = el('div', 'gantt-row');
+    row.append(el('div', 'gantt-label', track.label));
+    const trackEl = el('div', 'gantt-track');
+    items.forEach((v, i) => {
+      const start = i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts;
+      const left = pct(start + track.shift);
+      const width = pct(v.ts + track.shift) - left;
+      const bar = el('div', 'gantt-bar', v.version);
+      bar.style.left = `${left}%`;
+      bar.style.width = `${Math.max(0.8, width)}%`;
+      bar.title = `v${v.version} · ${track.fmt(v.ts)}${v.note ? ' · ' + v.note : ''}`;
+      trackEl.append(bar);
+    });
+    row.append(trackEl);
+    host.append(row);
+  }
+
+  const axis = el('div', 'gantt-axis');
+  axis.append(el('span', 'num', `${fmtUTC(items[0].ts)} UTC`));
+  axis.append(el('span', 'num', `${fmtBJ(items[items.length - 1].ts)} 北京`));
+  host.append(axis);
+
+  const list = el('div', 'ver-list');
+  for (const v of items) {
+    const row = el('div', 'ver-row');
+    row.append(
+      el('span', 'ver-tag', `v${v.version}`),
+      el('span', 'ver-time num', `${fmtUTC(v.ts)} UTC`),
+      el('span', 'ver-time num', `${fmtBJ(v.ts)} 北京`),
+      el('span', 'ver-note', v.note || '')
+    );
+    list.append(row);
+  }
+  host.append(list);
+
+  const full = el('a', 'modal-text', t('changelog.fullLog'));
+  full.href = 'CHANGELOG.md';
+  full.target = '_blank';
+  full.rel = 'noopener noreferrer';
+  host.append(full);
 }
 
 function showToast(text) {

@@ -128,6 +128,15 @@ export default {
   'settings.aboutOrdinal': 'Design references Ordinal Markup (mechanics only; no code/assets reused)',
   'settings.aboutRepo': 'Repository: github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': 'Close',
+  'settings.tabSettings': 'Settings',
+  'settings.tabAbout': 'About',
+  'settings.tabChangelog': 'Version History',
+  'changelog.loading': 'Loading…',
+  'changelog.loadFailed': 'Failed to load version data',
+  'changelog.empty': 'No version history',
+  'changelog.utcTrack': 'UTC',
+  'changelog.beijingTrack': 'Beijing UTC+8',
+  'changelog.fullLog': 'Full changelog (CHANGELOG.md)',
 
   // Endgame
   'endgame.title': 'The End Has Not Arrived',

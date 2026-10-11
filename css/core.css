@@ -317,6 +317,82 @@ body.phase2 .phase-lock { display: none; }
 .modal-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .modal-text { font-size: 12px; color: var(--text-dim); }
 
+/* ---- 模态 Tab（设置 / 关于 / 版本记录） ---- */
+.modal-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  margin: -4px 0 4px;
+}
+.modal-tab {
+  padding: 6px 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 12px;
+}
+.modal-tab:hover { color: var(--text); }
+.modal-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ---- 关于：Logo ---- */
+.about-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 4px auto 0;
+  image-rendering: pixelated;
+}
+
+/* ---- 版本记录：双轨甘特图 + 版本表 ---- */
+.gantt-host { display: flex; flex-direction: column; gap: 4px; }
+.gantt-row { display: flex; align-items: center; gap: 8px; }
+.gantt-label { flex: 0 0 auto; width: 84px; text-align: right; font-size: 12px; color: var(--text-dim); }
+.gantt-track {
+  position: relative;
+  flex: 1;
+  height: 18px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.gantt-bar {
+  position: absolute;
+  top: 2px;
+  height: 12px;
+  padding: 0 4px;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: 3px;
+  color: var(--accent-contrast);
+  font-size: 10px;
+  line-height: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.gantt-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 92px;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.ver-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.ver-row {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: 6px 10px;
+  align-items: baseline;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.ver-row:last-child { border-bottom: none; }
+.ver-tag { color: var(--accent); font-weight: 600; }
+.ver-time { color: var(--text-dim); font-size: 12px; }
+.ver-note { grid-column: 1 / -1; color: var(--text-dim); font-size: 12px; }
+
 /* ---- 终局视图 ---- */
 .endgame-title {
   font-size: 24px;
