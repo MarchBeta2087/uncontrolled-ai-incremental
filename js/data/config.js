@@ -52,6 +52,7 @@ const DEFAULT_PATHS = {
   challenges: 'config/challenges.json',
   universes: 'config/universes.json',
   endings: 'config/endings.json',
+  audio: 'config/audio.json',
 };
 
 async function fetchJSON(path) {
@@ -61,7 +62,7 @@ async function fetchJSON(path) {
 }
 
 export async function loadConfig(paths = DEFAULT_PATHS) {
-  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings] = await Promise.all([
+  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio] = await Promise.all([
     fetchJSON(paths.balance),
     fetchJSON(paths.resources),
     fetchJSON(paths.techs),
@@ -71,9 +72,10 @@ export async function loadConfig(paths = DEFAULT_PATHS) {
     fetchJSON(paths.challenges),
     fetchJSON(paths.universes),
     fetchJSON(paths.endings),
+    fetchJSON(paths.audio),
   ]);
-  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings });
-  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings };
+  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio });
+  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio };
 }
 
 /** 校验配置合法性：id 唯一、引用存在、requires 无环、effect 类型已注册 */
@@ -243,6 +245,20 @@ export function validateConfig(cfg) {
   }
   if (cfg.endings && !(cfg.endings.endings ?? []).length) {
     errors.push('endings.json 未定义任何结局');
+  }
+
+  // 音效（v0.6）
+  if (cfg.audio) {
+    const sfxIds = new Set();
+    for (const s of cfg.audio.sfx ?? []) {
+      if (!s.id) {
+        errors.push('存在缺少 id 的音效');
+        continue;
+      }
+      if (sfxIds.has(s.id)) errors.push(`音效 id 重复: ${s.id}`);
+      sfxIds.add(s.id);
+      if (!s.file && !s.synth) errors.push(`音效 ${s.id} 未提供 file 或 synth`);
+    }
   }
 
   if (errors.length) {

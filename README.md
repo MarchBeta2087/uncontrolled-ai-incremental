@@ -20,6 +20,7 @@
 - **存档**：localStorage + 导出/导入/硬重置
 - **像素字体**：缝合像素字体（[Fusion Pixel Font](https://github.com/TakWolf/fusion-pixel-font)）12px 比例/等宽，覆盖 7 种语言字形
 - **多语言**：简体中文 / 繁體中文 / 繁體中文（台灣/香港）/ English / 日本語 / 한국어 界面
+- **音效**：Web Audio 合成音效（点击 / 购买 / 研发 / 穿梭 / 成就 / 跳跃 / 结局），设置面板可静音与调节音量
 
 ## 运行
 

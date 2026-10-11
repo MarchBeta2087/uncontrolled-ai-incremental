@@ -32,6 +32,8 @@
 
 素材入库须遵守 [docs/素材与授权规则-v1.2.md](docs/素材与授权规则-v1.2.md)，并在下表逐条登记：
 
+> 当前音效由 **Web Audio 合成**（`config/audio.json` 的 `synth` 字段），尚未引入音频素材；后续引入音频素材时置于 `assets/audio/`，并按本文件与素材规则登记。
+
 | 文件 | 作者 | 来源 | 许可证 | 获取日期 | 修改说明 |
 |---|---|---|---|---|---|
 | assets/images/starfield-bg.png | NASA/JPL-Caltech/ESA/CXC/STScI | <https://commons.wikimedia.org/wiki/File:Center_of_the_Milky_Way_Galaxy_IV_%E2%80%93_Composite.jpg> | Public domain（PDM） | 2026-10-11 | 缩小至 480×240（最近邻）、限色 11 色、压暗偏蓝、边缘暗角融合 #0d1117 |
