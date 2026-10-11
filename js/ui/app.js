@@ -15,6 +15,7 @@ import * as Challenges from '../sim/challenges.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
+import { BIG_NUMBER_MODES, getBigNumberMode, setBigNumberMode } from './format.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
 const VERSION = '0.4.0';
@@ -453,6 +454,25 @@ function buildShell() {
   accentReset.onclick = () => { setAccent(''); accentInput.value = '#58a6ff'; };
   accentRow.append(accentInput, accentReset);
   modalBody.append(accentRow);
+
+  // 大数记法（科学记数 / ee）
+  modalBody.append(el('div', 'modal-section', t('settings.bigNumberSection')));
+  const bnRow = el('div', 'modal-row');
+  const bnBtns = {};
+  for (const m of BIG_NUMBER_MODES) {
+    const bnBtn = el('button', 'btn', t('settings.bigNumber_' + m));
+    bnBtn.type = 'button';
+    if (m === getBigNumberMode()) bnBtn.classList.add('btn-primary');
+    bnBtn.onclick = () => {
+      setBigNumberMode(m);
+      for (const [k, b] of Object.entries(bnBtns)) b.classList.toggle('btn-primary', k === m);
+      markDirty();
+    };
+    bnBtns[m] = bnBtn;
+    bnRow.append(bnBtn);
+  }
+  modalBody.append(bnRow);
+  modalBody.append(el('p', 'modal-text', t('settings.bigNumberHint')));
 
   modalBody.append(el('div', 'modal-section', t('settings.aboutSection')));
   modalBody.append(el('p', 'modal-text', t('settings.aboutGame')));
