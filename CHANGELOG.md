@@ -2,7 +2,9 @@
 
 本项目遵循语义化版本（SemVer）。
 
-## [Unreleased]
+## [0.5.0] - 2026-10-11
+
+> **本版说明**：v0.5.0 **整合了原计划的 v0.5（多宇宙）与 v0.6（舍入纪）全部内容**，作为一次发布。决策与理由见 [docs/决策记录.md](docs/决策记录.md) 的 **ADR-001**；自此「舍入纪」为**功能弧名称**，不再作为版本号。
 
 ### 新增（Added）
 
@@ -10,8 +12,8 @@
 - **大数记法 ee / loglog 显示开关**（#19 第一步）：新增设置项「大数记法」——指数达 7 位数（≥ `1e1000000`）时可将科学记数折叠为 `eeN`（如 `1e1000000 → ee6`）；偏好存 localStorage，经 `Num.setDisplayMode` 注入格式化默认值，与现有 ban 档并存；`config/balance.json` 新增 `format.numberEeThreshold`；`js/ui/format.js` 为新偏好模块；补齐 5 语言文案与回归测试。
 - **多宇宙引擎地基（v0.5 · PR-A，Issue #16）**：新增 `config/universes.json` 与 `js/sim/universe.js` / `js/sim/singularity.js`——宇宙编号、奇点种子（新货币）、跨宇宙升级、第三层重置「宇宙跃迁」。`getUniverseCap()` 改为 `min(基准 × Πcap_mult, 当前宇宙上限目标)`（宇宙 1 仍封顶 float64，宇宙 ≥2 越过 float64）；第二阶段技术成本随宇宙上限乘子同步缩放；新增条件 `universe_ge` / `seeds_ge`；存档 `schemaVersion` 3→4 + 迁移；标题栏显示宇宙、扩张视图新增「奇点 / 多宇宙」面板与跃迁确认；补齐 5 语言文案。设计见 [docs/v0.5-多宇宙设计.md](docs/v0.5-多宇宙设计.md)。
 - **多宇宙内容与平衡（v0.5 · PR-B/C，Issue #16）**：跨宇宙升级树扩至 **9 项**；新增成就 **×4**（第二/第三口袋、第一枚种子、越界之后）与记忆碎片 **×3**（口袋纪）；补齐 5 语言内容；`tools/balance-sim.mjs` 新增多宇宙模式（`--multiverse`）并产出 [docs/v0.5-平衡模拟.md](docs/v0.5-平衡模拟.md)；星场背景改为独立 `body::before` 层，按宇宙编号 `hue-rotate` 换皮。
-- **双结局与终局条件修正（v0.6 · Issue #19）**：终局触发由「第二阶段全部研发」改为「集齐全部记忆碎片」（避免与宇宙跃迁条件冲突）；新增 `config/endings.json` + `js/sim/endings.js`——解锁后在终局视图二选一（约束线 / 无约束线），选择永久记录，之后进入自由模式（机制照常）；`schemaVersion` 4→5 + 迁移；补齐 5 语言结局文案。
-- **音频基建（v0.6）**：新增 `js/core/audio.js`（Web Audio 封装，无 AudioContext 环境静默降级）+ `js/ui/audio.js`（音量/静音偏好存 localStorage + 游戏事件→音效接线）+ `config/audio.json`（声明式音效：`file` 素材或 `synth` 振荡器合成，规避授权）。已接入点击/购买/研发/穿梭/成就/碎片/**宇宙跃迁 sting**/结局音效；设置面板新增音频区（静音 + 音量滑杆）；补齐 5 语言文案。
+- **双结局与终局条件修正（舍入纪 · Issue #19）**：终局触发由「第二阶段全部研发」改为「集齐全部记忆碎片」（避免与宇宙跃迁条件冲突）；新增 `config/endings.json` + `js/sim/endings.js`——解锁后在终局视图二选一（约束线 / 无约束线），选择永久记录，之后进入自由模式（机制照常）；`schemaVersion` 4→5 + 迁移；补齐 5 语言结局文案。
+- **音频基建（舍入纪）**：新增 `js/core/audio.js`（Web Audio 封装，无 AudioContext 环境静默降级）+ `js/ui/audio.js`（音量/静音偏好存 localStorage + 游戏事件→音效接线）+ `config/audio.json`（声明式音效：`file` 素材或 `synth` 振荡器合成，规避授权）。已接入点击/购买/研发/穿梭/成就/碎片/**宇宙跃迁 sting**/结局音效；设置面板新增音频区（静音 + 音量滑杆）；补齐 5 语言文案。
 - **多宇宙平衡调优（自适应难度）**：新增自适应阻尼——`universe:prod = 上限乘子 / 静态难度 / metaProd^difficultyExponent`（`difficultyExponent` 默认 `0.95`，`config/universes.json`）；消除后续宇宙「瞬时通关」，模拟结果宇宙 2/3 约 29 min / 8.3 min；`Resources` 新增 `removeGlobalMultiplier`；更新 `docs/v0.5-平衡模拟.md` 与设计文档。
 - **九宇宙换皮联动（#19）**：`config/universes.json` 显式定义宇宙 1–9（含 `hue` 色相：U1 0° → U9 320°，每宇宙 +40°）；星场背景按当前宇宙的 `hue` 施加 `hue-rotate`；第 9 宇宙「舍入纪」上限 1e2020788（跨过 `1e1000000`，衔接 #19 叙事）。
 

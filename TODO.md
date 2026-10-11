@@ -45,9 +45,9 @@
 
 - [x] 引擎地基：`config/universes.json` + `js/sim/universe.js` / `singularity.js`、`getUniverseCap` 目标封顶、第二阶段成本宇宙缩放、`universe_ge`/`seeds_ge` 条件、存档 v4 + 迁移
 - [x] UI：标题栏宇宙编号、扩张视图「奇点 / 多宇宙」面板（种子、跃迁确认、跨宇宙升级）、5 语言文案
-- [ ] 跨宇宙升级树扩容 + 成就（宇宙 ≥2/≥3、越界之后）+ 碎片（口袋纪 ×3）
-- [ ] `balance-sim` 多宇宙扩展 + `docs/v0.5-平衡模拟.md`
-- [ ] 宇宙背景 `hue-rotate` 换皮（依赖 #19 / #20）
+- [x] 跨宇宙升级树扩容 + 成就（宇宙 ≥2/≥3、越界之后）+ 碎片（口袋纪 ×3）
+- [x] `balance-sim` 多宇宙扩展 + `docs/v0.5-平衡模拟.md`（含自适应难度）
+- [x] 宇宙背景 `hue-rotate` 换皮（九宇宙 1–9，见 #19 / #20）
 
 ## 待办（多语言 / i18n）
 
