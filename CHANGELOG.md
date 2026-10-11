@@ -2,6 +2,12 @@
 
 本项目遵循语义化版本（SemVer）。
 
+## [Unreleased]
+
+### 新增（Added）
+
+- **首张美术素材：银河中心星场背景**（`assets/images/starfield-bg.png`）——Public domain 天体摄影经 GIMP 缩小至 480×240（最近邻）、限色 11 色、压暗偏蓝、边缘暗角融合 `#0d1117` 后接入。CSS 铺于 `body` 底层（`background-size: cover` + `image-rendering: pixelated`），面板维持不透明 `--panel` 以保障 12px 像素数字可读；浅色主题以 `--bg-veil` 淡化星场。许可证与 6 项信息登记于 `ASSETS.md`，许可证文本归档 `assets/LICENSES/starfield-bg.txt`（Issue #20）。
+
 ## [0.4.0] - 2026-10-10
 
 ### 新增（Added）

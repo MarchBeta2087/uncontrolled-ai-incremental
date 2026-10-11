@@ -88,4 +88,6 @@
   --click-hover1: #bdd5f2;
   --click-hover2: #a6c6ec;
   --overlay: rgba(0, 0, 0, 0.35);
+  /* 浅色主题淡化暗色星场背景，避免与亮色面板冲突 */
+  --bg-veil: rgba(242, 243, 245, 0.9);
 }

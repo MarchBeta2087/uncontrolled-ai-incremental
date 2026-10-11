@@ -20,6 +20,8 @@
   --click-hover1: #234a76;
   --click-hover2: #1a3050;
   --overlay: rgba(0, 0, 0, 0.6);
+  /* 星场背景叠加色（默认透明；浅色主题用来淡化星场，保证整体观感） */
+  --bg-veil: transparent;
   --font: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
   --mono: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
 }
@@ -30,7 +32,14 @@ html, body { height: 100%; }
 
 body {
   font-family: var(--font);
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--bg-veil), var(--bg-veil)),
+    url('../assets/images/starfield-bg.png');
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  image-rendering: pixelated;
   color: var(--text);
   font-size: 12px;
   line-height: 1.5;
