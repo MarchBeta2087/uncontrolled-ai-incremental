@@ -1,0 +1,16 @@
+素材：assets/images/logo.png（及 logo.ico / logo.xcf）
+
+作者：MarchBeta2087（本项目维护者，原创）
+
+许可证：CC BY-SA 4.0
+  https://creativecommons.org/licenses/by-sa/4.0/
+  作为项目游戏素材提交，依据《素材与授权规则》以 CC BY-SA 4.0 发布。
+
+获取日期：2026-10-11
+
+修改说明：未修改。64×64 像素图标（背景 #0d1117；字母 U #ff0000、A #00ff00、I #ff00ff）。
+  - logo.png：网页 / favicon（PNG）；
+  - logo.ico：传统 favicon；
+  - logo.xcf：GIMP 源文件（满足素材规则「提供可修改格式」的实践）。
+
+合规：见 docs/素材与授权规则-v1.2.md §3、§9；登记于 ASSETS.md。

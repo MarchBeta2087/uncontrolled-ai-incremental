@@ -104,7 +104,7 @@ export default {
   'settings.bigNumberSection': '大數記法 / Big Number',
   'settings.bigNumber_default': '科學記數',
   'settings.bigNumber_ee': 'ee 記法',
-  'settings.bigNumberHint': 'ee 記法在指數達 7 位數（≥1e1000000）時折疊為 eeN，如 1e1000000 → ee6。',
+  'settings.bigNumberHint': 'ee 記法在指數達 7 位數（≥1e1000000）時折疊為 eeN，如 1e1000000 → ee6.0000。',
   'settings.audioSection': '音訊 / Audio',
   'settings.mute': '靜音',
   'settings.unmute': '取消靜音',

@@ -37,6 +37,7 @@
 | 文件 | 作者 | 来源 | 许可证 | 获取日期 | 修改说明 |
 |---|---|---|---|---|---|
 | assets/images/starfield-bg.png | NASA/JPL-Caltech/ESA/CXC/STScI | <https://commons.wikimedia.org/wiki/File:Center_of_the_Milky_Way_Galaxy_IV_%E2%80%93_Composite.jpg> | Public domain（PDM） | 2026-10-11 | 缩小至 480×240（最近邻）、限色 11 色、压暗偏蓝、边缘暗角融合 #0d1117 |
+| assets/images/logo.png（同目录附 `logo.ico` / `logo.xcf`） | MarchBeta2087 | 项目维护者原创 | CC BY-SA 4.0 | 2026-10-11 | 未修改（64×64 像素图标；`.ico` 为 favicon，`.xcf` 为 GIMP 源文件） |
 
 ## 字体
 
