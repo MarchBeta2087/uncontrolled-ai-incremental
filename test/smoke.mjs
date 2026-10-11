@@ -29,6 +29,7 @@ const fragCfg = JSON.parse(fs.readFileSync('config/fragments.json', 'utf8'));
 const chCfg = JSON.parse(fs.readFileSync('config/challenges.json', 'utf8'));
 const uniCfg = JSON.parse(fs.readFileSync('config/universes.json', 'utf8'));
 const endingCfg = JSON.parse(fs.readFileSync('config/endings.json', 'utf8'));
+const audioCfg = JSON.parse(fs.readFileSync('config/audio.json', 'utf8'));
 // 第一阶段技术 id（校验第一阶段行为时只加载这些，排除第二阶段的永久乘子）
 const p1TechIds = techsCfg.techs.filter((t) => t.phase !== 2).map((t) => t.id);
 
@@ -49,12 +50,13 @@ const universeMod = await import('../js/sim/universe.js');
 const singularityMod = await import('../js/sim/singularity.js');
 const fragMod = await import('../js/sim/fragments.js');
 const endingsMod = await import('../js/sim/endings.js');
+const audioMod = await import('../js/core/audio.js');
 const Num = numMod.Num;
 const setDisplayMode = numMod.setDisplayMode;
 
 console.log('== 配置校验 ==');
 try {
-  cfgMod.validateConfig({ balance, resources: resourcesCfg, techs: techsCfg, upgrades: upgradesCfg, achievements: achCfg, fragments: fragCfg, challenges: chCfg, universes: uniCfg, endings: endingCfg });
+  cfgMod.validateConfig({ balance, resources: resourcesCfg, techs: techsCfg, upgrades: upgradesCfg, achievements: achCfg, fragments: fragCfg, challenges: chCfg, universes: uniCfg, endings: endingCfg, audio: audioCfg });
   assert('配置校验通过', true);
 } catch (e) {
   assert(`配置校验: ${e.message}`, false);
@@ -342,6 +344,30 @@ endingsMod.load(null);
 assert('清空后未选择', endingsMod.getChosen() === null);
 endingsMod.load(endSnap);
 assert('load 恢复结局', endingsMod.getChosen() === 'constrained');
+
+console.log('== 音频基建（v0.6）==');
+audioMod.configureAudio(audioCfg);
+assert('音效注册数量', audioMod.getSfxIds().length === audioCfg.sfx.length && audioMod.getSfxIds().length > 0);
+assert('音效存在性', audioMod.hasSfx('universe') && audioMod.hasSfx('click') && !audioMod.hasSfx('nope'));
+assert('默认主音量', Math.abs(audioMod.getMasterVolume() - audioCfg.defaults.masterVolume) < 1e-9);
+audioMod.setMasterVolume(0.25);
+assert('设置主音量', Math.abs(audioMod.getMasterVolume() - 0.25) < 1e-9);
+audioMod.setMasterVolume(5);
+assert('音量钳制到 1', audioMod.getMasterVolume() === 1);
+audioMod.setMasterVolume(-1);
+assert('音量钳制到 0', audioMod.getMasterVolume() === 0);
+audioMod.setMuted(true);
+assert('静音', audioMod.isMuted() === true);
+audioMod.setMuted(false);
+assert('取消静音', audioMod.isMuted() === false);
+let audioThrew = false;
+try {
+  audioMod.playSfx('universe');
+  audioMod.playSfx('click');
+} catch (_) {
+  audioThrew = true;
+}
+assert('无 AudioContext 环境播放不抛错', audioThrew === false);
 
 console.log(`\n通过 ${passed} 项，失败 ${failed} 项`);
 if (failed > 0) process.exit(1);

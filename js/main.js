@@ -17,6 +17,7 @@ import * as Endings from './sim/endings.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
+import { initAudioUI } from './ui/audio.js';
 import { t, tc } from './i18n/index.js';
 
 const AUTO_SAVE_MS = 30_000;
@@ -53,6 +54,7 @@ async function bootstrap() {
     Challenges.configureChallenges(cfg.balance);
     Singularity.initSingularity();
     Endings.initEndings(cfg.endings);
+    initAudioUI(cfg.audio);
 
     // 恢复存档（含离线结算）
     restoreSave();

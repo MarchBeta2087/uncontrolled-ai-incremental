@@ -19,6 +19,8 @@ import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
 import { BIG_NUMBER_MODES, getBigNumberMode, setBigNumberMode } from './format.js';
+import { playSfx } from '../core/audio.js';
+import { getVolumePref, setVolumePref, getMutedPref, setMutedPref } from './audio.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
 const VERSION = '0.4.0';
@@ -91,7 +93,7 @@ function buildShell() {
 
   const clickBtn = el('button', 'click-btn', t('res.click'));
   clickBtn.type = 'button';
-  clickBtn.onclick = () => { Resources.click(); markDirty(); };
+  clickBtn.onclick = () => { Resources.click(); playSfx('click'); markDirty(); };
   leftCol.append(clickBtn);
   refs.clickBtn = clickBtn;
 
@@ -573,6 +575,30 @@ function buildShell() {
   }
   modalBody.append(bnRow);
   modalBody.append(el('p', 'modal-text', t('settings.bigNumberHint')));
+
+  // 音频
+  modalBody.append(el('div', 'modal-section', t('settings.audioSection')));
+  const audioRow = el('div', 'modal-row');
+  const muteBtn = el('button', 'btn', getMutedPref() ? t('settings.unmute') : t('settings.mute'));
+  muteBtn.type = 'button';
+  if (!getMutedPref()) muteBtn.classList.add('btn-primary');
+  muteBtn.onclick = () => {
+    const next = !getMutedPref();
+    setMutedPref(next);
+    muteBtn.textContent = next ? t('settings.unmute') : t('settings.mute');
+    muteBtn.classList.toggle('btn-primary', !next);
+    if (!next) playSfx('click');
+  };
+  const volInput = el('input', '');
+  volInput.type = 'range';
+  volInput.min = '0';
+  volInput.max = '1';
+  volInput.step = '0.05';
+  volInput.value = String(getVolumePref());
+  volInput.oninput = () => setVolumePref(Number(volInput.value));
+  volInput.onchange = () => playSfx('click');
+  audioRow.append(muteBtn, volInput);
+  modalBody.append(audioRow);
 
   modalBody.append(el('div', 'modal-section', t('settings.aboutSection')));
   modalBody.append(el('p', 'modal-text', t('settings.aboutGame')));
