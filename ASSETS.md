@@ -45,5 +45,8 @@
 | 字体 | 版本 | 许可证 | 版权 | 位置 |
 |---|---|---|---|---|
 | 缝合像素字体（Fusion Pixel Font）12px 比例/等宽 · 全语言字形 | 2026.09.25 | SIL OFL 1.1 | © 2022 TakWolf | `assets/fonts/fusion-pixel/`（附 `OFL.txt`） |
+| Handjet Regular（备用像素字体） | 2.003 | SIL OFL 1.1 | © 2018 The Handjet Project Authors（Rosetta Type，David Březina） | `assets/fonts/handjet/`（附 `OFL.txt`；TTF → WOFF2） |
 
 > 来源：<https://github.com/TakWolf/fusion-pixel-font>。已入库 12px 的 7 种语言字形（latin / zh-hans / zh-hant / zh-hk / zh-tw / ja / ko）× 比例/等宽两种模式，共 14 个 `.otf.woff2`。字体未做任何修改，故沿用原字体名（Fusion Pixel），符合 OFL 保留字体名条款。仅通过 `css/fonts.css` 按 `data-lang` 切换引用。
+>
+> **Handjet** 来源：<https://github.com/rosettatype/Handjet>（Google Fonts 下载，版本 2.003）。作为**备用字体**置于字体族末尾（优先级 **Fusion > Handjet**），用于覆盖 Fusion 缺失的**阿拉伯 / 希腊 / 西里尔 / 希伯来 / 亚美尼亚**等；**不覆盖天城文（印地语）**，印地语需另寻字体。文件由 TTF 转为 WOFF2（38 KB），字形未改动，保留原字体名。
