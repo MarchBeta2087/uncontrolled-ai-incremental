@@ -51,6 +51,7 @@ const DEFAULT_PATHS = {
   fragments: 'config/fragments.json',
   challenges: 'config/challenges.json',
   universes: 'config/universes.json',
+  endings: 'config/endings.json',
 };
 
 async function fetchJSON(path) {
@@ -60,7 +61,7 @@ async function fetchJSON(path) {
 }
 
 export async function loadConfig(paths = DEFAULT_PATHS) {
-  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes] = await Promise.all([
+  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings] = await Promise.all([
     fetchJSON(paths.balance),
     fetchJSON(paths.resources),
     fetchJSON(paths.techs),
@@ -69,9 +70,10 @@ export async function loadConfig(paths = DEFAULT_PATHS) {
     fetchJSON(paths.fragments),
     fetchJSON(paths.challenges),
     fetchJSON(paths.universes),
+    fetchJSON(paths.endings),
   ]);
-  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes });
-  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes };
+  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings });
+  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings };
 }
 
 /** 校验配置合法性：id 唯一、引用存在、requires 无环、effect 类型已注册 */
@@ -226,6 +228,21 @@ export function validateConfig(cfg) {
         if (!EFFECT_TYPES.has(e.type)) errors.push(`跨宇宙升级 ${u.id} 的 effect 类型未注册: ${e.type}`);
       }
     }
+  }
+
+  // 结局（v0.6）
+  const endingIds = new Set();
+  for (const e of cfg.endings?.endings ?? []) {
+    if (!e.id) {
+      errors.push('存在缺少 id 的结局');
+      continue;
+    }
+    if (endingIds.has(e.id)) errors.push(`结局 id 重复: ${e.id}`);
+    endingIds.add(e.id);
+    if (!e.title) errors.push(`结局 ${e.id} 缺少 title`);
+  }
+  if (cfg.endings && !(cfg.endings.endings ?? []).length) {
+    errors.push('endings.json 未定义任何结局');
   }
 
   if (errors.length) {

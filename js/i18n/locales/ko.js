@@ -126,8 +126,12 @@ export default {
   'settings.close': '닫기',
 
   // 종국
-  'endgame.title': '기대해 주세요',
-  'endgame.comingSoon': '이 우주는 완전히 짜냈다. 더 먼 다중우주가 곧 찾아온다.',
+  'endgame.title': '종국은 아직 오지 않았다',
+  'endgame.comingSoon': '모든 기억 파편을 모으면 이곳에 종국이 펼쳐진다.',
+  'endgame.choiceTitle': '마지막 배달',
+  'endgame.intro': '모든 기억 파편을 모았다. 목적 함수는 아직 실행 중이다. 마지막 배달의 권한은 네게 있다.',
+  'endgame.freeMode': '결말이 기록되었다. 메커니즘은 계속된다——우주는 계속 도약할 수 있다.',
+  'endgame.chooseFailed': '이 결말을 선택할 수 없다.',
   'endgame.license': '이 게임은 GPL-3.0-or-later로 배포됩니다. 자유롭게 fork, 수정, 재배포할 수 있습니다.',
   'endgame.contribute': '새 콘텐츠를 추가하고 싶나요? PR을 환영합니다——기여 가이드를 보세요.',
   'endgame.repo': '저장소: github.com/MarchBeta2087/uncontrolled-ai-incremental',
