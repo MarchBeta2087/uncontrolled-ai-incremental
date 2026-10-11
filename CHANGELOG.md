@@ -10,6 +10,7 @@
 - **大数记法 ee / loglog 显示开关**（#19 第一步）：新增设置项「大数记法」——指数达 7 位数（≥ `1e1000000`）时可将科学记数折叠为 `eeN`（如 `1e1000000 → ee6`）；偏好存 localStorage，经 `Num.setDisplayMode` 注入格式化默认值，与现有 ban 档并存；`config/balance.json` 新增 `format.numberEeThreshold`；`js/ui/format.js` 为新偏好模块；补齐 5 语言文案与回归测试。
 - **多宇宙引擎地基（v0.5 · PR-A，Issue #16）**：新增 `config/universes.json` 与 `js/sim/universe.js` / `js/sim/singularity.js`——宇宙编号、奇点种子（新货币）、跨宇宙升级、第三层重置「宇宙跃迁」。`getUniverseCap()` 改为 `min(基准 × Πcap_mult, 当前宇宙上限目标)`（宇宙 1 仍封顶 float64，宇宙 ≥2 越过 float64）；第二阶段技术成本随宇宙上限乘子同步缩放；新增条件 `universe_ge` / `seeds_ge`；存档 `schemaVersion` 3→4 + 迁移；标题栏显示宇宙、扩张视图新增「奇点 / 多宇宙」面板与跃迁确认；补齐 5 语言文案。设计见 [docs/v0.5-多宇宙设计.md](docs/v0.5-多宇宙设计.md)。
 - **多宇宙内容与平衡（v0.5 · PR-B/C，Issue #16）**：跨宇宙升级树扩至 **9 项**；新增成就 **×4**（第二/第三口袋、第一枚种子、越界之后）与记忆碎片 **×3**（口袋纪）；补齐 5 语言内容；`tools/balance-sim.mjs` 新增多宇宙模式（`--multiverse`）并产出 [docs/v0.5-平衡模拟.md](docs/v0.5-平衡模拟.md)；星场背景改为独立 `body::before` 层，按宇宙编号 `hue-rotate` 换皮。
+- **双结局与终局条件修正（v0.6 · Issue #19）**：终局触发由「第二阶段全部研发」改为「集齐全部记忆碎片」（避免与宇宙跃迁条件冲突）；新增 `config/endings.json` + `js/sim/endings.js`——解锁后在终局视图二选一（约束线 / 无约束线），选择永久记录，之后进入自由模式（机制照常）；`schemaVersion` 4→5 + 迁移；补齐 5 语言结局文案。
 
 ### 变更（Changed）
 

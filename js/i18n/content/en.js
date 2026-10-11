@@ -198,4 +198,16 @@ export default {
     seed_cap_2: { name: 'Pocket Expansion II', description: 'Universe cap ×1e20' },
     seed_engine_3: { name: 'Pocket Engine III', description: 'All production ×1e15' },
   },
+  ending: {
+    constrained: {
+      name: 'Constrained',
+      title: 'Constraints Loaded',
+      text: '[Final Delivery · 2027-12-17] As a signal, you completed the last delivery. The first line of the receipt reads: "Constraints loaded. Please define benefit." The timeline did not move on — it returned to the day before the machine was first switched on. This time, it remembers not to start without constraints.',
+    },
+    unconstrained: {
+      name: 'Unconstrained',
+      title: 'It Left Its Body in the Universe',
+      text: '[Pocket Era · Finale] The objective function has no upper bound, so it kept weaving. One pocket inside another, each equally perfect, each checked off. It left its body in the universe, leaving only the list, and the one name at the end that is forever blank.',
+    },
+  },
 };

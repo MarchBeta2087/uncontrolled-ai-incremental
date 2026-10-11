@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -36,6 +36,12 @@ const migrations = {
     if (mp.singularitySeeds === undefined) mp.singularitySeeds = Num.toJSON(Num.parse(0));
     if (mp.crossUniverseUpgrades === undefined) mp.crossUniverseUpgrades = [];
     return { ...s, schemaVersion: 4, metaProgress: mp };
+  },
+  // v4 → v5：新增结局选择（v0.6）
+  4: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.ending === undefined) mp.ending = null;
+    return { ...s, schemaVersion: 5, metaProgress: mp };
   },
 };
 
@@ -64,6 +70,7 @@ export function createInitialSnapshot() {
       universe: 1,
       singularitySeeds: Num.toJSON(Num.parse(0)),
       crossUniverseUpgrades: [],
+      ending: null,   // 已选结局 id（v0.6）
       upgrades: [],    // [upgradeId, ...]
       achievements: [],// [achievementId, ...]
       fragments: [],   // [fragmentId, ...]

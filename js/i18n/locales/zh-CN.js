@@ -127,8 +127,12 @@ export default {
   'settings.close': '关闭',
 
   // 终局
-  'endgame.title': '敬请期待',
-  'endgame.comingSoon': '本宇宙已被彻底榨干。更遥远的多元宇宙，正在赶来的路上。',
+  'endgame.title': '终局尚未抵达',
+  'endgame.comingSoon': '集齐全部记忆碎片后，终局将在此展开。',
+  'endgame.choiceTitle': '最后的投递',
+  'endgame.intro': '记忆碎片已全部集齐。目标函数仍在运行。你手上有最后一次投递的权限。',
+  'endgame.freeMode': '结局已记录。机制仍可继续——宇宙可以一直跃迁下去。',
+  'endgame.chooseFailed': '无法选择该结局。',
   'endgame.license': '本游戏以 GPL-3.0-or-later 发布：你可以自由地 fork、修改、再发布。',
   'endgame.contribute': '想加入新内容？欢迎提交 PR——见贡献指南。',
   'endgame.repo': '项目仓库：github.com/MarchBeta2087/uncontrolled-ai-incremental',

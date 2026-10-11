@@ -28,6 +28,7 @@ const achCfg = JSON.parse(fs.readFileSync('config/achievements.json', 'utf8'));
 const fragCfg = JSON.parse(fs.readFileSync('config/fragments.json', 'utf8'));
 const chCfg = JSON.parse(fs.readFileSync('config/challenges.json', 'utf8'));
 const uniCfg = JSON.parse(fs.readFileSync('config/universes.json', 'utf8'));
+const endingCfg = JSON.parse(fs.readFileSync('config/endings.json', 'utf8'));
 // 第一阶段技术 id（校验第一阶段行为时只加载这些，排除第二阶段的永久乘子）
 const p1TechIds = techsCfg.techs.filter((t) => t.phase !== 2).map((t) => t.id);
 
@@ -46,12 +47,14 @@ const saveMod = await import('../js/data/save.js');
 const conditionsMod = await import('../js/sim/conditions.js');
 const universeMod = await import('../js/sim/universe.js');
 const singularityMod = await import('../js/sim/singularity.js');
+const fragMod = await import('../js/sim/fragments.js');
+const endingsMod = await import('../js/sim/endings.js');
 const Num = numMod.Num;
 const setDisplayMode = numMod.setDisplayMode;
 
 console.log('== 配置校验 ==');
 try {
-  cfgMod.validateConfig({ balance, resources: resourcesCfg, techs: techsCfg, upgrades: upgradesCfg, achievements: achCfg, fragments: fragCfg, challenges: chCfg, universes: uniCfg });
+  cfgMod.validateConfig({ balance, resources: resourcesCfg, techs: techsCfg, upgrades: upgradesCfg, achievements: achCfg, fragments: fragCfg, challenges: chCfg, universes: uniCfg, endings: endingCfg });
   assert('配置校验通过', true);
 } catch (e) {
   assert(`配置校验: ${e.message}`, false);
@@ -83,9 +86,11 @@ techMod.initTechs(techsCfg);
 prestigeMod.initPrestige();
 upgMod.initUpgrades(upgradesCfg);
 achMod.initAchievements(achCfg);
+fragMod.initFragments(fragCfg);
 chMod.initChallenges(chCfg);
 chMod.configureChallenges(balance);
 singularityMod.initSingularity();
+endingsMod.initEndings(endingCfg);
 
 console.log('== 穿梭结算 ==');
 resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
@@ -213,10 +218,13 @@ assert('穿梭后普通技术清除', techMod.isOwned('run_test') === false);
 
 const v1snap = { schemaVersion: 1, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '5', upgrades: [] } };
 const migrated = saveMod.migrate(v1snap);
-assert('v1 → v4 迁移', migrated.schemaVersion === 4 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false && migrated.metaProgress.universe === 1);
+assert('v1 → v5 迁移', migrated.schemaVersion === 5 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false && migrated.metaProgress.universe === 1 && migrated.metaProgress.ending === null);
 const v2snap = { schemaVersion: 2, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '7', totalTimeCrystals: '9' } };
 const migrated2 = saveMod.migrate(v2snap);
-assert('v2 → v4 迁移', migrated2.schemaVersion === 4 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades));
+assert('v2 → v5 迁移', migrated2.schemaVersion === 5 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades) && migrated2.metaProgress.ending === null);
+const v4snap = { schemaVersion: 4, meta: {}, time: {}, run: {}, metaProgress: { universe: 2, singularitySeeds: '1', crossUniverseUpgrades: [] } };
+const migrated4 = saveMod.migrate(v4snap);
+assert('v4 → v5 迁移：ending=null', migrated4.schemaVersion === 5 && migrated4.metaProgress.ending === null);
 
 console.log('== 第二阶段成就 / 碎片 / 挑战 ==');
 assert('内容计数：成就 25 / 碎片 12 / 挑战 5', achCfg.achievements.length === 25 && fragCfg.fragments.length === 12 && chCfg.challenges.length === 5);
@@ -318,6 +326,22 @@ singularityMod.load(uniSnap);
 assert('load 恢复宇宙 = 2', universeMod.getUniverse() === 2);
 assert('load 恢复种子 = 2', Num.eq(universeMod.getSeeds(), 2));
 assert('load 恢复跨宇宙升级', universeMod.isCrossOwned('seed_engine_1') === true);
+
+console.log('== 双结局（v0.6）==');
+fragMod.initFragments(fragCfg);
+endingsMod.initEndings(endingCfg);
+assert('默认结局未解锁', endingsMod.isUnlocked() === false);
+fragMod.load(fragCfg.fragments.map((f) => f.id));
+assert('集齐碎片后结局解锁', endingsMod.isUnlocked() === true);
+assert('结局定义可读', endingsMod.getEnding('constrained') !== null && endingsMod.getEnding('unconstrained') !== null);
+const er = endingsMod.choose('constrained');
+assert('选择约束线', er.ok === true && endingsMod.getChosen() === 'constrained');
+assert('不能重复选择', endingsMod.choose('unconstrained').ok === false);
+const endSnap = endingsMod.serialize();
+endingsMod.load(null);
+assert('清空后未选择', endingsMod.getChosen() === null);
+endingsMod.load(endSnap);
+assert('load 恢复结局', endingsMod.getChosen() === 'constrained');
 
 console.log(`\n通过 ${passed} 项，失败 ${failed} 项`);
 if (failed > 0) process.exit(1);
