@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -28,6 +28,14 @@ const migrations = {
     const mp = { ...(s.metaProgress ?? {}) };
     if (mp.phase2Unlocked === undefined) mp.phase2Unlocked = false;
     return { ...s, schemaVersion: 3, metaProgress: mp };
+  },
+  // v3 → v4：新增多宇宙（v0.5）——宇宙编号、奇点种子、跨宇宙升级
+  3: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.universe === undefined) mp.universe = 1;
+    if (mp.singularitySeeds === undefined) mp.singularitySeeds = Num.toJSON(Num.parse(0));
+    if (mp.crossUniverseUpgrades === undefined) mp.crossUniverseUpgrades = [];
+    return { ...s, schemaVersion: 4, metaProgress: mp };
   },
 };
 
@@ -53,6 +61,9 @@ export function createInitialSnapshot() {
       timeCrystals: Num.toJSON(Num.parse(0)),
       totalTimeCrystals: Num.toJSON(Num.parse(0)),
       phase2Unlocked: false,
+      universe: 1,
+      singularitySeeds: Num.toJSON(Num.parse(0)),
+      crossUniverseUpgrades: [],
       upgrades: [],    // [upgradeId, ...]
       achievements: [],// [achievementId, ...]
       fragments: [],   // [fragmentId, ...]

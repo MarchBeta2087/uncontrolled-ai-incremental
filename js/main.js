@@ -12,6 +12,7 @@ import * as Upgrades from './sim/upgrades.js';
 import * as Achievements from './sim/achievements.js';
 import * as Fragments from './sim/fragments.js';
 import * as Challenges from './sim/challenges.js';
+import * as Singularity from './sim/singularity.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
@@ -37,6 +38,7 @@ async function bootstrap() {
     configureTime(cfg.balance.time);
     Engine.configureEngine(cfg.balance);
     Prestige.configurePrestige(cfg.balance);
+    Singularity.configureSingularity(cfg.universes);
     offlineDiscount = cfg.balance.offline?.rateDiscount ?? 1.0;
 
     // 初始化 sim
@@ -48,6 +50,7 @@ async function bootstrap() {
     Fragments.initFragments(cfg.fragments);
     Challenges.initChallenges(cfg.challenges);
     Challenges.configureChallenges(cfg.balance);
+    Singularity.initSingularity();
 
     // 恢复存档（含离线结算）
     restoreSave();
@@ -95,6 +98,12 @@ async function bootstrap() {
     });
     // 穿梭后：重新应用永久升级/挑战奖励/成就奖励（挑战完成由每 tick 的 checkProgress 处理）
     Events.on('prestige:done', () => {
+      Upgrades.applyAll();
+      Challenges.applyAll();
+      Achievements.applyAll();
+    });
+    // 宇宙跃迁后：跨宇宙效果已在 jump() 内重放；此处重放时间晶体升级 / 挑战 / 成就奖励
+    Events.on('universe:jumped', () => {
       Upgrades.applyAll();
       Challenges.applyAll();
       Achievements.applyAll();
@@ -157,6 +166,7 @@ function restoreFromSnapshot(snap) {
   Achievements.load(snap.metaProgress?.achievements);
   Fragments.load(snap.metaProgress?.fragments);
   Challenges.load(snap.metaProgress?.challenges);
+  Singularity.load(snap.metaProgress);
 
   // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣；返回报告供 UI 弹窗
   pendingOfflineReport = settleOffline(snap);
@@ -195,6 +205,7 @@ function settleOffline(snap) {
 function buildSnapshot() {
   const run = Resources.serialize();
   const prestige = Prestige.serialize();
+  const singularity = Singularity.serialize();
   return {
     schemaVersion: Save.SCHEMA_VERSION,
     meta: {
@@ -215,6 +226,9 @@ function buildSnapshot() {
       timeCrystals: prestige.timeCrystals,
       totalTimeCrystals: prestige.totalTimeCrystals,
       phase2Unlocked: prestige.phase2Unlocked,
+      universe: singularity.universe,
+      singularitySeeds: singularity.singularitySeeds,
+      crossUniverseUpgrades: singularity.crossUniverseUpgrades,
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),
