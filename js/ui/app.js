@@ -809,10 +809,16 @@ function renderGantt(host, versions) {
 
   const inner = el('div', 'gantt-inner');
 
-  // 一行一个版本（点击查看详情）
-  const rows = el('div', 'gantt-rows');
+  // 每个版本的起始时间 = 上一版本发布（升序计算，与显示顺序无关）
+  const startOf = new Map();
   items.forEach((v, i) => {
-    const start = i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts;
+    startOf.set(v.version, i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts);
+  });
+
+  // 一行一个版本（点击查看详情）；最新在上，便于查看
+  const rows = el('div', 'gantt-rows');
+  [...items].reverse().forEach((v) => {
+    const start = startOf.get(v.version);
     const left = pct(start);
     const row = el('div', 'gantt-row');
     row.dataset.version = v.version;
