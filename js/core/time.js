@@ -3,7 +3,7 @@
 //
 // 核心约定：
 //   1. 状态只存一个量 gameSecondsElapsed（Num 实例），自 UTC 2028-01-01 00:00:00 起累计的游戏内秒；
-//   2. 初始速率 1 物理秒 = 10000 游戏秒，当前速率 = 初始 × 各速率乘子之积（乘子用 Num，设软上限）；
+//   2. 初始速率 1 物理秒 = 10000 游戏秒，当前速率 = 初始 × 各速率乘子之积（乘子用 Num；v0.5.1 起取消软上限）；
 //   3. 分级显示（需求 §5.1）：Y<10^6 完整日期 → 10^6≤Y<10^8 仅年份 → Y≥10^8 科学记数 → 超 float64 走 MegotaNum 记法。
 
 import { Num } from './num.js';
@@ -13,7 +13,6 @@ import { t } from '../i18n/index.js';
 // 与 config/balance.json 初值一致，可被 configureTime 覆盖
 const DEFAULTS = {
   baseRate: '10000',
-  rateMultiplierCap: '1e30',
   julianYearSeconds: '31557600',
   startYear: 2028,
   startTimestampMs: Date.UTC(2028, 0, 1, 0, 0, 0),
@@ -27,7 +26,6 @@ const DEFAULTS = {
 const DATE_MAX_SECONDS = 8.64e12;
 
 let BASE_RATE = Num.parse(DEFAULTS.baseRate);
-let RATE_CAP = Num.parse(DEFAULTS.rateMultiplierCap);
 let JULIAN_YEAR = Num.parse(DEFAULTS.julianYearSeconds);
 let START_YEAR = DEFAULTS.startYear;
 let START_MS = DEFAULTS.startTimestampMs;
@@ -110,7 +108,6 @@ export const Time = {
       const eff = permanentRateSources.has(id) ? Num.pow(m, challengeRateNerfExp) : m;
       r = Num.mul(r, eff);
     }
-    if (Num.gt(r, RATE_CAP)) r = RATE_CAP;
     r = Num.div(r, challengeRateDiv);
     return r;
   },
@@ -199,7 +196,6 @@ export const Time = {
 /** 由 main.js 从 balance.json 注入参数覆盖默认值 */
 export function configureTime(cfg = {}) {
   if (cfg.baseRate !== undefined) BASE_RATE = Num.parse(cfg.baseRate);
-  if (cfg.rateMultiplierCap !== undefined) RATE_CAP = Num.parse(cfg.rateMultiplierCap);
   if (cfg.julianYearSeconds !== undefined) JULIAN_YEAR = Num.parse(cfg.julianYearSeconds);
   if (cfg.startYear !== undefined) START_YEAR = cfg.startYear;
   if (cfg.startTimestampMs !== undefined) START_MS = cfg.startTimestampMs;

@@ -137,6 +137,12 @@ export default {
   'changelog.beijingTrack': '베이징 UTC+8',
   'changelog.fullLog': '전체 변경 로그(CHANGELOG.md)',
   'changelog.noDetail': '(이 버전의 상세 정보 없음)',
+  'timeboost.section': '시간 배증',
+  'timeboost.boost': '시간 배증',
+  'timeboost.locked': '우주 ≥3에서 해금',
+  'timeboost.cooling': '쿨다운 {s}s',
+  'timeboost.info': '누적 ×{mult}({count}회) · 이번 ×{factor}',
+  'timeboost.done': '시간 속도 ×{factor}, 누적 ×{mult}',
 
   // 종국
   'endgame.title': '종국은 아직 오지 않았다',
@@ -145,6 +151,7 @@ export default {
   'endgame.intro': '모든 기억 파편을 모았다. 목적 함수는 아직 실행 중이다. 마지막 배달의 권한은 네게 있다.',
   'endgame.freeMode': '결말이 기록되었다. 메커니즘은 계속된다——우주는 계속 도약할 수 있다.',
   'endgame.chooseFailed': '이 결말을 선택할 수 없다.',
+  'endgame.artPending': '엔딩 컷신 이미지 모집 중 (素材 규칙 §7)',
   'endgame.license': '이 게임은 GPL-3.0-or-later로 배포됩니다. 자유롭게 fork, 수정, 재배포할 수 있습니다.',
   'endgame.contribute': '새 콘텐츠를 추가하고 싶나요? PR을 환영합니다——기여 가이드를 보세요.',
   'endgame.repo': '저장소: github.com/MarchBeta2087/uncontrolled-ai-incremental',

@@ -200,13 +200,14 @@
 
 - 美术、音乐等素材：CC BY-SA 4.0。
 - **字体单独走 SIL OFL 1.1**：字体文件置于 `assets/fonts/`，附其独立许可证文本；注意 OFL 的保留字体名（Reserved Font Name）条款，修改字体后不得沿用原名发布。
+  - 注（v0.5.1 起）：亦接受**兼容 CC BY-SA 4.0** 的字体许可证（如 **CC BY 4.0**，须署名），详见 [素材与授权规则 v1.3](素材与授权规则-v1.3.md) §4。
 - 三者（代码 GPL / 素材 CC BY-SA / 字体 OFL）在仓库根目录分文件声明：LICENSE（GPL-3.0-or-later）、ASSETS.md（素材与字体的授权及归属清单）。
 
 ### 9.3 README 友好声明（文案草稿）
 
 > **随便玩、随便 fork、随便自己改着玩。** 本项目代码以 GPL-3.0-or-later 许可证发布：如果你基于本项目向公众发布（哪怕只是挂在网上）一个游戏，请同步公开你的源代码。玩家无需关心许可证细节，点开即玩。
 >
-> License: GPL-3.0-or-later（详见 LICENSE 文件）。游戏素材以 CC BY-SA 4.0 发布，字体以 SIL OFL 1.1 发布，详见 ASSETS.md。
+> License: GPL-3.0-or-later（详见 LICENSE 文件）。游戏素材以 CC BY-SA 4.0 发布，字体以 SIL OFL 1.1（或兼容 CC BY-SA 4.0 的许可证）发布，详见 ASSETS.md。
 
 ## 10. 里程碑规划
 

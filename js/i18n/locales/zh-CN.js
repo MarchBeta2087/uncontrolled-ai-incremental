@@ -138,6 +138,12 @@ export default {
   'changelog.beijingTrack': '北京 UTC+8',
   'changelog.fullLog': '完整变更日志（CHANGELOG.md）',
   'changelog.noDetail': '（该版本无详情）',
+  'timeboost.section': '时间倍增',
+  'timeboost.boost': '时间倍增',
+  'timeboost.locked': '宇宙 ≥3 解锁',
+  'timeboost.cooling': '冷却 {s}s',
+  'timeboost.info': '累计 ×{mult}（已按 {count} 次）· 本次 ×{factor}',
+  'timeboost.done': '时间速率 ×{factor}，累计 ×{mult}',
 
   // 终局
   'endgame.title': '终局尚未抵达',
@@ -146,6 +152,7 @@ export default {
   'endgame.intro': '记忆碎片已全部集齐。目标函数仍在运行。你手上有最后一次投递的权限。',
   'endgame.freeMode': '结局已记录。机制仍可继续——宇宙可以一直跃迁下去。',
   'endgame.chooseFailed': '无法选择该结局。',
+  'endgame.artPending': '过场像素画待征集（见素材规则 §7）',
   'endgame.license': '本游戏以 GPL-3.0-or-later 发布：你可以自由地 fork、修改、再发布。',
   'endgame.contribute': '想加入新内容？欢迎提交 PR——见贡献指南。',
   'endgame.repo': '项目仓库：github.com/MarchBeta2087/uncontrolled-ai-incremental',

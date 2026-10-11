@@ -292,5 +292,5 @@ isMobile = matchMedia('(pointer: coarse)').matches || innerWidth < 768
 
 - [ ] LICENSE：GPL-3.0-or-later 全文
 - [ ] vendor/MegotaNum.js 保留 MIT 头
-- [ ] ASSETS.md：素材 CC BY-SA 4.0 归属；字体 OFL 1.1 文本 + 保留字体名核对
+- [ ] ASSETS.md：素材 CC BY-SA 4.0 归属；字体 OFL 1.1（或兼容 CC BY-SA 4.0，如 CC BY 4.0）文本 + 保留字体名（OFL）核对
 - [ ] README：友好声明（照需求 §9.3 文案），无黑话

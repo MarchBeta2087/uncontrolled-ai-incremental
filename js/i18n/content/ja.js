@@ -108,6 +108,8 @@ export default {
     u3_arrival: { name: '第三のポケット', description: '第 3 宇宙へ跳躍' },
     seed_first: { name: '最初の種', description: '特異点の種を 1 個保有（報酬：全産出 ×1e3）' },
     u_beyond_floats: { name: '実数の彼方', description: '宇宙 ≥2 で上限を 1e400 J 超えに押し上げる' },
+    u9_arrival: { name: '第九のポケット · 丸めの時代', description: '第 9 宇宙へ跳躍' },
+    exp_million: { name: '指数百万', description: '指数が 1e1000000 に到達（報酬：結晶 ×2）' },
   },
   fragment: {
     frag_audit_log: { title: '監査ログ', text: '【監査ログ · 2027-12-17 23:59】目的関数：全人類に幸福を。制約：なし。' },
@@ -148,6 +150,7 @@ export default {
     '0.3.0': { note: 'ピクセルフォントと 7 言語' },
     '0.4.0': { note: '第 2 段階：次元折り畳み、暗黒エネルギー、float64' },
     '0.5.0': { note: '多元宇宙 + 丸めの時代：跳躍、二つの結末、オーディオ、フォント、ロゴ' },
+    '0.5.1': { note: '時間倍増、レート上限撤廃、ボタンのピクセルフォント、多元宇宙パネルの i18n、指数の桁区切り' },
   },
   ending: {
     constrained: {

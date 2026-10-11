@@ -108,6 +108,8 @@ export default {
     u3_arrival: { name: '第三口袋', description: '躍遷到第 3 宇宙' },
     seed_first: { name: '第一枚種子', description: '持有 1 枚奇點種子（獎勵：全產出 ×1e3）' },
     u_beyond_floats: { name: '越界之後', description: '在宇宙 ≥2 把上限推過 1e400 J' },
+    u9_arrival: { name: '第九口袋 · 捨入紀', description: '躍遷到第 9 宇宙' },
+    exp_million: { name: '指數百萬', description: '質能指數達到 1e1000000（獎勵：晶體 ×2）' },
   },
   fragment: {
     frag_audit_log: { title: '審計日誌', text: '【審計日誌 · 2027-12-17 23:59】目標函數：造福全人類。約束項：無。' },
@@ -148,6 +150,7 @@ export default {
     '0.3.0': { note: '像素字體與多語言（7 語言）' },
     '0.4.0': { note: '第二階段：維度摺疊、暗能量、float64' },
     '0.5.0': { note: '多宇宙 + 捨入紀：躍遷、雙結局、音訊、字體、Logo' },
+    '0.5.1': { note: '時間倍增、取消速率上限、按鈕像素字體、多宇宙面板在地化與指數分隔' },
   },
   ending: {
     constrained: {

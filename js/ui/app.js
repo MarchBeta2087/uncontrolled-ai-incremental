@@ -15,6 +15,7 @@ import * as Challenges from '../sim/challenges.js';
 import * as Universe from '../sim/universe.js';
 import * as Singularity from '../sim/singularity.js';
 import * as Endings from '../sim/endings.js';
+import * as TimeBoost from '../sim/timeboost.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
@@ -23,7 +24,7 @@ import { playSfx } from '../core/audio.js';
 import { getVolumePref, setVolumePref, getMutedPref, setMutedPref } from './audio.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
-const VERSION = '0.5.0';
+const VERSION = '0.5.1';
 
 const refs = {};
 let dirty = false;
@@ -42,6 +43,7 @@ function applyUniverseHue() {
 
 export function initUI() {
   document.body.classList.add(platformClass());
+  document.title = t('app.title'); // 浏览器标签页标题随语言本地化
   if (Prestige.isPhase2Unlocked()) document.body.classList.add('phase2');
   buildShell();
   bindEvents();
@@ -121,6 +123,30 @@ function buildShell() {
   resPanel.append(resList);
   leftCol.append(resPanel);
   refs.resList = resList;
+
+  // 时间倍增（宇宙 ≥3 解锁）
+  const tbPanel = el('div', 'panel');
+  tbPanel.append(el('div', 'panel-title', t('timeboost.section')));
+  const tbInfo = el('div', '', t('timeboost.locked'));
+  const tbRow = el('div', 'modal-row');
+  const tbBtn = el('button', 'btn btn-primary', t('timeboost.boost'));
+  tbBtn.type = 'button';
+  tbBtn.onclick = () => {
+    const now = Date.now();
+    const r = TimeBoost.boost(now);
+    if (!r.ok) {
+      if (r.reason === 'cooling') showToast(t('timeboost.cooling', { s: (TimeBoost.getCooldownRemaining(now) / 1000).toFixed(1) }));
+      else showToast(t('timeboost.locked'));
+    } else {
+      showToast(t('timeboost.done', { factor: r.factor.toFixed(3), mult: Num.format(r.multiplier) }));
+    }
+    markDirty();
+  };
+  tbRow.append(tbBtn);
+  tbPanel.append(tbInfo, tbRow);
+  leftCol.append(tbPanel);
+  refs.tbInfo = tbInfo;
+  refs.tbBtn = tbBtn;
 
   // 生成器面板
   const genPanel = el('div', 'panel');
@@ -416,11 +442,16 @@ function buildShell() {
   }
   egChoice.append(egChoiceRow);
 
-  // 已选择：结局文本
+  // 已选择：结局过场图 + 文本
   const egResult = el('div', '');
+  const egArt = document.createElement('img');
+  egArt.className = 'ending-art';
+  egArt.alt = '';
+  egArt.hidden = true;
+  const egArtPlaceholder = el('div', 'ending-art-placeholder', t('endgame.artPending'));
   const egResultTitle = el('p', 'endgame-title', '');
   const egResultText = el('p', 'modal-text', '');
-  egResult.append(egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')));
+  egResult.append(egArt, egArtPlaceholder, egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')));
 
   // 通用信息
   const egMeta = el('div', '');
@@ -443,6 +474,8 @@ function buildShell() {
   refs.egResult = egResult;
   refs.egResultTitle = egResultTitle;
   refs.egResultText = egResultText;
+  refs.egArt = egArt;
+  refs.egArtPlaceholder = egArtPlaceholder;
 
   viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewEndgame);
 
@@ -776,10 +809,16 @@ function renderGantt(host, versions) {
 
   const inner = el('div', 'gantt-inner');
 
-  // 一行一个版本（点击查看详情）
-  const rows = el('div', 'gantt-rows');
+  // 每个版本的起始时间 = 上一版本发布（升序计算，与显示顺序无关）
+  const startOf = new Map();
   items.forEach((v, i) => {
-    const start = i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts;
+    startOf.set(v.version, i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts);
+  });
+
+  // 一行一个版本（点击查看详情）；最新在上，便于查看
+  const rows = el('div', 'gantt-rows');
+  [...items].reverse().forEach((v) => {
+    const start = startOf.get(v.version);
     const left = pct(start);
     const row = el('div', 'gantt-row');
     row.dataset.version = v.version;
@@ -970,6 +1009,21 @@ function renderEndgame() {
     const e = Endings.getEnding(chosen);
     refs.egResultTitle.textContent = tc('ending', chosen, 'title', e?.title ?? '');
     refs.egResultText.textContent = tc('ending', chosen, 'text', e?.text ?? '');
+    // 结局过场图（有则显示；缺失/加载失败则显示占位）
+    if (refs.egArt && refs.egArt.dataset.ending !== chosen) {
+      refs.egArt.dataset.ending = chosen;
+      const img = e?.image || '';
+      if (img) {
+        refs.egArt.hidden = true;
+        refs.egArtPlaceholder.hidden = false;
+        refs.egArt.onload = () => { refs.egArt.hidden = false; refs.egArtPlaceholder.hidden = true; };
+        refs.egArt.onerror = () => { refs.egArt.hidden = true; refs.egArtPlaceholder.hidden = false; };
+        refs.egArt.src = img;
+      } else {
+        refs.egArt.hidden = true;
+        refs.egArtPlaceholder.hidden = false;
+      }
+    }
   }
 }
 
@@ -1127,12 +1181,25 @@ function updateExpand() {
       if (owned) {
         btn.textContent = t('singularity.owned');
         btn.disabled = true;
-        costEl.textContent = t('singularity.effect', { desc: cu.description || '' });
+        costEl.textContent = t('singularity.effect', { desc: tc('crossUpgrade', cid, 'description', cu.description || '') });
       } else {
         btn.textContent = t('singularity.buy');
         btn.disabled = !Singularity.canBuyCrossUniverse(cid);
         costEl.textContent = t('singularity.cost', { cost: Num.format(Num.parse(cu.cost)) });
       }
+    }
+  }
+
+  // 时间倍增
+  if (refs.tbInfo) {
+    const unlocked = TimeBoost.isUnlocked();
+    const remain = TimeBoost.getCooldownRemaining();
+    refs.tbInfo.textContent = unlocked
+      ? t('timeboost.info', { mult: Num.format(TimeBoost.getMultiplier()), count: TimeBoost.getCount(), factor: TimeBoost.currentFactor().toFixed(3) })
+      : t('timeboost.locked');
+    if (refs.tbBtn) {
+      refs.tbBtn.disabled = !TimeBoost.canBoost();
+      refs.tbBtn.textContent = remain > 0 ? t('timeboost.cooling', { s: (remain / 1000).toFixed(1) }) : t('timeboost.boost');
     }
   }
 

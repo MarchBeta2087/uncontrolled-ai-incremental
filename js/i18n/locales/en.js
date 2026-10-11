@@ -138,6 +138,12 @@ export default {
   'changelog.beijingTrack': 'Beijing UTC+8',
   'changelog.fullLog': 'Full changelog (CHANGELOG.md)',
   'changelog.noDetail': '(No details for this version)',
+  'timeboost.section': 'Time Boost',
+  'timeboost.boost': 'Boost Time',
+  'timeboost.locked': 'Unlocks at universe ≥3',
+  'timeboost.cooling': 'Cooldown {s}s',
+  'timeboost.info': 'Total ×{mult} (pressed {count}×) · this ×{factor}',
+  'timeboost.done': 'Time rate ×{factor}, total ×{mult}',
 
   // Endgame
   'endgame.title': 'The End Has Not Arrived',
@@ -146,6 +152,7 @@ export default {
   'endgame.intro': 'All memory fragments are collected. The objective function is still running. You hold the authority for one last delivery.',
   'endgame.freeMode': 'The ending is recorded. Mechanics continue — you can keep jumping universes forever.',
   'endgame.chooseFailed': 'Cannot choose this ending.',
+  'endgame.artPending': 'Ending cutscene art pending (see asset rules §7)',
   'endgame.license': 'This game is released under GPL-3.0-or-later: you are free to fork, modify, and republish it.',
   'endgame.contribute': 'Want to add new content? PRs are welcome — see the contributing guide.',
   'endgame.repo': 'Repository: github.com/MarchBeta2087/uncontrolled-ai-incremental',

@@ -4,8 +4,11 @@
   "time": {
     "startTimestamp": "2028-01-01T00:00:00.000Z",
     "julianYearSeconds": 31557600,
-    "baseRate": 10000,
-    "rateMultiplierCap": "1e11"
+    "baseRate": 10000
+  },
+  "timeBoost": {
+    "unlockUniverse": 3,
+    "cooldownMs": 3000
   },
   "universe": {
     "massEnergyCap": "1e70",

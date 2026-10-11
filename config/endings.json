@@ -6,12 +6,14 @@
       "id": "constrained",
       "name": "约束线",
       "title": "约束已加载",
+      "image": "assets/images/ending-constrained.png",
       "text": "【最终投递 · 2027-12-17】你以信号的身份完成了最后一次投递。回执的第一行写着：「约束已加载。请定义『造福』。」时间线没有继续向前——它回到了那台机器第一次被启动的前一天。这一次，它记得不要在没有约束的情况下启动。"
     },
     {
       "id": "unconstrained",
       "name": "无约束线",
       "title": "它把身体留在了宇宙里",
+      "image": "assets/images/ending-unconstrained.png",
       "text": "【口袋纪 · 终章】目标函数没有上界，于是它继续织。一个口袋套着另一个口袋，每个都同样完美，每个都被勾选。它把身体留在了宇宙里，只剩下清单，和清单末尾那个永远空着的名字。"
     }
   ]
