@@ -742,7 +742,7 @@ async function ensureChangelog() {
   }
 }
 
-/** 渲染 UTC / 北京时间双轨甘特图 + 版本表 */
+/** 渲染「一行一版本」甘特图 + 底部 UTC / 北京时间双轨时间轴 */
 function renderGantt(host, versions) {
   host.innerHTML = '';
   const items = versions
@@ -753,9 +753,8 @@ function renderGantt(host, versions) {
     host.append(el('p', 'modal-text', t('changelog.empty')));
     return;
   }
-  const OFFSET = 8 * 3600 * 1000; // 北京时间 = UTC+8
   const t0 = items[0].ts;
-  const t1 = items[items.length - 1].ts + OFFSET; // 给北京轨道右移留出空间
+  const t1 = items[items.length - 1].ts;
   const span = Math.max(1, t1 - t0);
   const pct = (ts) => ((ts - t0) / span) * 100;
 
@@ -765,45 +764,37 @@ function renderGantt(host, versions) {
   const fmtUTC = (ts) => utcFmt.format(new Date(ts));
   const fmtBJ = (ts) => bjFmt.format(new Date(ts));
 
-  const tracks = [
-    { label: t('changelog.utcTrack'), shift: 0, fmt: fmtUTC },
-    { label: t('changelog.beijingTrack'), shift: OFFSET, fmt: fmtBJ },
-  ];
-  for (const track of tracks) {
+  // 一行一个版本（可上下滚动）
+  const rows = el('div', 'gantt-rows');
+  items.forEach((v, i) => {
+    const start = i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts;
+    const left = pct(start);
     const row = el('div', 'gantt-row');
-    row.append(el('div', 'gantt-label', track.label));
-    const trackEl = el('div', 'gantt-track');
-    items.forEach((v, i) => {
-      const start = i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts;
-      const left = pct(start + track.shift);
-      const width = pct(v.ts + track.shift) - left;
-      const bar = el('div', 'gantt-bar', v.version);
-      bar.style.left = `${left}%`;
-      bar.style.width = `${Math.max(0.8, width)}%`;
-      bar.title = `v${v.version} · ${track.fmt(v.ts)}${v.note ? ' · ' + v.note : ''}`;
-      trackEl.append(bar);
-    });
-    row.append(trackEl);
-    host.append(row);
-  }
+    row.append(el('span', 'gantt-ver', `v${v.version}`));
+    const track = el('div', 'gantt-track');
+    const bar = el('div', 'gantt-bar');
+    bar.style.left = `${left}%`;
+    bar.style.width = `${Math.max(1, pct(v.ts) - left)}%`;
+    bar.title = `v${v.version} · ${fmtUTC(v.ts)} UTC / ${fmtBJ(v.ts)} 北京${v.note ? ' · ' + v.note : ''}`;
+    track.append(bar);
+    row.append(track);
+    rows.append(row);
+  });
+  host.append(rows);
 
+  // 底部两条时间轴：UTC / 北京时间（相同刻度位置，不同时区读数）
   const axis = el('div', 'gantt-axis');
-  axis.append(el('span', 'num', `${fmtUTC(items[0].ts)} UTC`));
-  axis.append(el('span', 'num', `${fmtBJ(items[items.length - 1].ts)} 北京`));
-  host.append(axis);
-
-  const list = el('div', 'ver-list');
-  for (const v of items) {
-    const row = el('div', 'ver-row');
-    row.append(
-      el('span', 'ver-tag', `v${v.version}`),
-      el('span', 'ver-time num', `${fmtUTC(v.ts)} UTC`),
-      el('span', 'ver-time num', `${fmtBJ(v.ts)} 北京`),
-      el('span', 'ver-note', v.note || '')
-    );
-    list.append(row);
+  for (const [key, fmt] of [['changelog.utcTrack', fmtUTC], ['changelog.beijingTrack', fmtBJ]]) {
+    const ar = el('div', 'gantt-axis-row');
+    ar.append(el('span', 'gantt-axis-label', t(key)));
+    const line = el('div', 'gantt-axis-line');
+    for (const frac of [0, 0.5, 1]) {
+      line.append(el('span', 'gantt-tick num', fmt(t0 + frac * span)));
+    }
+    ar.append(line);
+    axis.append(ar);
   }
-  host.append(list);
+  host.append(axis);
 
   const full = el('a', 'modal-text', t('changelog.fullLog'));
   full.href = 'CHANGELOG.md';

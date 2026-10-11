@@ -30,6 +30,9 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* 保证 hidden 生效（否则会被 .modal-body{display:flex} 等规则覆盖） */
+[hidden] { display: none !important; }
+
 html, body { height: 100%; }
 
 body {
@@ -346,52 +349,45 @@ body.phase2 .phase-lock { display: none; }
   image-rendering: pixelated;
 }
 
-/* ---- 版本记录：双轨甘特图 + 版本表 ---- */
-.gantt-host { display: flex; flex-direction: column; gap: 4px; }
+/* ---- 版本记录：一行一版本（可上下滚动）+ 底部 UTC / 北京时间双轨时间轴 ---- */
+.gantt-host { display: flex; flex-direction: column; gap: 6px; }
+.gantt-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
 .gantt-row { display: flex; align-items: center; gap: 8px; }
-.gantt-label { flex: 0 0 auto; width: 84px; text-align: right; font-size: 12px; color: var(--text-dim); }
+.gantt-ver {
+  flex: 0 0 auto;
+  width: 76px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--accent);
+  font-family: var(--mono);
+}
 .gantt-track {
   position: relative;
   flex: 1;
-  height: 18px;
+  height: 16px;
   background: var(--panel-2);
   border: 1px solid var(--border);
   border-radius: 4px;
 }
 .gantt-bar {
   position: absolute;
-  top: 2px;
+  top: 1px;
   height: 12px;
-  padding: 0 4px;
   background: linear-gradient(90deg, var(--accent), var(--success));
   border-radius: 3px;
-  color: var(--accent-contrast);
-  font-size: 10px;
-  line-height: 12px;
-  white-space: nowrap;
-  overflow: hidden;
 }
-.gantt-axis {
-  display: flex;
-  justify-content: space-between;
-  margin-left: 92px;
-  font-size: 10px;
-  color: var(--text-dim);
-}
-.ver-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
-.ver-row {
-  display: grid;
-  grid-template-columns: auto 1fr 1fr;
-  gap: 6px 10px;
-  align-items: baseline;
-  padding: 4px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 12px;
-}
-.ver-row:last-child { border-bottom: none; }
-.ver-tag { color: var(--accent); font-weight: 600; }
-.ver-time { color: var(--text-dim); font-size: 12px; }
-.ver-note { grid-column: 1 / -1; color: var(--text-dim); font-size: 12px; }
+.gantt-axis { display: flex; flex-direction: column; gap: 1px; margin-top: 2px; }
+.gantt-axis-row { display: flex; align-items: center; gap: 8px; }
+.gantt-axis-label { flex: 0 0 auto; width: 76px; text-align: right; font-size: 11px; color: var(--text-dim); }
+.gantt-axis-line { flex: 1; display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); }
+.gantt-tick { white-space: nowrap; }
 
 /* ---- 终局视图 ---- */
 .endgame-title {
