@@ -38,6 +38,8 @@
 |---|---|---|---|---|---|
 | assets/images/starfield-bg.png | NASA/JPL-Caltech/ESA/CXC/STScI | <https://commons.wikimedia.org/wiki/File:Center_of_the_Milky_Way_Galaxy_IV_%E2%80%93_Composite.jpg> | Public domain（PDM） | 2026-10-11 | 缩小至 480×240（最近邻）、限色 11 色、压暗偏蓝、边缘暗角融合 #0d1117 |
 | `favicon.ico` + `assets/images/logo.png` + `assets/images/logo.xcf` | MarchBeta2087 | 项目维护者原创 | CC BY-SA 4.0 | 2026-10-11 | `logo.png` 原样（64×64）；`favicon.ico` 由 `logo.png` 生成（16/32/48/64，最近邻）；`logo.xcf` 为 GIMP 源文件 |
+| assets/images/ending-constrained.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-11 | 192×108 像素合成（约束线结局过场）；可修改源脚本随仓库 |
+| assets/images/ending-unconstrained.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-11 | 192×108 像素合成（无约束线结局过场）；可修改源脚本随仓库 |
 
 ## 字体
 
