@@ -139,7 +139,7 @@ export default {
   'changelog.noDetail': '（該版本無詳情）',
   'timeboost.section': '時間倍增',
   'timeboost.boost': '時間倍增',
-  'timeboost.locked': '宇宙 ≥4 解鎖',
+  'timeboost.locked': '宇宙 ≥3 解鎖',
   'timeboost.cooling': '冷卻 {s}s',
   'timeboost.info': '累計 ×{mult}（已按 {count} 次）· 本次 ×{factor}',
   'timeboost.done': '時間速率 ×{factor}，累計 ×{mult}',

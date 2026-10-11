@@ -140,7 +140,7 @@ export default {
   'changelog.noDetail': '(No details for this version)',
   'timeboost.section': 'Time Boost',
   'timeboost.boost': 'Boost Time',
-  'timeboost.locked': 'Unlocks at universe ≥4',
+  'timeboost.locked': 'Unlocks at universe ≥3',
   'timeboost.cooling': 'Cooldown {s}s',
   'timeboost.info': 'Total ×{mult} (pressed {count}×) · this ×{factor}',
   'timeboost.done': 'Time rate ×{factor}, total ×{mult}',
