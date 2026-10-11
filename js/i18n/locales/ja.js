@@ -136,6 +136,7 @@ export default {
   'changelog.utcTrack': 'UTC',
   'changelog.beijingTrack': '北京 UTC+8',
   'changelog.fullLog': '完全な変更履歴（CHANGELOG.md）',
+  'changelog.noDetail': '（このバージョンの詳細はありません）',
 
   // 終局
   'endgame.title': '終局はまだ来ない',

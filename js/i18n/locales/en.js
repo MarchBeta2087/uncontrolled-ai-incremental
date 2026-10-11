@@ -137,6 +137,7 @@ export default {
   'changelog.utcTrack': 'UTC',
   'changelog.beijingTrack': 'Beijing UTC+8',
   'changelog.fullLog': 'Full changelog (CHANGELOG.md)',
+  'changelog.noDetail': '(No details for this version)',
 
   // Endgame
   'endgame.title': 'The End Has Not Arrived',

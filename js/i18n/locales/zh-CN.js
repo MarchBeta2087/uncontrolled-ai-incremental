@@ -137,6 +137,7 @@ export default {
   'changelog.utcTrack': 'UTC',
   'changelog.beijingTrack': '北京 UTC+8',
   'changelog.fullLog': '完整变更日志（CHANGELOG.md）',
+  'changelog.noDetail': '（该版本无详情）',
 
   // 终局
   'endgame.title': '终局尚未抵达',

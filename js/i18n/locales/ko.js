@@ -136,6 +136,7 @@ export default {
   'changelog.utcTrack': 'UTC',
   'changelog.beijingTrack': '베이징 UTC+8',
   'changelog.fullLog': '전체 변경 로그(CHANGELOG.md)',
+  'changelog.noDetail': '(이 버전의 상세 정보 없음)',
 
   // 종국
   'endgame.title': '종국은 아직 오지 않았다',
