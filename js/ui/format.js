@@ -1,7 +1,7 @@
 // js/ui/format.js
 // 大数记法偏好（UI 偏好，存 localStorage，不进存档）。
 //   'default'：科学记数 / ban 档（现状）；
-//   'ee'：指数达 7 位数起改用 ee / loglog 记法（#19），如 1e1000000 → ee6。
+//   'ee'：指数达 7 位数起改用 ee / loglog 记法（#19），如 1e1000000 → ee6.0000。
 
 import { DISPLAY_MODES, setDisplayMode } from '../core/num.js';
 

@@ -2,16 +2,6 @@
 
 本项目遵循语义化版本（SemVer）。
 
-## [Unreleased]
-
-### 新增（Added）
-
-- **SevenFifteen 备用像素字体**：接入 SevenFifteen Mono Rounded（**CC BY 4.0**，Douglas Vautour / Burpy Fresh）——子集化为 WOFF2（3.0 MB → 107 KB），覆盖 Fusion 缺失的**天城文（印地语，含连字）/ 阿拉伯（含连写）**/ 希腊 / 西里尔 / 希伯来 / 泰文；字体栈改为优先级 **Fusion > SevenFifteen**；登记 `ASSETS.md` + `LICENSE.txt`。
-
-### 变更（Changed）
-
-- **素材与授权规则 v1.3**（`docs/素材与授权规则-v1.3.md`，自 v1.2 更名）：§4 字体规则扩展为「OFL 优先，兼容 CC BY-SA 4.0 的许可证（如 CC BY 4.0）亦可，须署名」；§9 检查清单同步；全仓库 v1.2 链接更新。决策见 [docs/决策记录.md](docs/决策记录.md) **ADR-002**。
-
 ## [0.5.0] - 2026-10-11
 
 > **本版说明**：v0.5.0 **整合了原计划的 v0.5（多宇宙）与 v0.6（舍入纪）全部内容**，作为一次发布。决策与理由见 [docs/决策记录.md](docs/决策记录.md) 的 **ADR-001**；自此「舍入纪」为**功能弧名称**，不再作为版本号。
@@ -19,7 +9,7 @@
 ### 新增（Added）
 
 - **首张美术素材：银河中心星场背景**（`assets/images/starfield-bg.png`）——Public domain 天体摄影经 GIMP 缩小至 480×240（最近邻）、限色 11 色、压暗偏蓝、边缘暗角融合 `#0d1117` 后接入。CSS 铺于 `body` 底层（`background-size: cover` + `image-rendering: pixelated`），面板维持不透明 `--panel` 以保障 12px 像素数字可读；浅色主题以 `--bg-veil` 淡化星场。许可证与 6 项信息登记于 `ASSETS.md`，许可证文本归档 `assets/LICENSES/starfield-bg.txt`（Issue #20）。
-- **大数记法 ee / loglog 显示开关**（#19 第一步）：新增设置项「大数记法」——指数达 7 位数（≥ `1e1000000`）时可将科学记数折叠为 `eeN`（如 `1e1000000 → ee6`）；偏好存 localStorage，经 `Num.setDisplayMode` 注入格式化默认值，与现有 ban 档并存；`config/balance.json` 新增 `format.numberEeThreshold`；`js/ui/format.js` 为新偏好模块；补齐 5 语言文案与回归测试。
+- **大数记法 ee / loglog 显示开关**（#19 第一步）：新增设置项「大数记法」——指数达 7 位数（≥ `1e1000000`）时可将科学记数折叠为 `eeN`（如 `1e1000000 → ee6.0000`）；偏好存 localStorage，经 `Num.setDisplayMode` 注入格式化默认值，与现有 ban 档并存；`config/balance.json` 新增 `format.numberEeThreshold`；`js/ui/format.js` 为新偏好模块；补齐 5 语言文案与回归测试。
 - **多宇宙引擎地基（v0.5 · PR-A，Issue #16）**：新增 `config/universes.json` 与 `js/sim/universe.js` / `js/sim/singularity.js`——宇宙编号、奇点种子（新货币）、跨宇宙升级、第三层重置「宇宙跃迁」。`getUniverseCap()` 改为 `min(基准 × Πcap_mult, 当前宇宙上限目标)`（宇宙 1 仍封顶 float64，宇宙 ≥2 越过 float64）；第二阶段技术成本随宇宙上限乘子同步缩放；新增条件 `universe_ge` / `seeds_ge`；存档 `schemaVersion` 3→4 + 迁移；标题栏显示宇宙、扩张视图新增「奇点 / 多宇宙」面板与跃迁确认；补齐 5 语言文案。设计见 [docs/v0.5-多宇宙设计.md](docs/v0.5-多宇宙设计.md)。
 - **多宇宙内容与平衡（v0.5 · PR-B/C，Issue #16）**：跨宇宙升级树扩至 **9 项**；新增成就 **×4**（第二/第三口袋、第一枚种子、越界之后）与记忆碎片 **×3**（口袋纪）；补齐 5 语言内容；`tools/balance-sim.mjs` 新增多宇宙模式（`--multiverse`）并产出 [docs/v0.5-平衡模拟.md](docs/v0.5-平衡模拟.md)；星场背景改为独立 `body::before` 层，按宇宙编号 `hue-rotate` 换皮。
 - **双结局与终局条件修正（舍入纪 · Issue #19）**：终局触发由「第二阶段全部研发」改为「集齐全部记忆碎片」（避免与宇宙跃迁条件冲突）；新增 `config/endings.json` + `js/sim/endings.js`——解锁后在终局视图二选一（约束线 / 无约束线），选择永久记录，之后进入自由模式（机制照常）；`schemaVersion` 4→5 + 迁移；补齐 5 语言结局文案。
@@ -27,10 +17,12 @@
 - **多宇宙平衡调优（自适应难度）**：新增自适应阻尼——`universe:prod = 上限乘子 / 静态难度 / metaProd^difficultyExponent`（`difficultyExponent` 默认 `0.95`，`config/universes.json`）；消除后续宇宙「瞬时通关」，模拟结果宇宙 2/3 约 29 min / 8.3 min；`Resources` 新增 `removeGlobalMultiplier`；更新 `docs/v0.5-平衡模拟.md` 与设计文档。
 - **九宇宙换皮联动（#19）**：`config/universes.json` 显式定义宇宙 1–9（含 `hue` 色相：U1 0° → U9 320°，每宇宙 +40°）；星场背景按当前宇宙的 `hue` 施加 `hue-rotate`；第 9 宇宙「舍入纪」上限 1e2020788（跨过 `1e1000000`，衔接 #19 叙事）。
 - **项目 Logo**：接入维护者原创 64×64 像素图标（`assets/images/logo.png` + `.xcf` 源文件）——用于**根目录 `favicon.ico`**（16/32/48/64 多尺寸，由 `logo.png` 最近邻生成）与标题栏；登记 `ASSETS.md` 与 `assets/LICENSES/logo.txt`（CC BY-SA 4.0）。
+- **SevenFifteen 备用像素字体**：接入 SevenFifteen Mono Rounded（**CC BY 4.0**，Douglas Vautour / Burpy Fresh）——子集化为 WOFF2（3.0 MB → 107 KB），覆盖 Fusion 缺失的**天城文（印地语，含连字）/ 阿拉伯（含连写）**/ 希腊 / 西里尔 / 希伯来 / 泰文；字体栈改为优先级 **Fusion > SevenFifteen**；登记 `ASSETS.md` + `LICENSE.txt`。决策见 [docs/决策记录.md](docs/决策记录.md) **ADR-002**。
 
 ### 变更（Changed）
 
 - **素材与授权规则 v1.2**（`docs/素材与授权规则-v1.2.md`，自 v1.1 更名）：新增 §5.2「创作工具中立」条款——项目只审计素材（画面元素原创性、嵌入字体合规、授权链完整），不审计创作工具（专有 / 破解 / 开源 / AI 工具均中立，不产生连带责任）；§5.3 增补「创作工具」登记项（仅溯源，不作为准入条件）；新增附录 A「投稿审查回复模板」；§8 / §9 增补相应条目；修正 CONTRIBUTING 章节交叉引用（禁用来源黑名单 §7 → §6）与全仓库 v1.1 文档链接。
+- **素材与授权规则 v1.3**（`docs/素材与授权规则-v1.3.md`，自 v1.2 更名）：§4 字体规则扩展为「OFL 优先，兼容 CC BY-SA 4.0 的许可证（如 CC BY 4.0）亦可，须署名」；§9 检查清单同步；全仓库 v1.2 链接更新。决策见 [docs/决策记录.md](docs/决策记录.md) **ADR-002**。
 - **多宇宙缩放修正（模拟驱动）**：宇宙上限 / 产出 / 第二阶段成本改为**同步缩放**（新增 `universe:prod` 全局乘子），修复「仅缩放成本 → 首个第二阶段技术买不起」「仅抬升上限 → 无法触顶穿梭」两处死结；跨宇宙效果在每次穿梭后重放。代价：保留元进度使宇宙 2+ 偏快，待后续平衡（见 [docs/v0.5-平衡模拟.md](docs/v0.5-平衡模拟.md)）。
 - **`ee` 记法保留四位小数**：`1e1000000 → ee6.0000`（原为 `ee6`）。外层取 `log10(log10(n))` 并保留 4 位小数（`Num.format` 新增 `eeDecimals`，默认 4），信息更精确；同步更新 5 语言文案与测试。
 

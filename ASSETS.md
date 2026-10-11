@@ -6,7 +6,7 @@
 |---|---|
 | 代码 | GPL-3.0-or-later（见 `LICENSE`） |
 | 游戏素材（美术/音乐等） | CC BY-SA 4.0 |
-| 字体 | SIL OFL 1.1（单独授权） |
+| 字体 | SIL OFL 1.1 或兼容 CC BY-SA 4.0 的许可证（如 CC BY 4.0） |
 
 ---
 
