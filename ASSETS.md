@@ -30,13 +30,11 @@
 
 ## 游戏素材（美术 / 音乐 / 音效）
 
-*当前尚未引入任何游戏素材。*
-
 素材入库须遵守 [docs/素材与授权规则-v1.1.md](docs/素材与授权规则-v1.1.md)，并在下表逐条登记：
 
 | 文件 | 作者 | 来源 | 许可证 | 获取日期 | 修改说明 |
 |---|---|---|---|---|---|
-| （待填） | | | | | |
+| assets/images/starfield-bg.png | NASA/JPL-Caltech/ESA/CXC/STScI | <https://commons.wikimedia.org/wiki/File:Center_of_the_Milky_Way_Galaxy_IV_%E2%80%93_Composite.jpg> | Public domain（PDM） | 2026-10-11 | 缩小至 480×240（最近邻）、限色 11 色、压暗偏蓝、边缘暗角融合 #0d1117 |
 
 ## 字体
 

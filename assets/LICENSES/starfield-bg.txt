@@ -1,0 +1,22 @@
+素材：assets/images/starfield-bg.png
+
+来源：Center of the Milky Way Galaxy IV – Composite
+  https://commons.wikimedia.org/wiki/File:Center_of_the_Milky_Way_Galaxy_IV_%E2%80%93_Composite.jpg
+
+作者 / 署名：NASA/JPL-Caltech/ESA/CXC/STScI
+
+许可证：Public domain（公有领域，PDM）
+  - 该文件在 Wikimedia Commons 标注为公有领域。
+  - 美国联邦政府（NASA/JPL-Caltech/ESA/CXC/STScI 联合图像）作品不受版权保护，
+    可自由使用与再分发。
+  - 依据：https://www.nasa.gov/nasa-brand-center/images-and-media/
+
+获取日期：2026-10-11
+
+修改说明：
+  - 9725×4862 缩小至 480×240，插值采用最近邻（None），保留像素感；
+  - 索引化限色（11 色）；
+  - 压暗并统一色相（偏蓝，靠拢 --accent #58a6ff）；
+  - 边缘径向暗角，四周融合进项目背景色 #0d1117。
+
+合规：见 docs/素材与授权规则-v1.1.md §3、§9；登记于 ASSETS.md。
