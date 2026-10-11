@@ -20,8 +20,10 @@ const crossOwned = new Set();
 let capTarget = FLOAT64_MAX;
 let capMult = Num.parse(1);
 let costMult = Num.parse(1);
+let prodMult = Num.parse(1);
+let difficulty = Num.parse(1);
 let rateMult = Num.parse(1);
-let currentDef = { id: 1, capExponent: 308, seedReward: '1', rateMult: '1' };
+let currentDef = { id: 1, capExponent: 308, seedReward: '1', rateMult: '1', difficulty: '1' };
 
 export function configureUniverse(cfg = {}) {
   config = cfg;
@@ -45,6 +47,7 @@ export function getUniverseDef(n) {
       capExponent: Number(explicit.capExponent ?? 308),
       seedReward: Num.parse(explicit.seedReward ?? '1'),
       rateMult: Num.parse(explicit.rateMult ?? '1'),
+      difficulty: Num.parse(explicit.difficulty ?? '1'),
       restrictions: explicit.restrictions ?? [],
     };
   }
@@ -53,12 +56,15 @@ export function getUniverseDef(n) {
   const growth = Number(fb.capExponentGrowth ?? 3);
   const seedBase = Num.parse(fb.seedRewardBase ?? '1');
   const seedGrowth = Num.parse(fb.seedRewardGrowth ?? '2');
+  const diffBase = Num.parse(fb.difficultyBase ?? '1');
+  const diffGrowth = Num.parse(fb.difficultyGrowth ?? '1');
   return {
     id: Number(n),
     name: null,
     capExponent: base * Math.pow(growth, Number(n) - 1),
     seedReward: Num.mul(seedBase, Num.pow(seedGrowth, Num.parse(Number(n) - 1))),
     rateMult: Num.parse(fb.rateMultiplier ?? '1'),
+    difficulty: Num.mul(diffBase, Num.pow(diffGrowth, Num.parse(Number(n) - 1))),
     restrictions: [],
   };
 }
@@ -77,8 +83,11 @@ function computeDerived() {
     // 用字符串构造精确的 10^(exp-308)，避免 Num.pow 的尾数误差
     capMult = Num.parse(`1e${currentDef.capExponent - 308}`);
   }
-  // 上限 / 产出 / 第二阶段成本均由宇宙上限乘子同步缩放，保持每宇宙节奏一致
+  // 上限 / 第二阶段成本由宇宙上限乘子同步缩放；产出再除以「宇宙难度」，
+  // 以抵消保留元进度带来的加速，避免后续宇宙瞬时通关（见 docs/v0.5-平衡模拟.md）。
   costMult = capMult;
+  difficulty = currentDef.difficulty;
+  prodMult = Num.div(capMult, difficulty);
   rateMult = currentDef.rateMult;
 }
 
@@ -94,6 +103,18 @@ export function getCapMultiplier() {
 }
 export function getCostMultiplier() {
   return costMult;
+}
+export function getDifficulty() {
+  return difficulty;
+}
+/** 元进度产出阻尼指数：universe:prod 会除以 metaProd^exponent，使元进度收益有界、不瞬时通关 */
+export function getDifficultyExponent() {
+  const e = Number(config?.difficultyExponent ?? 0.95);
+  return Number.isFinite(e) && e >= 0 ? e : 0.95;
+}
+/** 宇宙产出乘子 = 上限乘子 / 难度 */
+export function getProductionMultiplier() {
+  return prodMult;
 }
 export function getRateMultiplier() {
   return rateMult;

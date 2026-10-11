@@ -121,6 +121,9 @@ export function getClickProduction() {
 export function setGlobalMultiplier(sourceId, value) {
   globalMults.set(sourceId, Num.parse(value));
 }
+export function removeGlobalMultiplier(sourceId) {
+  globalMults.delete(sourceId);
+}
 export function getGlobalMultiplier() {
   let m = Num.parse(1);
   for (const v of globalMults.values()) m = Num.mul(m, v);

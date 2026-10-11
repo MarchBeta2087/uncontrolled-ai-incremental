@@ -12,6 +12,7 @@
 - **多宇宙内容与平衡（v0.5 · PR-B/C，Issue #16）**：跨宇宙升级树扩至 **9 项**；新增成就 **×4**（第二/第三口袋、第一枚种子、越界之后）与记忆碎片 **×3**（口袋纪）；补齐 5 语言内容；`tools/balance-sim.mjs` 新增多宇宙模式（`--multiverse`）并产出 [docs/v0.5-平衡模拟.md](docs/v0.5-平衡模拟.md)；星场背景改为独立 `body::before` 层，按宇宙编号 `hue-rotate` 换皮。
 - **双结局与终局条件修正（v0.6 · Issue #19）**：终局触发由「第二阶段全部研发」改为「集齐全部记忆碎片」（避免与宇宙跃迁条件冲突）；新增 `config/endings.json` + `js/sim/endings.js`——解锁后在终局视图二选一（约束线 / 无约束线），选择永久记录，之后进入自由模式（机制照常）；`schemaVersion` 4→5 + 迁移；补齐 5 语言结局文案。
 - **音频基建（v0.6）**：新增 `js/core/audio.js`（Web Audio 封装，无 AudioContext 环境静默降级）+ `js/ui/audio.js`（音量/静音偏好存 localStorage + 游戏事件→音效接线）+ `config/audio.json`（声明式音效：`file` 素材或 `synth` 振荡器合成，规避授权）。已接入点击/购买/研发/穿梭/成就/碎片/**宇宙跃迁 sting**/结局音效；设置面板新增音频区（静音 + 音量滑杆）；补齐 5 语言文案。
+- **多宇宙平衡调优（自适应难度）**：新增自适应阻尼——`universe:prod = 上限乘子 / 静态难度 / metaProd^difficultyExponent`（`difficultyExponent` 默认 `0.95`，`config/universes.json`）；消除后续宇宙「瞬时通关」，模拟结果宇宙 2/3 约 29 min / 8.3 min；`Resources` 新增 `removeGlobalMultiplier`；更新 `docs/v0.5-平衡模拟.md` 与设计文档。
 
 ### 变更（Changed）
 
