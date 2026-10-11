@@ -18,6 +18,10 @@
     { "id": "seed_rate_1", "name": "口袋时序 I", "description": "时间速率 ×5", "cost": "2", "requires": [], "effects": [{ "type": "rate_mult", "value": "5" }] },
     { "id": "seed_crystal_1", "name": "口袋结晶 I", "description": "穿梭晶体 ×2", "cost": "2", "requires": [], "effects": [{ "type": "crystal_mult", "value": "2" }] },
     { "id": "seed_cap_1", "name": "口袋声张 I", "description": "宇宙上限 ×1e10", "cost": "3", "requires": ["seed_engine_1"], "effects": [{ "type": "cap_mult", "value": "1e10" }] },
-    { "id": "seed_engine_2", "name": "口袋引擎 II", "description": "全产出 ×1e10", "cost": "5", "requires": ["seed_engine_1"], "effects": [{ "type": "all_generator_mult", "value": "1e10" }] }
+    { "id": "seed_engine_2", "name": "口袋引擎 II", "description": "全产出 ×1e10", "cost": "5", "requires": ["seed_engine_1"], "effects": [{ "type": "all_generator_mult", "value": "1e10" }] },
+    { "id": "seed_rate_2", "name": "口袋时序 II", "description": "时间速率 ×10", "cost": "6", "requires": ["seed_rate_1"], "effects": [{ "type": "rate_mult", "value": "10" }] },
+    { "id": "seed_crystal_2", "name": "口袋结晶 II", "description": "穿梭晶体 ×3", "cost": "8", "requires": ["seed_crystal_1"], "effects": [{ "type": "crystal_mult", "value": "3" }] },
+    { "id": "seed_cap_2", "name": "口袋声张 II", "description": "宇宙上限 ×1e20", "cost": "12", "requires": ["seed_cap_1", "seed_engine_2"], "effects": [{ "type": "cap_mult", "value": "1e20" }] },
+    { "id": "seed_engine_3", "name": "口袋引擎 III", "description": "全产出 ×1e15", "cost": "20", "requires": ["seed_engine_2"], "effects": [{ "type": "all_generator_mult", "value": "1e15" }] }
   ]
 }

@@ -22,6 +22,8 @@
   --overlay: rgba(0, 0, 0, 0.6);
   /* 星场背景叠加色（默认透明；浅色主题用来淡化星场，保证整体观感） */
   --bg-veil: transparent;
+  /* 星场背景色相偏移（由 JS 按宇宙编号设置，用于换皮） */
+  --bg-hue: 0deg;
   --font: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
   --mono: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
 }
@@ -33,6 +35,18 @@ html, body { height: 100%; }
 body {
   font-family: var(--font);
   background-color: var(--bg);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+/* 星场背景层：独立于内容，便于按宇宙 hue-rotate 换皮（v0.5 / #19） */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background-image:
     linear-gradient(var(--bg-veil), var(--bg-veil)),
     url('../assets/images/starfield-bg.png');
@@ -40,10 +54,8 @@ body {
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
   image-rendering: pixelated;
-  color: var(--text);
-  font-size: 12px;
-  line-height: 1.5;
-  overflow: hidden;
+  filter: hue-rotate(var(--bg-hue, 0deg));
+  pointer-events: none;
 }
 
 /* 数值一律等宽 + 表格数字对齐 */

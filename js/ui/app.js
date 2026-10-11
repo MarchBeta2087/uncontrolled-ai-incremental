@@ -27,6 +27,15 @@ let dirty = false;
 let rafId = 0;
 let currentView = 'resources';
 let toastTimer = 0;
+let appliedUniverseHue = -1;
+
+/** 按当前宇宙编号设置星场背景色相（每宇宙 +40°，v0.5 换皮） */
+function applyUniverseHue() {
+  const u = Universe.getUniverse();
+  if (u === appliedUniverseHue) return;
+  appliedUniverseHue = u;
+  document.documentElement.style.setProperty('--bg-hue', `${((u - 1) * 40) % 360}deg`);
+}
 
 export function initUI() {
   document.body.classList.add(platformClass());
@@ -34,6 +43,7 @@ export function initUI() {
   buildShell();
   bindEvents();
   switchView('resources');
+  applyUniverseHue();
   markDirty();
 }
 
@@ -682,6 +692,7 @@ function updateTitlebar() {
   refs.rateText.textContent = t('titlebar.rate', { rate: Num.format(rateMult) });
   refs.weekText.textContent = t('titlebar.week', { n: Prestige.getPrestigeCount() + 1 });
   if (refs.universeText) refs.universeText.textContent = t('titlebar.universe', { n: Universe.getUniverse() });
+  applyUniverseHue();
 }
 
 function updateResources() {

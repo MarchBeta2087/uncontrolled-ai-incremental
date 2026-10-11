@@ -219,7 +219,7 @@ const migrated2 = saveMod.migrate(v2snap);
 assert('v2 → v4 迁移', migrated2.schemaVersion === 4 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades));
 
 console.log('== 第二阶段成就 / 碎片 / 挑战 ==');
-assert('内容计数：成就 21 / 碎片 9 / 挑战 5', achCfg.achievements.length === 21 && fragCfg.fragments.length === 9 && chCfg.challenges.length === 5);
+assert('内容计数：成就 25 / 碎片 12 / 挑战 5', achCfg.achievements.length === 25 && fragCfg.fragments.length === 12 && chCfg.challenges.length === 5);
 progressMod.setPhase2Unlocked(false);
 assert('condition phase2_unlocked（解锁前否）', conditionsMod.checkCondition({ type: 'phase2_unlocked' }) === false);
 progressMod.setPhase2Unlocked(true);
@@ -293,7 +293,7 @@ assert('获得 1 枚奇点种子', Num.eq(universeMod.getSeeds(), 1));
 assert('跃迁后技术清空（含永久）', techMod.ownedCount() === 0);
 assert('跃迁后时间晶体清空', Num.eq(prestigeMod.getTimeCrystals(), 0));
 assert('跃迁后资源清空', Num.lt(resMod.getResource('mass_energy'), '1e100'));
-assert('跃迁后上限 = 1e686（无折叠 × 宇宙乘子）', Num.eq(prestigeMod.getUniverseCap(), '1e686'));
+assert('跃迁后上限 = 1e686（宇宙乘子生效，无折叠）', Num.eq(prestigeMod.getUniverseCap(), '1e686'));
 
 // 奇点种子条件
 universeMod.addSeeds('2');

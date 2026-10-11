@@ -101,12 +101,14 @@ async function bootstrap() {
       Upgrades.applyAll();
       Challenges.applyAll();
       Achievements.applyAll();
+      Singularity.applyCrossUniverse();
     });
     // 宇宙跃迁后：跨宇宙效果已在 jump() 内重放；此处重放时间晶体升级 / 挑战 / 成就奖励
     Events.on('universe:jumped', () => {
       Upgrades.applyAll();
       Challenges.applyAll();
       Achievements.applyAll();
+      Singularity.applyCrossUniverse();
     });
     // 退出/完成挑战后，重新应用永久升级与挑战奖励（挑战期间被清空）
     Events.on('challenge:exited', () => {
