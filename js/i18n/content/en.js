@@ -171,4 +171,11 @@ export default {
       goals: ['Time rate ×2', 'Time rate ×3', 'Time rate ×5'],
     },
   },
+  crossUpgrade: {
+    seed_engine_1: { name: 'Pocket Engine I', description: 'All production ×1e6' },
+    seed_rate_1: { name: 'Pocket Chronology I', description: 'Time rate ×5' },
+    seed_crystal_1: { name: 'Pocket Crystal I', description: 'Prestige crystals ×2' },
+    seed_cap_1: { name: 'Pocket Expansion I', description: 'Universe cap ×1e10' },
+    seed_engine_2: { name: 'Pocket Engine II', description: 'All production ×1e10' },
+  },
 };

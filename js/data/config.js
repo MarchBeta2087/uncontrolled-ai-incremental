@@ -30,6 +30,8 @@ export const CONDITION_TYPES = new Set([
   'prestige_gain_ge',    // 单次穿梭晶体 >= value
   'cap_ge',              // 宇宙上限 >= value
   'dark_energy_ge',      // 暗能量 >= value
+  'universe_ge',         // 当前宇宙编号 >= value（v0.5）
+  'seeds_ge',            // 奇点种子 >= value（v0.5）
 ]);
 
 // 挑战限制类型（有限枚举，见 js/sim/challenges.js）
@@ -48,6 +50,7 @@ const DEFAULT_PATHS = {
   achievements: 'config/achievements.json',
   fragments: 'config/fragments.json',
   challenges: 'config/challenges.json',
+  universes: 'config/universes.json',
 };
 
 async function fetchJSON(path) {
@@ -57,7 +60,7 @@ async function fetchJSON(path) {
 }
 
 export async function loadConfig(paths = DEFAULT_PATHS) {
-  const [balance, resources, techs, upgrades, achievements, fragments, challenges] = await Promise.all([
+  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes] = await Promise.all([
     fetchJSON(paths.balance),
     fetchJSON(paths.resources),
     fetchJSON(paths.techs),
@@ -65,9 +68,10 @@ export async function loadConfig(paths = DEFAULT_PATHS) {
     fetchJSON(paths.achievements),
     fetchJSON(paths.fragments),
     fetchJSON(paths.challenges),
+    fetchJSON(paths.universes),
   ]);
-  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges });
-  return { balance, resources, techs, upgrades, achievements, fragments, challenges };
+  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes });
+  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes };
 }
 
 /** 校验配置合法性：id 唯一、引用存在、requires 无环、effect 类型已注册 */
@@ -194,6 +198,32 @@ export function validateConfig(cfg) {
     for (const g of c.goals ?? []) {
       if (!g.reward || !EFFECT_TYPES.has(g.reward.type)) {
         errors.push(`挑战 ${c.id} 的目标奖励类型未注册: ${g.reward?.type}`);
+      }
+    }
+  }
+
+  // 多宇宙（v0.5）
+  if (cfg.universes) {
+    const uniIds = new Set();
+    for (const u of cfg.universes.universes ?? []) {
+      if (u.id === undefined || u.id === null) errors.push('存在缺少 id 的宇宙');
+      else if (uniIds.has(u.id)) errors.push(`宇宙 id 重复: ${u.id}`);
+      else uniIds.add(u.id);
+      if (!(Number(u.capExponent) > 0)) errors.push(`宇宙 ${u.id} 的 capExponent 无效`);
+    }
+    const crossIds = [];
+    for (const u of cfg.universes.crossUniverseUpgrades ?? []) {
+      if (!u.id) {
+        errors.push('存在缺少 id 的跨宇宙升级');
+        continue;
+      }
+      if (crossIds.includes(u.id)) errors.push(`跨宇宙升级 id 重复: ${u.id}`);
+      crossIds.push(u.id);
+      for (const req of u.requires ?? []) {
+        if (!crossIds.includes(req)) errors.push(`跨宇宙升级 ${u.id} 的 requires 引用不存在/未定义的升级: ${req}`);
+      }
+      for (const e of u.effects ?? []) {
+        if (!EFFECT_TYPES.has(e.type)) errors.push(`跨宇宙升级 ${u.id} 的 effect 类型未注册: ${e.type}`);
       }
     }
   }

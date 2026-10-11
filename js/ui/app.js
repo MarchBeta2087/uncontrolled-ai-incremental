@@ -12,6 +12,8 @@ import * as Upgrades from '../sim/upgrades.js';
 import * as Achievements from '../sim/achievements.js';
 import * as Fragments from '../sim/fragments.js';
 import * as Challenges from '../sim/challenges.js';
+import * as Universe from '../sim/universe.js';
+import * as Singularity from '../sim/singularity.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
@@ -58,12 +60,14 @@ function buildShell() {
   const metaLine = el('div', 'titlebar-meta');
   const rateSpan = el('span', '', t('titlebar.rate', { rate: 1 }));
   const weekSpan = el('span', '', t('titlebar.week', { n: 1 }));
-  metaLine.append(rateSpan, weekSpan);
+  const universeSpan = el('span', '', t('titlebar.universe', { n: 1 }));
+  metaLine.append(rateSpan, weekSpan, universeSpan);
   tr.append(timeLine, metaLine);
   titlebar.append(tl, tr);
   refs.timeText = timeSpan;
   refs.rateText = rateSpan;
   refs.weekText = weekSpan;
+  refs.universeText = universeSpan;
 
   // ---- 视图容器 ----
   const viewContainer = el('div', 'view-container');
@@ -275,6 +279,45 @@ function buildShell() {
   }
   expPanel.append(chGrid);
   refs.chGrid = chGrid;
+
+  // 奇点 / 多宇宙（v0.5）
+  expPanel.append(el('div', 'panel-title', t('singularity.panel')));
+  const singularityInfo = el('div', '', t('singularity.info', { universe: 1, exponent: '308', seeds: '0' }));
+  const jumpStatus = el('div', '', t('singularity.notReady'));
+  const jumpBtn = el('button', 'btn btn-primary', t('singularity.jumpBtn'));
+  jumpBtn.type = 'button';
+  jumpBtn.disabled = true;
+  jumpBtn.onclick = () => {
+    if (!window.confirm(t('singularity.confirm'))) return;
+    const r = Singularity.jump();
+    if (!r.ok) showToast(r.reason || t('toast.cannotPrestige'));
+    else showToast(t('singularity.jumped', { universe: r.universe, seeds: Num.toString(r.seeds) }));
+    renderNow();
+  };
+  expPanel.append(singularityInfo, jumpStatus, jumpBtn);
+  refs.singularityInfo = singularityInfo;
+  refs.jumpStatus = jumpStatus;
+  refs.jumpBtn = jumpBtn;
+
+  const crossGrid = el('div', 'tech-grid');
+  for (const cu of Universe.getCrossUniverseUpgrades()) {
+    const card = el('div', 'tech-card');
+    card.append(el('div', 'tech-name', tc('crossUpgrade', cu.id, 'name', cu.name)));
+    card.append(el('div', 'tech-desc', tc('crossUpgrade', cu.id, 'description', cu.description || '')));
+    const cost = el('div', 'tech-cost', '');
+    const btn = el('button', 'btn', t('singularity.buy'));
+    btn.type = 'button';
+    btn.dataset.cross = cu.id;
+    btn.onclick = () => {
+      const r = Singularity.buyCrossUniverse(cu.id);
+      if (!r.ok) showToast(r.reason || t('toast.cannotBuy'));
+      markDirty();
+    };
+    card.append(cost, btn);
+    crossGrid.append(card);
+  }
+  expPanel.append(crossGrid);
+  refs.crossGrid = crossGrid;
 
   viewExpand.append(expPanel);
   refs.massBig = massBig;
@@ -618,6 +661,7 @@ function updateTitlebar() {
   const rateMult = Num.div(Time.getRate(), Time.getBaseRate());
   refs.rateText.textContent = t('titlebar.rate', { rate: Num.format(rateMult) });
   refs.weekText.textContent = t('titlebar.week', { n: Prestige.getPrestigeCount() + 1 });
+  if (refs.universeText) refs.universeText.textContent = t('titlebar.universe', { n: Universe.getUniverse() });
 }
 
 function updateResources() {
@@ -670,7 +714,7 @@ function updateTechs() {
     const owned = Techs.isOwned(tid);
     card.classList.toggle('owned', owned);
     card.querySelector('.tech-cost').textContent =
-      t('tech.cost', { cost: Num.format(Num.parse(def.cost)), currency: tc('resource', def.costCurrency, 'name', Resources.getResourceDef(def.costCurrency)?.name ?? '') });
+      t('tech.cost', { cost: Num.format(Techs.getCost(tid)), currency: tc('resource', def.costCurrency, 'name', Resources.getResourceDef(def.costCurrency)?.name ?? '') });
     if (owned) {
       btn.textContent = t('tech.owned');
       btn.disabled = true;
@@ -736,6 +780,39 @@ function updateExpand() {
         btn.textContent = t('expand.upgradeBuy');
         btn.disabled = !Upgrades.canBuy(uid);
         costEl.textContent = t('expand.upgradeCost', { cost: Num.format(Num.parse(u.cost)) });
+      }
+    }
+  }
+
+  // 奇点 / 多宇宙
+  if (refs.singularityInfo) {
+    refs.singularityInfo.textContent = t('singularity.info', {
+      universe: Universe.getUniverse(),
+      exponent: Num.format(Universe.getCapExponent()),
+      seeds: Num.format(Universe.getSeeds()),
+    });
+  }
+  if (refs.jumpBtn) {
+    const ready = Singularity.canJump();
+    refs.jumpStatus.textContent = ready ? t('singularity.ready') : t('singularity.notReady');
+    refs.jumpBtn.disabled = !ready;
+  }
+  if (refs.crossGrid) {
+    for (const card of refs.crossGrid.querySelectorAll('.tech-card')) {
+      const btn = card.querySelector('.btn');
+      const cid = btn.dataset.cross;
+      const cu = Universe.getCrossUniverseUpgrade(cid);
+      const owned = Universe.isCrossOwned(cid);
+      card.classList.toggle('owned', owned);
+      const costEl = card.querySelector('.tech-cost');
+      if (owned) {
+        btn.textContent = t('singularity.owned');
+        btn.disabled = true;
+        costEl.textContent = t('singularity.effect', { desc: cu.description || '' });
+      } else {
+        btn.textContent = t('singularity.buy');
+        btn.disabled = !Singularity.canBuyCrossUniverse(cid);
+        costEl.textContent = t('singularity.cost', { cost: Num.format(Num.parse(cu.cost)) });
       }
     }
   }

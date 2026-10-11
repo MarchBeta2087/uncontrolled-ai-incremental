@@ -1,0 +1,23 @@
+{
+  "$comment": "多宇宙配置（v0.5，见 docs/v0.5-多宇宙设计.md）。capExponent = 该宇宙最终上限的十进制指数（宇宙 1 即 float64 上限）；宇宙上限乘子 = 10^(capExponent-308)。universes 只显式定义前几个宇宙，N 超出后走 fallback 公式。crossUniverseUpgrades 消耗奇点种子，效果为有限枚举（见 js/data/config.js）。",
+  "version": "1.0.0",
+  "universes": [
+    { "id": 1, "name": "初生宇宙", "capExponent": 308, "seedReward": "1", "rateMult": "1", "restrictions": [] },
+    { "id": 2, "name": "第二口袋", "capExponent": 924, "seedReward": "2", "rateMult": "1", "restrictions": [] },
+    { "id": 3, "name": "第三口袋", "capExponent": 2772, "seedReward": "4", "rateMult": "0.9", "restrictions": [] }
+  ],
+  "fallback": {
+    "capExponentBase": 308,
+    "capExponentGrowth": 3,
+    "seedRewardBase": "1",
+    "seedRewardGrowth": "2",
+    "rateMultiplier": "0.9"
+  },
+  "crossUniverseUpgrades": [
+    { "id": "seed_engine_1", "name": "口袋引擎 I", "description": "全产出 ×1e6", "cost": "1", "requires": [], "effects": [{ "type": "all_generator_mult", "value": "1e6" }] },
+    { "id": "seed_rate_1", "name": "口袋时序 I", "description": "时间速率 ×5", "cost": "2", "requires": [], "effects": [{ "type": "rate_mult", "value": "5" }] },
+    { "id": "seed_crystal_1", "name": "口袋结晶 I", "description": "穿梭晶体 ×2", "cost": "2", "requires": [], "effects": [{ "type": "crystal_mult", "value": "2" }] },
+    { "id": "seed_cap_1", "name": "口袋声张 I", "description": "宇宙上限 ×1e10", "cost": "3", "requires": ["seed_engine_1"], "effects": [{ "type": "cap_mult", "value": "1e10" }] },
+    { "id": "seed_engine_2", "name": "口袋引擎 II", "description": "全产出 ×1e10", "cost": "5", "requires": ["seed_engine_1"], "effects": [{ "type": "all_generator_mult", "value": "1e10" }] }
+  ]
+}

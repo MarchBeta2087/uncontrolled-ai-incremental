@@ -123,4 +123,11 @@ export default {
     challenge_p2_drought: { name: '晶體枯竭', description: '晶體產出 ×0.1', goals: ['晶體 ×2', '晶體 ×3', '晶體 ×5'] },
     challenge_p2_zero: { name: '絕對零度', description: '時間速率 ÷1000', goals: ['時間速率 ×2', '時間速率 ×3', '時間速率 ×5'] },
   },
+  crossUpgrade: {
+    seed_engine_1: { name: '口袋引擎 I', description: '全產出 ×1e6' },
+    seed_rate_1: { name: '口袋時序 I', description: '時間速率 ×5' },
+    seed_crystal_1: { name: '口袋結晶 I', description: '穿梭晶體 ×2' },
+    seed_cap_1: { name: '口袋聲張 I', description: '宇宙上限 ×1e10' },
+    seed_engine_2: { name: '口袋引擎 II', description: '全產出 ×1e10' },
+  },
 };

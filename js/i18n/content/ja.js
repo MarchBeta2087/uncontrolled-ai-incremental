@@ -123,4 +123,11 @@ export default {
     challenge_p2_drought: { name: '結晶の枯渇', description: '結晶産出 ×0.1', goals: ['結晶 ×2', '結晶 ×3', '結晶 ×5'] },
     challenge_p2_zero: { name: '絶対零度', description: '時間速度 ÷1000', goals: ['時間速度 ×2', '時間速度 ×3', '時間速度 ×5'] },
   },
+  crossUpgrade: {
+    seed_engine_1: { name: 'ポケットエンジン I', description: '全産出 ×1e6' },
+    seed_rate_1: { name: 'ポケット時序 I', description: '時間速度 ×5' },
+    seed_crystal_1: { name: 'ポケット結晶 I', description: '跳躍結晶 ×2' },
+    seed_cap_1: { name: 'ポケット膨張 I', description: '宇宙上限 ×1e10' },
+    seed_engine_2: { name: 'ポケットエンジン II', description: '全産出 ×1e10' },
+  },
 };

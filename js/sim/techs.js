@@ -9,6 +9,7 @@ import { Time } from '../core/time.js';
 import * as Resources from './resources.js';
 import * as Mults from './mults.js';
 import * as Progress from './progress.js';
+import * as Universe from './universe.js';
 import { Events } from '../core/events.js';
 import { t } from '../i18n/index.js';
 
@@ -31,6 +32,15 @@ export function getTechIds() {
   return [...techs.keys()];
 }
 
+/** 技术实际成本：第二阶段成本随宇宙上限乘子同步缩放（保持上限/成本比例） */
+export function getCost(id) {
+  const t = techs.get(id);
+  if (!t) return null;
+  let c = Num.parse(t.def.cost);
+  if (t.def.phase === 2) c = Num.mul(c, Universe.getCostMultiplier());
+  return c;
+}
+
 /** 当前可用（未因阶段锁定）的技术 id；用于晶体结算的研发深度分母 */
 export function getAvailableTechIds() {
   return [...techs.entries()]
@@ -48,7 +58,7 @@ export function canBuy(id) {
   }
   const currency = Resources.getResource(tech.def.costCurrency);
   if (currency === null) return false;
-  return Num.gte(currency, Num.parse(tech.def.cost));
+  return Num.gte(currency, getCost(id));
 }
 
 export function buyTech(id) {
@@ -61,7 +71,7 @@ export function buyTech(id) {
   for (const req of tech.def.requires ?? []) {
     if (!techs.get(req)?.owned) return { ok: false, reason: t('reason.prereqMissing', { id: req }) };
   }
-  if (!Resources.spend(tech.def.costCurrency, Num.parse(tech.def.cost))) {
+  if (!Resources.spend(tech.def.costCurrency, getCost(id))) {
     return { ok: false, reason: t('reason.insufficientResources') };
   }
   tech.owned = true;
@@ -140,6 +150,16 @@ export function reset() {
   Resources.clearMultipliers();
   Time.clearRateMultipliers();
   applyPermanent();
+}
+
+/** 宇宙跃迁：清空全部技术（含 permanent）与乘子；不重放永久技术（由上层重放跨宇宙效果） */
+export function resetAll() {
+  for (const [id, t] of techs) {
+    removeEffects(id, t.def);
+    t.owned = false;
+  }
+  Resources.clearMultipliers();
+  Time.clearRateMultipliers();
 }
 
 /** 挑战开始：清空非永久技术及技术乘子；永久技术保留并重放 */

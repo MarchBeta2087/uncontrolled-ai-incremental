@@ -123,4 +123,11 @@ export default {
     challenge_p2_drought: { name: '결정 고갈', description: '결정 생산 ×0.1', goals: ['결정 ×2', '결정 ×3', '결정 ×5'] },
     challenge_p2_zero: { name: '절대 영도', description: '시간 속도 ÷1000', goals: ['시간 속도 ×2', '시간 속도 ×3', '시간 속도 ×5'] },
   },
+  crossUpgrade: {
+    seed_engine_1: { name: '주머니 엔진 I', description: '전체 생산 ×1e6' },
+    seed_rate_1: { name: '주머니 시간 I', description: '시간 속도 ×5' },
+    seed_crystal_1: { name: '주머니 결정 I', description: '도약 결정 ×2' },
+    seed_cap_1: { name: '주머니 팽창 I', description: '우주 상한 ×1e10' },
+    seed_engine_2: { name: '주머니 엔진 II', description: '전체 생산 ×1e10' },
+  },
 };

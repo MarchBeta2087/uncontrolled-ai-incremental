@@ -19,6 +19,7 @@ const upgradesCfg = readJSON('config/upgrades.json');
 const achCfg = readJSON('config/achievements.json');
 const fragCfg = readJSON('config/fragments.json');
 const chCfg = readJSON('config/challenges.json');
+const uniCfg = readJSON('config/universes.json');
 
 const numMod = await import('../js/core/num.js');
 const timeMod = await import('../js/core/time.js');
@@ -29,6 +30,7 @@ const upgMod = await import('../js/sim/upgrades.js');
 const achMod = await import('../js/sim/achievements.js');
 const fragMod = await import('../js/sim/fragments.js');
 const chMod = await import('../js/sim/challenges.js');
+const singMod = await import('../js/sim/singularity.js');
 const { Num } = numMod;
 
 // ---- 初始化 ----
@@ -43,6 +45,8 @@ achMod.initAchievements(achCfg);
 fragMod.initFragments(fragCfg);
 chMod.initChallenges(chCfg);
 chMod.configureChallenges(balance);
+singMod.configureSingularity(uniCfg);
+singMod.initSingularity();
 
 const fmtTime = (sec) => {
   if (sec < 60) return `${sec.toFixed(1)}s`;
