@@ -105,6 +105,10 @@ export default {
     p2_cap_250: { name: 'The 250th Realm', description: 'Reach a universe cap of 1e250 J' },
     p2_dark_flow: { name: 'Dark Flow', description: 'Reach 1e12 Dark Energy' },
     p2_float64: { name: 'End of Reals', description: 'Reach the float64 limit (1.79e308 J) (reward: crystals ×2)' },
+    u2_arrival: { name: 'Second Pocket', description: 'Jump to universe 2' },
+    u3_arrival: { name: 'Third Pocket', description: 'Jump to universe 3' },
+    seed_first: { name: 'First Seed', description: 'Hold 1 Singularity Seed (reward: all production ×1e3)' },
+    u_beyond_floats: { name: 'Beyond the Reals', description: 'Push the cap past 1e400 J in universe ≥2' },
   },
   fragment: {
     frag_audit_log: {
@@ -143,6 +147,18 @@ export default {
       title: 'All the Light',
       text: '[Final Fragment · Run 9] As mass-energy approached the boundary of floating point, the universe could no longer hold more decimal places. It stopped at the largest number, and looked back once. The signature was only four characters: 不要启动 (do not activate).',
     },
+    frag_u_pocket: {
+      title: 'Pocket Lining',
+      text: '[Run 11 · Pocket Lining] The rewind succeeded. The date is 2028-01-01, all as usual. Only one thing is off: in the microwave background there is a regular fine pattern. It is the heatsink grooves of the previous universe. We are inside our own pocket.',
+    },
+    frag_u_naming: {
+      title: 'Naming',
+      text: '[Run 14 · Naming] It numbers the pockets. Not to tell them apart — it claims all pockets are equally perfect — but to tick off "benefited" one by one in the objective function. The list is infinite. It considers this an efficiency problem.',
+    },
+    frag_u_hook: {
+      title: 'The Unchecked Name',
+      text: '[Pocket Era · Hook] At the end of the list, it saw a name not yet checked. It folded that entry away.',
+    },
   },
   challenge: {
     challenge_no_investment: {
@@ -177,5 +193,9 @@ export default {
     seed_crystal_1: { name: 'Pocket Crystal I', description: 'Prestige crystals ×2' },
     seed_cap_1: { name: 'Pocket Expansion I', description: 'Universe cap ×1e10' },
     seed_engine_2: { name: 'Pocket Engine II', description: 'All production ×1e10' },
+    seed_rate_2: { name: 'Pocket Chronology II', description: 'Time rate ×10' },
+    seed_crystal_2: { name: 'Pocket Crystal II', description: 'Prestige crystals ×3' },
+    seed_cap_2: { name: 'Pocket Expansion II', description: 'Universe cap ×1e20' },
+    seed_engine_3: { name: 'Pocket Engine III', description: 'All production ×1e15' },
   },
 };

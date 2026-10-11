@@ -52,9 +52,12 @@ function applyEffects(effects, sourceId) {
   }
 }
 
-/** 重放宇宙自身乘子（上限 / 速率）与所有已购跨宇宙升级效果 */
+/** 重放宇宙自身乘子（经济 / 速率）与所有已购跨宇宙升级效果；跨宇宙效果在穿梭后需重放 */
 export function applyCrossUniverse() {
+  // 宇宙经济乘子：上限 / 产出 / （由 universe.getCostMultiplier 提供的）第二阶段成本同步缩放，
+  // 保证每宇宙的相对节奏一致（见 docs/v0.5-平衡模拟.md）。
   Mults.setCapMultiplier('universe:cap', Universe.getCapMultiplier());
+  Resources.setGlobalMultiplier('universe:prod', Universe.getCapMultiplier());
   Time.setRateMultiplier('universe:rate', Universe.getRateMultiplier(), true);
   for (const id of Universe.getOwnedCrossUpgrades()) {
     const u = Universe.getCrossUniverseUpgrade(id);
@@ -63,9 +66,9 @@ export function applyCrossUniverse() {
 }
 
 // ---- 跃迁 ----
-/** 是否可跃迁：当前宇宙第二阶段全部研发（奇点折叠完成）且质能触顶 */
+/** 是否可跃迁：当前宇宙第二阶段全部研发（奇点折叠完成） */
 export function canJump() {
-  return Techs.allPhase2Researched() && Prestige.canPrestige();
+  return Techs.allPhase2Researched();
 }
 
 export function getSeedReward() {

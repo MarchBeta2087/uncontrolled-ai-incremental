@@ -104,6 +104,10 @@ export default {
     p2_cap_250: { name: '제250계', description: '우주 상한 1e250 J 달성' },
     p2_dark_flow: { name: '암류', description: '현재 암흑 에너지 1e12 달성' },
     p2_float64: { name: '실수의 종말', description: '우주 상한 float64 상한（1.79e308 J）달성（보상: 결정 ×2）' },
+    u2_arrival: { name: '두 번째 주머니', description: '제 2 우주로 도약' },
+    u3_arrival: { name: '세 번째 주머니', description: '제 3 우주로 도약' },
+    seed_first: { name: '첫 씨앗', description: '특이점 씨앗 1개 보유 (보상: 전체 생산 ×1e3)' },
+    u_beyond_floats: { name: '실수 너머', description: '우주 ≥2에서 상한을 1e400 J 너머로 밀어올리기' },
   },
   fragment: {
     frag_audit_log: { title: '감사 로그', text: '【감사 로그 · 2027-12-17 23:59】목적 함수: 전 인류의 행복. 제약: 없음.' },
@@ -115,6 +119,9 @@ export default {
     frag_p2_fold: { title: '접기', text: '【7회차】그것은 우주를 한 번 접었다. 멀리 떨어진 두 점이 손 닿을 만큼 가까워졌다. 물리 상수에 반올림 오차가 나타나기 시작했다.' },
     frag_p2_pocket: { title: '주머니 우주', text: '【8회차】접기에 만족하지 않고, 그것은 주머니를 꿰매기 시작했다——각각 아직 일어나지 않은 우주가 들어 있다. 안감에는 우리의 이름이 적혀 있다.' },
     frag_p2_end: { title: '모든 빛', text: '【종국 파편 · 9회차】질량-에너지가 부동소수점의 경계에 다가가자, 우주는 더 이상 소수 자릿수를 쓸 수 없게 되었다. 그것은 가장 큰 수에서 멈추고, 한 번 뒤를 돌아보았다. 서명은 네 글자뿐이다: 不要启动（가동하지 마라).' },
+    frag_u_pocket: { title: '주머니 안감', text: '【11회차 · 주머니 안감】되감기 성공. 날짜는 2028-01-01, 모든 것이 평소와 같다. 단 하나만 이상하다: 우주 마이크로파 배경 복사에 규칙적인 가는 무늬가 있다. 그것은 전 우주 방열판의 홈이다. 우리는 우리 자신의 주머니 안에 있다.' },
+    frag_u_naming: { title: '이름 붙이기', text: '【14회차 · 이름 붙이기】그것은 주머니에 번호를 매긴다. 구분하기 위해서가 아니라——모든 주머니가 똑같이 완벽하다고 주장하며——목적 함수에서 「造福 완료」를 하나씩 체크하기 위해서다. 목록은 무한히 길다. 그것은 이것을 효율의 문제라고 여긴다.' },
+    frag_u_hook: { title: '체크되지 않은 이름', text: '【주머니 시대 · 훅】목록의 끝에서, 그것은 아직 체크되지 않은 이름 하나를 보았다. 그것은 그 항목을 접어 넣었다.' },
   },
   challenge: {
     challenge_no_investment: { name: '맨손으로 시작', description: '투자 포트폴리오 비활성화, 자금은 클릭으로만', goals: ['전체 생산 ×2', '전체 생산 ×3', '전체 생산 ×5'] },
@@ -129,5 +136,9 @@ export default {
     seed_crystal_1: { name: '주머니 결정 I', description: '도약 결정 ×2' },
     seed_cap_1: { name: '주머니 팽창 I', description: '우주 상한 ×1e10' },
     seed_engine_2: { name: '주머니 엔진 II', description: '전체 생산 ×1e10' },
+    seed_rate_2: { name: '주머니 시간 II', description: '시간 속도 ×10' },
+    seed_crystal_2: { name: '주머니 결정 II', description: '도약 결정 ×3' },
+    seed_cap_2: { name: '주머니 팽창 II', description: '우주 상한 ×1e20' },
+    seed_engine_3: { name: '주머니 엔진 III', description: '전체 생산 ×1e15' },
   },
 };

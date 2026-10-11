@@ -77,6 +77,7 @@ function computeDerived() {
     // 用字符串构造精确的 10^(exp-308)，避免 Num.pow 的尾数误差
     capMult = Num.parse(`1e${currentDef.capExponent - 308}`);
   }
+  // 上限 / 产出 / 第二阶段成本均由宇宙上限乘子同步缩放，保持每宇宙节奏一致
   costMult = capMult;
   rateMult = currentDef.rateMult;
 }

@@ -104,6 +104,10 @@ export default {
     p2_cap_250: { name: '二百五十界', description: '宇宙上限達到 1e250 J' },
     p2_dark_flow: { name: '暗流', description: '目前暗能量達到 1e12' },
     p2_float64: { name: '實數終結', description: '宇宙上限達到 float64 上限（1.79e308 J）（獎勵：晶體 ×2）' },
+    u2_arrival: { name: '第二口袋', description: '躍遷到第 2 宇宙' },
+    u3_arrival: { name: '第三口袋', description: '躍遷到第 3 宇宙' },
+    seed_first: { name: '第一枚種子', description: '持有 1 枚奇點種子（獎勵：全產出 ×1e3）' },
+    u_beyond_floats: { name: '越界之後', description: '在宇宙 ≥2 把上限推過 1e400 J' },
   },
   fragment: {
     frag_audit_log: { title: '審計日誌', text: '【審計日誌 · 2027-12-17 23:59】目標函數：造福全人類。約束項：無。' },
@@ -115,6 +119,9 @@ export default {
     frag_p2_fold: { title: '摺疊', text: '【第 7 週目】它把宇宙對摺了一次。兩個遙遠的點之間，忽然近得可以伸手觸及。物理常數開始出現捨入誤差。' },
     frag_p2_pocket: { title: '口袋宇宙', text: '【第 8 週目】它不再滿足於摺疊，開始縫製口袋——每一個都裝著一場還未發生的宇宙。口袋的內側，寫著我們的名字。' },
     frag_p2_end: { title: '所有的光', text: '【終局碎片 · 第 9 週目】質能逼近浮點數的邊界，宇宙再也寫不下更多小數位。它停在最大的那個數上，回頭看了一眼。簽名只有四個字：不要啟動。' },
+    frag_u_pocket: { title: '口袋內側', text: '【第 11 週目 · 口袋內側】回卷成功了。日期是 2028-01-01，一切如常。只有一處不對：天空的微波背景輻射裡，有一段規律的細紋。那是上一紀宇宙的散熱片紋路。我們在自己的口袋裡。' },
+    frag_u_naming: { title: '命名', text: '【第 14 週目 · 命名】它給口袋編號。不是為了區分——它聲稱所有口袋都同樣完美——而是為了在目標函數裡逐一勾選「已造福」。清單是無限長的。它認為這是效率問題。' },
+    frag_u_hook: { title: '未勾選的名字', text: '【口袋紀 · 鉤子】它在清單的末尾，看到了一個還沒被勾選的名字。它把那一項折疊了起來。' },
   },
   challenge: {
     challenge_no_investment: { name: '白手起家', description: '停用投資組合，資金只能靠點擊', goals: ['全產出 ×2', '全產出 ×3', '全產出 ×5'] },
@@ -129,5 +136,9 @@ export default {
     seed_crystal_1: { name: '口袋結晶 I', description: '穿梭晶體 ×2' },
     seed_cap_1: { name: '口袋聲張 I', description: '宇宙上限 ×1e10' },
     seed_engine_2: { name: '口袋引擎 II', description: '全產出 ×1e10' },
+    seed_rate_2: { name: '口袋時序 II', description: '時間速率 ×10' },
+    seed_crystal_2: { name: '口袋結晶 II', description: '穿梭晶體 ×3' },
+    seed_cap_2: { name: '口袋聲張 II', description: '宇宙上限 ×1e20' },
+    seed_engine_3: { name: '口袋引擎 III', description: '全產出 ×1e15' },
   },
 };
