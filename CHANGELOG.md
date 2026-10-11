@@ -7,6 +7,7 @@
 ### 新增（Added）
 
 - **首张美术素材：银河中心星场背景**（`assets/images/starfield-bg.png`）——Public domain 天体摄影经 GIMP 缩小至 480×240（最近邻）、限色 11 色、压暗偏蓝、边缘暗角融合 `#0d1117` 后接入。CSS 铺于 `body` 底层（`background-size: cover` + `image-rendering: pixelated`），面板维持不透明 `--panel` 以保障 12px 像素数字可读；浅色主题以 `--bg-veil` 淡化星场。许可证与 6 项信息登记于 `ASSETS.md`，许可证文本归档 `assets/LICENSES/starfield-bg.txt`（Issue #20）。
+- **大数记法 ee / loglog 显示开关**（#19 第一步）：新增设置项「大数记法」——指数达 7 位数（≥ `1e1000000`）时可将科学记数折叠为 `eeN`（如 `1e1000000 → ee6`）；偏好存 localStorage，经 `Num.setDisplayMode` 注入格式化默认值，与现有 ban 档并存；`config/balance.json` 新增 `format.numberEeThreshold`；`js/ui/format.js` 为新偏好模块；补齐 5 语言文案与回归测试。
 
 ### 变更（Changed）
 
