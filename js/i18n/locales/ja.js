@@ -104,7 +104,7 @@ export default {
   'settings.bigNumberSection': '巨大数の表記 / Big Number',
   'settings.bigNumber_default': '科学表記',
   'settings.bigNumber_ee': 'ee 記法',
-  'settings.bigNumberHint': 'ee 記法は指数が 7 桁（≥1e1000000）に達すると eeN に折り畳みます（例：1e1000000 → ee6）。',
+  'settings.bigNumberHint': 'ee 記法は指数が 7 桁（≥1e1000000）に達すると eeN に折り畳みます（例：1e1000000 → ee6.0000）。',
   'settings.audioSection': 'オーディオ / Audio',
   'settings.mute': 'ミュート',
   'settings.unmute': 'ミュート解除',

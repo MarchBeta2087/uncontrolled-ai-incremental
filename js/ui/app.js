@@ -66,7 +66,13 @@ function buildShell() {
   // ---- 标题栏 ----
   const titlebar = el('div', 'titlebar');
   const tl = el('div', 'titlebar-left');
-  tl.append(el('span', 'titlebar-dot', '●'), el('span', '', t('app.title')));
+  const logo = document.createElement('img');
+  logo.className = 'titlebar-logo';
+  logo.src = 'assets/images/logo.png';
+  logo.alt = '';
+  logo.width = 16;
+  logo.height = 16;
+  tl.append(logo, el('span', '', t('app.title')));
   const tr = el('div', 'titlebar-right');
   const timeLine = el('div', 'titlebar-time');
   const timeSpan = el('span', 'num', '--');
