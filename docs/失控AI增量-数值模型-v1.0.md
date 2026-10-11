@@ -29,7 +29,7 @@
 | 初始产出率 | `P0` | `1` J/s | 叙事：Ack4 启动日算力近乎为零 |
 | 单周目 e-folding time（初值） | `τ₁` | `3` 游戏年 | 本推演 §5 |
 | 周目 τ 衰减系数 | `d` | `0.5`（每轮减半） | 本推演 §7 |
-| 时间速率乘子软上限 | `RATE_CAP` | `1e30` | 设计 §3.1 防拖慢 tick |
+| ~~时间速率乘子软上限~~（v0.5.1 取消） | ~~`RATE_CAP`~~ | ~~`1e30`~~ | 原设计防拖慢 tick；v0.5.1 已取消 |
 
 > 所有可调数值进 `config/balance.json`，本文档中每个参数标注对应 JSON 键。
 >
@@ -157,7 +157,7 @@ T₁ = 9.467e7 × ln(1e70 / 9.467e7)
 
 ```
 当前速率 = RATE0 × Π(速率乘子) = 10000 × Π(速率乘子)
-速率乘子软上限 = RATE_CAP = 1e30   （超出部分被钳制，防 tick 运算爆炸）
+速率乘子软上限 = RATE_CAP = 1e30   （v0.5.1 已取消，不再钳制）
 ```
 
 | 速率乘子来源 | 示例 | 乘子 | 数量（MVP） |
@@ -281,7 +281,7 @@ crystals = floor( C0 × sqrt(D × K) × sqrt(n) )
 | 键 | 值 | 说明 |
 |---|---|---|
 | `time.baseRate` | 10000 | 初始速率 |
-| `time.rateMultiplierCap` | 1e30 | 速率乘子软上限 |
+| ~~`time.rateMultiplierCap`~~ | ~~1e30~~ | v0.5.1 已删除 |
 | `time.julianYearSeconds` | 31557600 | 儒略年 |
 | `universe.massEnergyCap` | 1e70 | 触顶锚点 |
 | `growth.efoldingYears` | 3 | τ₁ |
