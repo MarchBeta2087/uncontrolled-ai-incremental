@@ -105,7 +105,7 @@ export default {
   'settings.bigNumberSection': 'Big Number Notation',
   'settings.bigNumber_default': 'Scientific',
   'settings.bigNumber_ee': 'ee notation',
-  'settings.bigNumberHint': 'ee notation folds huge exponents (≥1e1000000) into eeN, e.g. 1e1000000 → ee6.',
+  'settings.bigNumberHint': 'ee notation folds huge exponents (≥1e1000000) into eeN, e.g. 1e1000000 → ee6.0000.',
   'settings.audioSection': 'Audio',
   'settings.mute': 'Mute',
   'settings.unmute': 'Unmute',

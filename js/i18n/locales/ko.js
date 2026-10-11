@@ -104,7 +104,7 @@ export default {
   'settings.bigNumberSection': '큰 수 표기 / Big Number',
   'settings.bigNumber_default': '과학적 표기',
   'settings.bigNumber_ee': 'ee 표기',
-  'settings.bigNumberHint': 'ee 표기는 지수가 7자리(≥1e1000000)에 도달하면 eeN으로 접어 표시합니다. 예: 1e1000000 → ee6.',
+  'settings.bigNumberHint': 'ee 표기는 지수가 7자리(≥1e1000000)에 도달하면 eeN으로 접어 표시합니다. 예: 1e1000000 → ee6.0000.',
   'settings.audioSection': '오디오 / Audio',
   'settings.mute': '음소거',
   'settings.unmute': '음소거 해제',

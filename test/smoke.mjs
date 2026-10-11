@@ -72,8 +72,9 @@ assert('ban 记法截断 3 位小数', Num.format(Num.parse('1.7976931348623157e
 assert('ban 记法 1e400', Num.format(Num.parse('1e400'), { mode: 'ban' }) === '1.000e400');
 assert('默认 1e1000000 为科学记数', Num.format('1e1000000') === '1.000e1000000');
 setDisplayMode('ee');
-assert('ee 记法 1e1000000 → ee6', Num.format('1e1000000') === 'ee6');
-assert('ee 记法 1e10000000 → ee7', Num.format('1e10000000') === 'ee7');
+assert('ee 记法 1e1000000 → ee6.0000', Num.format('1e1000000') === 'ee6.0000');
+assert('ee 记法 1e10000000 → ee7.0000', Num.format('1e10000000') === 'ee7.0000');
+assert('ee 记法保留四位小数 1e1234567 → ee6.0915', Num.format('1e1234567') === 'ee6.0915');
 assert('ee 阈值下 1e999999 回退科学记数', Num.format('1e999999') === '1.000e999999');
 assert('ee 不影响普通数', Num.format(1234) === '1,234');
 setDisplayMode('default');

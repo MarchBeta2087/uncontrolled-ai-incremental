@@ -84,14 +84,14 @@ function formatScientific(n, decimals, style) {
   return `${sign}${mantNum.toFixed(decimals)}e${expNum}`;
 }
 
-/** ee 记法（loglog，设计见 #19）：1e1000000 → "ee6"（外层数 = floor(log10(十进制指数))） */
+/** ee 记法（loglog，设计见 #19）：1e1000000 → "ee6.0000"；外层对数保留 decimals 位小数（默认 4） */
 function formatEe(n, decimals) {
   const sign = n.sign === -1 ? '-' : '';
   const abs = n.abs();
-  const exp = abs.log10().floor().toNumber(); // 十进制指数（可达 1e6 量级，普通 Number 足够）
-  if (!Number.isFinite(exp) || exp <= 0) return formatBan(n, decimals);
-  const outer = Math.floor(Math.log10(exp));
-  return `${sign}ee${outer}`;
+  const exp = abs.log10().toNumber(); // 十进制指数（可达 1e6 量级，普通 Number 足够）
+  if (!Number.isFinite(exp) || exp <= 1) return formatBan(n, decimals);
+  const loglog = Math.log10(exp); // 外层对数（loglog）
+  return `${sign}ee${loglog.toFixed(decimals)}`;
 }
 
 export const Num = {
@@ -218,7 +218,7 @@ export const Num = {
 
     // ee 记法（#19）：偏好开启且数值达阈值时，覆盖 ban 档为 eeN（与现有 ban 档并存）
     if ((displayMode === 'ee' || mode === 'ee') && abs.gte(eeThreshold)) {
-      return formatEe(n, decimals);
+      return formatEe(n, opts.eeDecimals ?? 4);
     }
 
     switch (mode) {
