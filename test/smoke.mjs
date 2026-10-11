@@ -278,6 +278,10 @@ assert('宇宙 2 上限目标 = 1e924', Num.eq(universeMod.getCapTarget(), '1e92
 assert('宇宙 2 成本乘子 = 1e616', Num.eq(universeMod.getCostMultiplier(), '1e616'));
 assert('显式宇宙 3 上限指数 = 2772', universeMod.getUniverseDef(3).capExponent === 2772);
 assert('fallback 宇宙 4 上限指数 = 8316', universeMod.getUniverseDef(4).capExponent === 8316);
+assert('宇宙 1 色相 = 0', universeMod.getUniverseDef(1).hue === 0);
+assert('宇宙 9 色相 = 320', universeMod.getUniverseDef(9).hue === 320);
+assert('显式宇宙 9 上限指数 = 2020788', universeMod.getUniverseDef(9).capExponent === 2020788);
+assert('fallback 宇宙 10 色相 = 0（360°）', universeMod.getUniverseDef(10).hue === 0);
 assert('universe_ge 2（是）', conditionsMod.checkCondition({ type: 'universe_ge', value: 2 }) === true);
 assert('universe_ge 3（否）', conditionsMod.checkCondition({ type: 'universe_ge', value: 3 }) === false);
 

@@ -2,9 +2,15 @@
   "$comment": "多宇宙配置（v0.5，见 docs/v0.5-多宇宙设计.md）。capExponent = 该宇宙最终上限的十进制指数（宇宙 1 即 float64 上限）；宇宙上限乘子 = 10^(capExponent-308)。universes 只显式定义前几个宇宙，N 超出后走 fallback 公式。crossUniverseUpgrades 消耗奇点种子，效果为有限枚举（见 js/data/config.js）。",
   "version": "1.0.0",
   "universes": [
-    { "id": 1, "name": "初生宇宙", "capExponent": 308, "seedReward": "1", "rateMult": "1", "difficulty": "1", "restrictions": [] },
-    { "id": 2, "name": "第二口袋", "capExponent": 924, "seedReward": "2", "rateMult": "1", "difficulty": "1", "restrictions": [] },
-    { "id": 3, "name": "第三口袋", "capExponent": 2772, "seedReward": "4", "rateMult": "0.9", "difficulty": "1", "restrictions": [] }
+    { "id": 1, "name": "初生宇宙", "capExponent": 308, "seedReward": "1", "rateMult": "1", "difficulty": "1", "hue": 0, "restrictions": [] },
+    { "id": 2, "name": "第二口袋", "capExponent": 924, "seedReward": "2", "rateMult": "1", "difficulty": "1", "hue": 40, "restrictions": [] },
+    { "id": 3, "name": "第三口袋", "capExponent": 2772, "seedReward": "4", "rateMult": "0.9", "difficulty": "1", "hue": 80, "restrictions": [] },
+    { "id": 4, "name": "第四口袋", "capExponent": 8316, "seedReward": "8", "rateMult": "0.9", "difficulty": "1", "hue": 120, "restrictions": [] },
+    { "id": 5, "name": "第五口袋", "capExponent": 24948, "seedReward": "16", "rateMult": "0.9", "difficulty": "1", "hue": 160, "restrictions": [] },
+    { "id": 6, "name": "第六口袋", "capExponent": 74844, "seedReward": "32", "rateMult": "0.9", "difficulty": "1", "hue": 200, "restrictions": [] },
+    { "id": 7, "name": "第七口袋", "capExponent": 224532, "seedReward": "64", "rateMult": "0.9", "difficulty": "1", "hue": 240, "restrictions": [] },
+    { "id": 8, "name": "第八口袋", "capExponent": 673596, "seedReward": "128", "rateMult": "0.9", "difficulty": "1", "hue": 280, "restrictions": [] },
+    { "id": 9, "name": "第九口袋 · 舍入纪", "capExponent": 2020788, "seedReward": "256", "rateMult": "0.9", "difficulty": "1", "hue": 320, "restrictions": [] }
   ],
   "difficultyExponent": "0.95",
   "fallback": {
@@ -14,7 +20,8 @@
     "seedRewardGrowth": "2",
     "rateMultiplier": "0.9",
     "difficultyBase": "1",
-    "difficultyGrowth": "1"
+    "difficultyGrowth": "1",
+    "hueStep": 40
   },
   "crossUniverseUpgrades": [
     { "id": "seed_engine_1", "name": "口袋引擎 I", "description": "全产出 ×1e6", "cost": "1", "requires": [], "effects": [{ "type": "all_generator_mult", "value": "1e6" }] },

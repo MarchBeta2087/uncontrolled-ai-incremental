@@ -37,7 +37,7 @@ function applyUniverseHue() {
   const u = Universe.getUniverse();
   if (u === appliedUniverseHue) return;
   appliedUniverseHue = u;
-  document.documentElement.style.setProperty('--bg-hue', `${((u - 1) * 40) % 360}deg`);
+  document.documentElement.style.setProperty('--bg-hue', `${Universe.getHue()}deg`);
 }
 
 export function initUI() {
