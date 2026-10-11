@@ -11,6 +11,7 @@ import * as Techs from './techs.js';
 import * as Prestige from './prestige.js';
 import * as Upgrades from './upgrades.js';
 import * as Progress from './progress.js';
+import * as Universe from './universe.js';
 
 /** 判定单个条件是否满足 */
 export function checkCondition(cond) {
@@ -46,6 +47,10 @@ export function checkCondition(cond) {
       return Num.gte(Prestige.getUniverseCap(), Num.parse(cond.value));
     case 'dark_energy_ge':
       return Num.gte(Resources.getResource('dark_energy') ?? Num.parse(0), Num.parse(cond.value));
+    case 'universe_ge':
+      return Universe.getUniverse() >= Number(cond.value);
+    case 'seeds_ge':
+      return Num.gte(Universe.getSeeds(), Num.parse(cond.value));
     default:
       return false;
   }

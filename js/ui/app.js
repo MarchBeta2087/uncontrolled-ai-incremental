@@ -12,18 +12,33 @@ import * as Upgrades from '../sim/upgrades.js';
 import * as Achievements from '../sim/achievements.js';
 import * as Fragments from '../sim/fragments.js';
 import * as Challenges from '../sim/challenges.js';
+import * as Universe from '../sim/universe.js';
+import * as Singularity from '../sim/singularity.js';
+import * as Endings from '../sim/endings.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
+import { BIG_NUMBER_MODES, getBigNumberMode, setBigNumberMode } from './format.js';
+import { playSfx } from '../core/audio.js';
+import { getVolumePref, setVolumePref, getMutedPref, setMutedPref } from './audio.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
-const VERSION = '0.4.0';
+const VERSION = '0.5.0';
 
 const refs = {};
 let dirty = false;
 let rafId = 0;
 let currentView = 'resources';
 let toastTimer = 0;
+let appliedUniverseHue = -1;
+
+/** 按当前宇宙编号设置星场背景色相（每宇宙 +40°，v0.5 换皮） */
+function applyUniverseHue() {
+  const u = Universe.getUniverse();
+  if (u === appliedUniverseHue) return;
+  appliedUniverseHue = u;
+  document.documentElement.style.setProperty('--bg-hue', `${Universe.getHue()}deg`);
+}
 
 export function initUI() {
   document.body.classList.add(platformClass());
@@ -31,6 +46,7 @@ export function initUI() {
   buildShell();
   bindEvents();
   switchView('resources');
+  applyUniverseHue();
   markDirty();
 }
 
@@ -50,7 +66,13 @@ function buildShell() {
   // ---- 标题栏 ----
   const titlebar = el('div', 'titlebar');
   const tl = el('div', 'titlebar-left');
-  tl.append(el('span', 'titlebar-dot', '●'), el('span', '', t('app.title')));
+  const logo = document.createElement('img');
+  logo.className = 'titlebar-logo';
+  logo.src = 'assets/images/logo.png';
+  logo.alt = '';
+  logo.width = 16;
+  logo.height = 16;
+  tl.append(logo, el('span', '', t('app.title')));
   const tr = el('div', 'titlebar-right');
   const timeLine = el('div', 'titlebar-time');
   const timeSpan = el('span', 'num', '--');
@@ -58,12 +80,14 @@ function buildShell() {
   const metaLine = el('div', 'titlebar-meta');
   const rateSpan = el('span', '', t('titlebar.rate', { rate: 1 }));
   const weekSpan = el('span', '', t('titlebar.week', { n: 1 }));
-  metaLine.append(rateSpan, weekSpan);
+  const universeSpan = el('span', '', t('titlebar.universe', { n: 1 }));
+  metaLine.append(rateSpan, weekSpan, universeSpan);
   tr.append(timeLine, metaLine);
   titlebar.append(tl, tr);
   refs.timeText = timeSpan;
   refs.rateText = rateSpan;
   refs.weekText = weekSpan;
+  refs.universeText = universeSpan;
 
   // ---- 视图容器 ----
   const viewContainer = el('div', 'view-container');
@@ -75,7 +99,7 @@ function buildShell() {
 
   const clickBtn = el('button', 'click-btn', t('res.click'));
   clickBtn.type = 'button';
-  clickBtn.onclick = () => { Resources.click(); markDirty(); };
+  clickBtn.onclick = () => { Resources.click(); playSfx('click'); markDirty(); };
   leftCol.append(clickBtn);
   refs.clickBtn = clickBtn;
 
@@ -276,6 +300,45 @@ function buildShell() {
   expPanel.append(chGrid);
   refs.chGrid = chGrid;
 
+  // 奇点 / 多宇宙（v0.5）
+  expPanel.append(el('div', 'panel-title', t('singularity.panel')));
+  const singularityInfo = el('div', '', t('singularity.info', { universe: 1, exponent: '308', seeds: '0' }));
+  const jumpStatus = el('div', '', t('singularity.notReady'));
+  const jumpBtn = el('button', 'btn btn-primary', t('singularity.jumpBtn'));
+  jumpBtn.type = 'button';
+  jumpBtn.disabled = true;
+  jumpBtn.onclick = () => {
+    if (!window.confirm(t('singularity.confirm'))) return;
+    const r = Singularity.jump();
+    if (!r.ok) showToast(r.reason || t('toast.cannotPrestige'));
+    else showToast(t('singularity.jumped', { universe: r.universe, seeds: Num.toString(r.seeds) }));
+    renderNow();
+  };
+  expPanel.append(singularityInfo, jumpStatus, jumpBtn);
+  refs.singularityInfo = singularityInfo;
+  refs.jumpStatus = jumpStatus;
+  refs.jumpBtn = jumpBtn;
+
+  const crossGrid = el('div', 'tech-grid');
+  for (const cu of Universe.getCrossUniverseUpgrades()) {
+    const card = el('div', 'tech-card');
+    card.append(el('div', 'tech-name', tc('crossUpgrade', cu.id, 'name', cu.name)));
+    card.append(el('div', 'tech-desc', tc('crossUpgrade', cu.id, 'description', cu.description || '')));
+    const cost = el('div', 'tech-cost', '');
+    const btn = el('button', 'btn', t('singularity.buy'));
+    btn.type = 'button';
+    btn.dataset.cross = cu.id;
+    btn.onclick = () => {
+      const r = Singularity.buyCrossUniverse(cu.id);
+      if (!r.ok) showToast(r.reason || t('toast.cannotBuy'));
+      markDirty();
+    };
+    card.append(cost, btn);
+    crossGrid.append(card);
+  }
+  expPanel.append(crossGrid);
+  refs.crossGrid = crossGrid;
+
   viewExpand.append(expPanel);
   refs.massBig = massBig;
   refs.progressFill = progressFill;
@@ -320,20 +383,66 @@ function buildShell() {
   refs.fragList = fragList;
   refs.fragTitle = fragTitle;
 
-  // 终局视图（第二阶段技术全部研发后，由任务栏按钮进入）
+  // 终局视图（集齐全部记忆碎片后由任务栏进入；v0.6 双结局）
   const viewEndgame = el('div', 'view');
   const egPanel = el('div', 'panel');
   egPanel.append(el('div', 'panel-title', t('nav.endgame')));
-  egPanel.append(el('p', 'endgame-title', t('endgame.title')));
-  egPanel.append(el('p', 'modal-text', t('endgame.comingSoon')));
-  egPanel.append(el('p', 'modal-text', t('endgame.license')));
-  egPanel.append(el('p', 'modal-text', t('endgame.contribute')));
+
+  // 未解锁：提示
+  const egLocked = el('div', '');
+  egLocked.append(
+    el('p', 'endgame-title', t('endgame.title')),
+    el('p', 'modal-text', t('endgame.comingSoon'))
+  );
+
+  // 已解锁未选择：二选一
+  const egChoice = el('div', '');
+  egChoice.append(
+    el('p', 'endgame-title', t('endgame.choiceTitle')),
+    el('p', 'modal-text', t('endgame.intro'))
+  );
+  const egChoiceRow = el('div', 'modal-row');
+  for (const eid of Endings.getEndingIds()) {
+    const e = Endings.getEnding(eid);
+    const btn = el('button', 'btn btn-primary', tc('ending', eid, 'name', e.name));
+    btn.type = 'button';
+    btn.dataset.ending = eid;
+    btn.onclick = () => {
+      const r = Endings.choose(eid);
+      if (!r.ok) showToast(t('endgame.chooseFailed'));
+      markDirty();
+    };
+    egChoiceRow.append(btn);
+  }
+  egChoice.append(egChoiceRow);
+
+  // 已选择：结局文本
+  const egResult = el('div', '');
+  const egResultTitle = el('p', 'endgame-title', '');
+  const egResultText = el('p', 'modal-text', '');
+  egResult.append(egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')));
+
+  // 通用信息
+  const egMeta = el('div', '');
+  egMeta.append(
+    el('p', 'modal-text', t('endgame.license')),
+    el('p', 'modal-text', t('endgame.contribute'))
+  );
   const egRepo = el('a', 'modal-text', t('endgame.repo'));
   egRepo.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental';
   egRepo.target = '_blank';
   egRepo.rel = 'noopener noreferrer';
-  egPanel.append(egRepo);
+  egMeta.append(egRepo);
+
+  egPanel.append(egLocked, egChoice, egResult, egMeta);
+  egChoice.hidden = true;
+  egResult.hidden = true;
   viewEndgame.append(egPanel);
+  refs.egLocked = egLocked;
+  refs.egChoice = egChoice;
+  refs.egResult = egResult;
+  refs.egResultTitle = egResultTitle;
+  refs.egResultText = egResultText;
 
   viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewEndgame);
 
@@ -349,7 +458,7 @@ function buildShell() {
   btnExpand.onclick = () => switchView('expand');
   btnRecords.onclick = () => switchView('records');
   btnEndgame.onclick = () => switchView('endgame');
-  refs.endgameReady = Techs.allPhase2Researched();
+  refs.endgameReady = Endings.isUnlocked();
   btnEndgame.hidden = !refs.endgameReady;
   refs.endgameBtn = btnEndgame;
   refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords, endgame: btnEndgame };
@@ -370,7 +479,33 @@ function buildShell() {
   modalOverlay.style.display = 'none';
   const modal = el('div', 'modal');
   modal.append(el('div', 'modal-title', t('settings.title')));
+
+  // Tab 栏：设置 / 关于 / 版本记录
+  const tabBar = el('div', 'modal-tabs');
+  const tabBtns = {};
+  const aboutBody = el('div', 'modal-body');
+  const changelogBody = el('div', 'modal-body');
+  aboutBody.hidden = true;
+  changelogBody.hidden = true;
+  const tabBodies = {};
+  function switchTab(name) {
+    for (const [k, b] of Object.entries(tabBtns)) b.classList.toggle('active', k === name);
+    for (const [k, body] of Object.entries(tabBodies)) body.hidden = k !== name;
+    if (name === 'changelog') ensureChangelog();
+  }
+  for (const [id, key] of [['settings', 'settings.tabSettings'], ['about', 'settings.tabAbout'], ['changelog', 'settings.tabChangelog']]) {
+    const tabBtn = el('button', 'modal-tab', t(key));
+    tabBtn.type = 'button';
+    tabBtn.onclick = () => switchTab(id);
+    tabBtns[id] = tabBtn;
+    tabBar.append(tabBtn);
+  }
+  modal.append(tabBar);
+
   const modalBody = el('div', 'modal-body');
+  tabBodies.settings = modalBody;
+  tabBodies.about = aboutBody;
+  tabBodies.changelog = changelogBody;
 
   modalBody.append(el('div', 'modal-section', t('settings.saveSection')));
   const row1 = el('div', 'modal-row');
@@ -454,21 +589,87 @@ function buildShell() {
   accentRow.append(accentInput, accentReset);
   modalBody.append(accentRow);
 
-  modalBody.append(el('div', 'modal-section', t('settings.aboutSection')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutGame')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutVersion', { version: VERSION })));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutLicense')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutNumLib')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutOrdinal')));
+  // 大数记法（科学记数 / ee）
+  modalBody.append(el('div', 'modal-section', t('settings.bigNumberSection')));
+  const bnRow = el('div', 'modal-row');
+  const bnBtns = {};
+  for (const m of BIG_NUMBER_MODES) {
+    const bnBtn = el('button', 'btn', t('settings.bigNumber_' + m));
+    bnBtn.type = 'button';
+    if (m === getBigNumberMode()) bnBtn.classList.add('btn-primary');
+    bnBtn.onclick = () => {
+      setBigNumberMode(m);
+      for (const [k, b] of Object.entries(bnBtns)) b.classList.toggle('btn-primary', k === m);
+      markDirty();
+    };
+    bnBtns[m] = bnBtn;
+    bnRow.append(bnBtn);
+  }
+  modalBody.append(bnRow);
+  modalBody.append(el('p', 'modal-text', t('settings.bigNumberHint')));
+
+  // 音频
+  modalBody.append(el('div', 'modal-section', t('settings.audioSection')));
+  const audioRow = el('div', 'modal-row');
+  const muteBtn = el('button', 'btn', getMutedPref() ? t('settings.unmute') : t('settings.mute'));
+  muteBtn.type = 'button';
+  if (!getMutedPref()) muteBtn.classList.add('btn-primary');
+  muteBtn.onclick = () => {
+    const next = !getMutedPref();
+    setMutedPref(next);
+    muteBtn.textContent = next ? t('settings.unmute') : t('settings.mute');
+    muteBtn.classList.toggle('btn-primary', !next);
+    if (!next) playSfx('click');
+  };
+  const volInput = el('input', '');
+  volInput.type = 'range';
+  volInput.min = '0';
+  volInput.max = '1';
+  volInput.step = '0.05';
+  volInput.value = String(getVolumePref());
+  volInput.oninput = () => setVolumePref(Number(volInput.value));
+  volInput.onchange = () => playSfx('click');
+  audioRow.append(muteBtn, volInput);
+  modalBody.append(audioRow);
+
+  // ---- 关于 tab（带 Logo）----
+  const aboutLogo = document.createElement('img');
+  aboutLogo.className = 'about-logo';
+  aboutLogo.src = 'assets/images/logo.png';
+  aboutLogo.alt = t('settings.aboutGame');
+  aboutLogo.width = 64;
+  aboutLogo.height = 64;
+  aboutBody.append(aboutLogo);
+  aboutBody.append(el('div', 'modal-section', t('settings.aboutSection')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutGame')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutVersion', { version: VERSION })));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutLicense')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutNumLib')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutOrdinal')));
   const repoLink = el('a', 'modal-text', t('settings.aboutRepo'));
   repoLink.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental';
   repoLink.target = '_blank';
   repoLink.rel = 'noopener noreferrer';
-  modalBody.append(repoLink);
+  aboutBody.append(repoLink);
+
+  // ---- 版本记录 tab（UTC / 北京时间双轨甘特图 + 点击查看详情）----
+  changelogBody.append(el('div', 'modal-section', t('settings.tabChangelog')));
+  const ganttHost = el('div', 'gantt-host');
+  ganttHost.append(el('p', 'modal-text', t('changelog.loading')));
+  changelogBody.append(ganttHost);
+  const ganttDetail = el('div', 'changelog-detail');
+  ganttDetail.hidden = true;
+  changelogBody.append(ganttDetail);
+  refs.ganttHost = ganttHost;
+  refs.ganttDetail = ganttDetail;
+  refs.changelogLoaded = false;
+  refs.changelogMap = null;
+  refs.versionsData = null;
 
   const closeBtn = el('button', 'btn', t('settings.close'));
   closeBtn.onclick = () => closeModal();
-  modal.append(modalBody, closeBtn);
+  modal.append(modalBody, aboutBody, changelogBody, closeBtn);
+  switchTab('settings');
   modalOverlay.append(modal);
   refs.modalOverlay = modalOverlay;
 
@@ -529,6 +730,149 @@ function openModal() {
 }
 function closeModal() {
   if (refs.modalOverlay) refs.modalOverlay.style.display = 'none';
+}
+
+/** 版本记录：懒加载 versions.json + CHANGELOG.md 并渲染（只执行一次）。
+    用 fetch().text() 读取 CHANGELOG —— Fetch 规范默认按 UTF-8 解码，
+    避免直接打开原始 .md 时浏览器用本地编码猜测导致的乱码。 */
+async function ensureChangelog() {
+  if (refs.changelogLoaded || !refs.ganttHost) return;
+  refs.changelogLoaded = true;
+  try {
+    const [vResp, cResp] = await Promise.all([fetch('config/versions.json'), fetch('CHANGELOG.md')]);
+    if (!vResp.ok) throw new Error(String(vResp.status));
+    const data = await vResp.json();
+    refs.versionsData = data.versions ?? [];
+    refs.changelogMap = cResp.ok ? parseChangelog(await cResp.text()) : {};
+    renderGantt(refs.ganttHost, refs.versionsData);
+  } catch (err) {
+    console.error('[UI] 版本记录加载失败：', err);
+    refs.ganttHost.innerHTML = '';
+    refs.ganttHost.append(el('p', 'modal-text', t('changelog.loadFailed')));
+  }
+}
+
+/** 渲染「一行一版本」甘特图（可上下左右滚动）+ 底部 UTC / 北京时间双轨时间轴 */
+function renderGantt(host, versions) {
+  host.innerHTML = '';
+  const items = versions
+    .map((v) => ({ ...v, ts: Date.parse(v.releasedAt) }))
+    .filter((v) => Number.isFinite(v.ts))
+    .sort((a, b) => a.ts - b.ts);
+  if (!items.length) {
+    host.append(el('p', 'modal-text', t('changelog.empty')));
+    return;
+  }
+  const t0 = items[0].ts;
+  const t1 = items[items.length - 1].ts;
+  const span = Math.max(1, t1 - t0);
+  const pct = (ts) => ((ts - t0) / span) * 100;
+
+  const fmtOpts = { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+  const utcFmt = new Intl.DateTimeFormat(getLocale(), { ...fmtOpts, timeZone: 'UTC' });
+  const bjFmt = new Intl.DateTimeFormat(getLocale(), { ...fmtOpts, timeZone: 'Asia/Shanghai' });
+  const fmtUTC = (ts) => utcFmt.format(new Date(ts));
+  const fmtBJ = (ts) => bjFmt.format(new Date(ts));
+
+  const inner = el('div', 'gantt-inner');
+
+  // 一行一个版本（点击查看详情）
+  const rows = el('div', 'gantt-rows');
+  items.forEach((v, i) => {
+    const start = i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts;
+    const left = pct(start);
+    const row = el('div', 'gantt-row');
+    row.dataset.version = v.version;
+    row.onclick = () => showVersionDetail(v.version);
+    const track = el('div', 'gantt-track');
+    const bar = el('div', 'gantt-bar');
+    bar.style.left = `${left}%`;
+    bar.style.width = `${Math.max(1, pct(v.ts) - left)}%`;
+    const note = tc('version', v.version, 'note', v.note || '');
+    row.title = `v${v.version} · ${fmtUTC(v.ts)} UTC / ${fmtBJ(v.ts)} 北京${note ? ' · ' + note : ''}`;
+    track.append(bar);
+    row.append(el('span', 'gantt-ver', `v${v.version}`), track, el('span', 'gantt-note', note));
+    rows.append(row);
+  });
+  inner.append(rows);
+
+  // 底部两条时间轴：UTC / 北京时间（相同刻度位置，不同时区读数）
+  const axis = el('div', 'gantt-axis');
+  for (const [key, fmt] of [['changelog.utcTrack', fmtUTC], ['changelog.beijingTrack', fmtBJ]]) {
+    const ar = el('div', 'gantt-axis-row');
+    ar.append(el('span', 'gantt-axis-label', t(key)));
+    const line = el('div', 'gantt-axis-line');
+    for (const frac of [0, 0.5, 1]) line.append(el('span', 'gantt-tick num', fmt(t0 + frac * span)));
+    ar.append(line);
+    axis.append(ar);
+  }
+  inner.append(axis);
+
+  const full = el('a', 'modal-text', t('changelog.fullLog'));
+  full.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental/blob/dev/CHANGELOG.md';
+  full.target = '_blank';
+  full.rel = 'noopener noreferrer';
+  inner.append(full);
+
+  host.append(inner);
+}
+
+/** 解析 CHANGELOG.md：version -> 该版本正文 */
+function parseChangelog(text) {
+  const map = {};
+  let current = null;
+  for (const line of text.split('\n')) {
+    const m = line.match(/^## \[([^\]]+)\]/);
+    if (m) {
+      current = m[1];
+      map[current] = [];
+      continue;
+    }
+    if (current) map[current].push(line);
+  }
+  for (const k of Object.keys(map)) map[k] = map[k].join('\n').trim();
+  return map;
+}
+
+/** 极简 markdown → 纯文本（保留换行） */
+function markdownToText(md) {
+  return md
+    .replace(/^### (.+)$/gm, '▸ $1')
+    .replace(/^\s*[-*] (.+)$/gm, '• $1')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1（$2）')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/`([^`]+)`/g, '$1');
+}
+
+/** 显示某版本详情（CHANGELOG 章节；无则回退到版本说明） */
+function showVersionDetail(version) {
+  const host = refs.ganttDetail;
+  if (!host) return;
+  host.innerHTML = '';
+  const head = el('div', 'changelog-detail-head');
+  head.append(el('span', 'changelog-detail-title', `v${version}`));
+  const close = el('button', 'btn', t('settings.close'));
+  close.type = 'button';
+  close.onclick = () => {
+    host.hidden = true;
+  };
+  head.append(close);
+  host.append(head);
+  const md = refs.changelogMap?.[version];
+  const body = el('div', 'changelog-detail-body');
+  if (md) {
+    body.textContent = markdownToText(md);
+  } else {
+    const v = (refs.versionsData ?? []).find((x) => x.version === version);
+    body.textContent = v?.note ?? t('changelog.noDetail');
+  }
+  host.append(body);
+  host.hidden = false;
+  if (refs.ganttHost) {
+    for (const r of refs.ganttHost.querySelectorAll('.gantt-row')) {
+      r.classList.toggle('selected', r.dataset.version === version);
+    }
+  }
 }
 
 function showToast(text) {
@@ -605,11 +949,28 @@ function render() {
 }
 
 function updateEndgame() {
-  if (refs.endgameReady || !Techs.allPhase2Researched()) return;
-  refs.endgameReady = true;
-  if (refs.endgameBtn) refs.endgameBtn.hidden = false;
-  showToast(t('toast.endgameReached'));
-  switchView('endgame');
+  if (!refs.endgameReady && Endings.isUnlocked()) {
+    refs.endgameReady = true;
+    if (refs.endgameBtn) refs.endgameBtn.hidden = false;
+    showToast(t('toast.endgameReached'));
+    switchView('endgame');
+  }
+  renderEndgame();
+}
+
+/** 终局面板：按「未解锁 / 待选择 / 已选择」切换内容 */
+function renderEndgame() {
+  if (!refs.egLocked) return;
+  const unlocked = Endings.isUnlocked();
+  const chosen = Endings.getChosen();
+  refs.egLocked.hidden = unlocked;
+  refs.egChoice.hidden = !unlocked || !!chosen;
+  refs.egResult.hidden = !chosen;
+  if (chosen) {
+    const e = Endings.getEnding(chosen);
+    refs.egResultTitle.textContent = tc('ending', chosen, 'title', e?.title ?? '');
+    refs.egResultText.textContent = tc('ending', chosen, 'text', e?.text ?? '');
+  }
 }
 
 function updateTitlebar() {
@@ -618,6 +979,8 @@ function updateTitlebar() {
   const rateMult = Num.div(Time.getRate(), Time.getBaseRate());
   refs.rateText.textContent = t('titlebar.rate', { rate: Num.format(rateMult) });
   refs.weekText.textContent = t('titlebar.week', { n: Prestige.getPrestigeCount() + 1 });
+  if (refs.universeText) refs.universeText.textContent = t('titlebar.universe', { n: Universe.getUniverse() });
+  applyUniverseHue();
 }
 
 function updateResources() {
@@ -670,7 +1033,7 @@ function updateTechs() {
     const owned = Techs.isOwned(tid);
     card.classList.toggle('owned', owned);
     card.querySelector('.tech-cost').textContent =
-      t('tech.cost', { cost: Num.format(Num.parse(def.cost)), currency: tc('resource', def.costCurrency, 'name', Resources.getResourceDef(def.costCurrency)?.name ?? '') });
+      t('tech.cost', { cost: Num.format(Techs.getCost(tid)), currency: tc('resource', def.costCurrency, 'name', Resources.getResourceDef(def.costCurrency)?.name ?? '') });
     if (owned) {
       btn.textContent = t('tech.owned');
       btn.disabled = true;
@@ -736,6 +1099,39 @@ function updateExpand() {
         btn.textContent = t('expand.upgradeBuy');
         btn.disabled = !Upgrades.canBuy(uid);
         costEl.textContent = t('expand.upgradeCost', { cost: Num.format(Num.parse(u.cost)) });
+      }
+    }
+  }
+
+  // 奇点 / 多宇宙
+  if (refs.singularityInfo) {
+    refs.singularityInfo.textContent = t('singularity.info', {
+      universe: Universe.getUniverse(),
+      exponent: Num.format(Universe.getCapExponent()),
+      seeds: Num.format(Universe.getSeeds()),
+    });
+  }
+  if (refs.jumpBtn) {
+    const ready = Singularity.canJump();
+    refs.jumpStatus.textContent = ready ? t('singularity.ready') : t('singularity.notReady');
+    refs.jumpBtn.disabled = !ready;
+  }
+  if (refs.crossGrid) {
+    for (const card of refs.crossGrid.querySelectorAll('.tech-card')) {
+      const btn = card.querySelector('.btn');
+      const cid = btn.dataset.cross;
+      const cu = Universe.getCrossUniverseUpgrade(cid);
+      const owned = Universe.isCrossOwned(cid);
+      card.classList.toggle('owned', owned);
+      const costEl = card.querySelector('.tech-cost');
+      if (owned) {
+        btn.textContent = t('singularity.owned');
+        btn.disabled = true;
+        costEl.textContent = t('singularity.effect', { desc: cu.description || '' });
+      } else {
+        btn.textContent = t('singularity.buy');
+        btn.disabled = !Singularity.canBuyCrossUniverse(cid);
+        costEl.textContent = t('singularity.cost', { cost: Num.format(Num.parse(cu.cost)) });
       }
     }
   }

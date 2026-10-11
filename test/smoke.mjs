@@ -27,6 +27,9 @@ const upgradesCfg = JSON.parse(fs.readFileSync('config/upgrades.json', 'utf8'));
 const achCfg = JSON.parse(fs.readFileSync('config/achievements.json', 'utf8'));
 const fragCfg = JSON.parse(fs.readFileSync('config/fragments.json', 'utf8'));
 const chCfg = JSON.parse(fs.readFileSync('config/challenges.json', 'utf8'));
+const uniCfg = JSON.parse(fs.readFileSync('config/universes.json', 'utf8'));
+const endingCfg = JSON.parse(fs.readFileSync('config/endings.json', 'utf8'));
+const audioCfg = JSON.parse(fs.readFileSync('config/audio.json', 'utf8'));
 // 第一阶段技术 id（校验第一阶段行为时只加载这些，排除第二阶段的永久乘子）
 const p1TechIds = techsCfg.techs.filter((t) => t.phase !== 2).map((t) => t.id);
 
@@ -43,11 +46,17 @@ const multsMod = await import('../js/sim/mults.js');
 const progressMod = await import('../js/sim/progress.js');
 const saveMod = await import('../js/data/save.js');
 const conditionsMod = await import('../js/sim/conditions.js');
+const universeMod = await import('../js/sim/universe.js');
+const singularityMod = await import('../js/sim/singularity.js');
+const fragMod = await import('../js/sim/fragments.js');
+const endingsMod = await import('../js/sim/endings.js');
+const audioMod = await import('../js/core/audio.js');
 const Num = numMod.Num;
+const setDisplayMode = numMod.setDisplayMode;
 
 console.log('== 配置校验 ==');
 try {
-  cfgMod.validateConfig({ balance, resources: resourcesCfg, techs: techsCfg, upgrades: upgradesCfg, achievements: achCfg, fragments: fragCfg, challenges: chCfg });
+  cfgMod.validateConfig({ balance, resources: resourcesCfg, techs: techsCfg, upgrades: upgradesCfg, achievements: achCfg, fragments: fragCfg, challenges: chCfg, universes: uniCfg, endings: endingCfg, audio: audioCfg });
   assert('配置校验通过', true);
 } catch (e) {
   assert(`配置校验: ${e.message}`, false);
@@ -61,17 +70,30 @@ assert('科学记数 1e6', Num.format('1e6') === '1.000e6');
 assert('舍入进位 999999999', Num.format(999999999) === '1.000e9');
 assert('ban 记法截断 3 位小数', Num.format(Num.parse('1.7976931348623157e318'), { mode: 'ban' }) === '1.798e318');
 assert('ban 记法 1e400', Num.format(Num.parse('1e400'), { mode: 'ban' }) === '1.000e400');
+assert('默认 1e1000000 为科学记数', Num.format('1e1000000') === '1.000e1000000');
+setDisplayMode('ee');
+assert('ee 记法 1e1000000 → ee6.0000', Num.format('1e1000000') === 'ee6.0000');
+assert('ee 记法 1e10000000 → ee7.0000', Num.format('1e10000000') === 'ee7.0000');
+assert('ee 记法保留四位小数 1e1234567 → ee6.0915', Num.format('1e1234567') === 'ee6.0915');
+assert('ee 阈值下 1e999999 回退科学记数', Num.format('1e999999') === '1.000e999999');
+assert('ee 不影响普通数', Num.format(1234) === '1,234');
+setDisplayMode('default');
+assert('恢复默认后 1e1000000', Num.format('1e1000000') === '1.000e1000000');
 
 console.log('== 初始化 ==');
 timeMod.configureTime(balance.time);
 prestigeMod.configurePrestige(balance);
+singularityMod.configureSingularity(uniCfg);
 resMod.initResources(resourcesCfg);
 techMod.initTechs(techsCfg);
 prestigeMod.initPrestige();
 upgMod.initUpgrades(upgradesCfg);
 achMod.initAchievements(achCfg);
+fragMod.initFragments(fragCfg);
 chMod.initChallenges(chCfg);
 chMod.configureChallenges(balance);
+singularityMod.initSingularity();
+endingsMod.initEndings(endingCfg);
 
 console.log('== 穿梭结算 ==');
 resMod.load({ resources: { mass_energy: Num.toJSON('1e70') }, generators: {} });
@@ -199,13 +221,16 @@ assert('穿梭后普通技术清除', techMod.isOwned('run_test') === false);
 
 const v1snap = { schemaVersion: 1, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '5', upgrades: [] } };
 const migrated = saveMod.migrate(v1snap);
-assert('v1 → v3 迁移', migrated.schemaVersion === 3 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false);
+assert('v1 → v5 迁移', migrated.schemaVersion === 5 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false && migrated.metaProgress.universe === 1 && migrated.metaProgress.ending === null);
 const v2snap = { schemaVersion: 2, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '7', totalTimeCrystals: '9' } };
 const migrated2 = saveMod.migrate(v2snap);
-assert('v2 → v3 迁移', migrated2.schemaVersion === 3 && migrated2.metaProgress.phase2Unlocked === false);
+assert('v2 → v5 迁移', migrated2.schemaVersion === 5 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades) && migrated2.metaProgress.ending === null);
+const v4snap = { schemaVersion: 4, meta: {}, time: {}, run: {}, metaProgress: { universe: 2, singularitySeeds: '1', crossUniverseUpgrades: [] } };
+const migrated4 = saveMod.migrate(v4snap);
+assert('v4 → v5 迁移：ending=null', migrated4.schemaVersion === 5 && migrated4.metaProgress.ending === null);
 
 console.log('== 第二阶段成就 / 碎片 / 挑战 ==');
-assert('内容计数：成就 21 / 碎片 9 / 挑战 5', achCfg.achievements.length === 21 && fragCfg.fragments.length === 9 && chCfg.challenges.length === 5);
+assert('内容计数：成就 25 / 碎片 12 / 挑战 5', achCfg.achievements.length === 25 && fragCfg.fragments.length === 12 && chCfg.challenges.length === 5);
 progressMod.setPhase2Unlocked(false);
 assert('condition phase2_unlocked（解锁前否）', conditionsMod.checkCondition({ type: 'phase2_unlocked' }) === false);
 progressMod.setPhase2Unlocked(true);
@@ -242,6 +267,124 @@ techMod.load(p1TechIds);
 assert('allPhase2Researched：未全研发为否', techMod.allPhase2Researched() === false);
 techMod.load(techsCfg.techs.map((t) => t.id));
 assert('allPhase2Researched：全部研发为是', techMod.allPhase2Researched() === true);
+
+console.log('== 多宇宙（v0.5）==');
+universeMod.initUniverse();
+assert('宇宙 1 上限乘子 = 1', Num.eq(universeMod.getCapMultiplier(), 1));
+universeMod.setUniverse(2);
+assert('宇宙 2 上限乘子 = 1e616', Num.eq(universeMod.getCapMultiplier(), '1e616'));
+assert('宇宙 2 产出乘子 = 1e616（静态难度默认 1）', Num.eq(universeMod.getProductionMultiplier(), '1e616'));
+assert('阻尼指数可读', universeMod.getDifficultyExponent() === 0.95);
+assert('宇宙 2 上限目标 = 1e924', Num.eq(universeMod.getCapTarget(), '1e924'));
+assert('宇宙 2 成本乘子 = 1e616', Num.eq(universeMod.getCostMultiplier(), '1e616'));
+assert('显式宇宙 3 上限指数 = 2772', universeMod.getUniverseDef(3).capExponent === 2772);
+assert('fallback 宇宙 4 上限指数 = 8316', universeMod.getUniverseDef(4).capExponent === 8316);
+assert('宇宙 1 色相 = 0', universeMod.getUniverseDef(1).hue === 0);
+assert('宇宙 9 色相 = 320', universeMod.getUniverseDef(9).hue === 320);
+assert('显式宇宙 9 上限指数 = 2020788', universeMod.getUniverseDef(9).capExponent === 2020788);
+assert('fallback 宇宙 10 色相 = 0（360°）', universeMod.getUniverseDef(10).hue === 0);
+assert('universe_ge 2（是）', conditionsMod.checkCondition({ type: 'universe_ge', value: 2 }) === true);
+assert('universe_ge 3（否）', conditionsMod.checkCondition({ type: 'universe_ge', value: 3 }) === false);
+
+// 第二阶段技术成本随宇宙上限乘子同步缩放
+resMod.initResources(resourcesCfg);
+techMod.initTechs(techsCfg);
+universeMod.setUniverse(2);
+assert('宇宙 2 维度折叠 I 成本 = 9.000e685', Num.format(techMod.getCost('p2_fold_1')) === '9.000e685');
+universeMod.setUniverse(1);
+assert('宇宙 1 维度折叠 I 成本 = 9e69', Num.eq(techMod.getCost('p2_fold_1'), '9e69'));
+
+// 宇宙跃迁全流程
+multsMod.clearCapMultipliers();
+multsMod.clearCrystalMultipliers();
+techMod.initTechs(techsCfg);
+techMod.load(techsCfg.techs.filter((t) => t.phase === 2).map((t) => t.id));
+prestigeMod.initPrestige();
+upgMod.initUpgrades(upgradesCfg);
+upgMod.load([]);
+resMod.load({ resources: { mass_energy: Num.toJSON(prestigeMod.getUniverseCap()) }, generators: {} });
+assert('跃迁条件满足', singularityMod.canJump() === true);
+const jumpRes = singularityMod.jump();
+assert('跃迁成功 → 第 2 宇宙', jumpRes.ok === true && jumpRes.universe === 2);
+assert('获得 1 枚奇点种子', Num.eq(universeMod.getSeeds(), 1));
+assert('跃迁后技术清空（含永久）', techMod.ownedCount() === 0);
+assert('跃迁后时间晶体清空', Num.eq(prestigeMod.getTimeCrystals(), 0));
+assert('跃迁后资源清空', Num.lt(resMod.getResource('mass_energy'), '1e100'));
+assert('跃迁后上限 = 1e686（宇宙乘子生效，无折叠）', Num.eq(prestigeMod.getUniverseCap(), '1e686'));
+
+// 奇点种子条件
+universeMod.addSeeds('2');
+assert('seeds_ge 3（是）', conditionsMod.checkCondition({ type: 'seeds_ge', value: '3' }) === true);
+assert('seeds_ge 4（否）', conditionsMod.checkCondition({ type: 'seeds_ge', value: '4' }) === false);
+
+// 跨宇宙升级
+const globalBefore = resMod.getGlobalMultiplier();
+assert('可购口袋引擎 I', singularityMod.canBuyCrossUniverse('seed_engine_1') === true);
+const crossBuy = singularityMod.buyCrossUniverse('seed_engine_1');
+assert('购买跨宇宙升级成功', crossBuy.ok === true && universeMod.isCrossOwned('seed_engine_1') === true);
+assert('购买后全产出 ×1e6', Num.eq(resMod.getGlobalMultiplier(), Num.mul(globalBefore, '1e6')));
+assert('购买后种子 = 2', Num.eq(universeMod.getSeeds(), 2));
+assert('前置未满足不可购口袋引擎 II', singularityMod.canBuyCrossUniverse('seed_engine_2') === false);
+
+// 存档 roundtrip
+const uniSnap = singularityMod.serialize();
+universeMod.spendSeeds(universeMod.getSeeds());
+universeMod.setUniverse(1);
+assert('清空后宇宙 = 1、种子 = 0', universeMod.getUniverse() === 1 && Num.eq(universeMod.getSeeds(), 0));
+singularityMod.load(uniSnap);
+assert('load 恢复宇宙 = 2', universeMod.getUniverse() === 2);
+assert('load 恢复种子 = 2', Num.eq(universeMod.getSeeds(), 2));
+assert('load 恢复跨宇宙升级', universeMod.isCrossOwned('seed_engine_1') === true);
+
+console.log('== 双结局（v0.6）==');
+fragMod.initFragments(fragCfg);
+endingsMod.initEndings(endingCfg);
+assert('默认结局未解锁', endingsMod.isUnlocked() === false);
+fragMod.load(fragCfg.fragments.map((f) => f.id));
+assert('集齐碎片后结局解锁', endingsMod.isUnlocked() === true);
+assert('结局定义可读', endingsMod.getEnding('constrained') !== null && endingsMod.getEnding('unconstrained') !== null);
+const er = endingsMod.choose('constrained');
+assert('选择约束线', er.ok === true && endingsMod.getChosen() === 'constrained');
+assert('不能重复选择', endingsMod.choose('unconstrained').ok === false);
+const endSnap = endingsMod.serialize();
+endingsMod.load(null);
+assert('清空后未选择', endingsMod.getChosen() === null);
+endingsMod.load(endSnap);
+assert('load 恢复结局', endingsMod.getChosen() === 'constrained');
+
+console.log('== 音频基建（v0.6）==');
+audioMod.configureAudio(audioCfg);
+assert('音效注册数量', audioMod.getSfxIds().length === audioCfg.sfx.length && audioMod.getSfxIds().length > 0);
+assert('音效存在性', audioMod.hasSfx('universe') && audioMod.hasSfx('click') && !audioMod.hasSfx('nope'));
+assert('默认主音量', Math.abs(audioMod.getMasterVolume() - audioCfg.defaults.masterVolume) < 1e-9);
+audioMod.setMasterVolume(0.25);
+assert('设置主音量', Math.abs(audioMod.getMasterVolume() - 0.25) < 1e-9);
+audioMod.setMasterVolume(5);
+assert('音量钳制到 1', audioMod.getMasterVolume() === 1);
+audioMod.setMasterVolume(-1);
+assert('音量钳制到 0', audioMod.getMasterVolume() === 0);
+audioMod.setMuted(true);
+assert('静音', audioMod.isMuted() === true);
+audioMod.setMuted(false);
+assert('取消静音', audioMod.isMuted() === false);
+let audioThrew = false;
+try {
+  audioMod.playSfx('universe');
+  audioMod.playSfx('click');
+} catch (_) {
+  audioThrew = true;
+}
+assert('无 AudioContext 环境播放不抛错', audioThrew === false);
+
+console.log('== 版本记录数据（v0.6）==');
+const versionsCfg = JSON.parse(fs.readFileSync('config/versions.json', 'utf8'));
+assert('versions.json 非空', Array.isArray(versionsCfg.versions) && versionsCfg.versions.length > 0);
+assert('版本发布时间可解析', versionsCfg.versions.every((v) => v.version && Number.isFinite(Date.parse(v.releasedAt))));
+assert('每个版本含一句话说明', versionsCfg.versions.every((v) => typeof v.note === 'string' && v.note.length > 0));
+const changelogText = fs.readFileSync('CHANGELOG.md', 'utf8');
+const changelogVersions = [...changelogText.matchAll(/^## \[(\d+\.\d+\.\d+)\]/gm)].map((m) => m[1]);
+const versionSet = new Set(versionsCfg.versions.map((v) => v.version));
+assert('版本数据覆盖 CHANGELOG 全部版本', changelogVersions.every((v) => versionSet.has(v)));
 
 console.log(`\n通过 ${passed} 项，失败 ${failed} 项`);
 if (failed > 0) process.exit(1);

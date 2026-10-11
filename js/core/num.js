@@ -24,8 +24,13 @@ function toNum(x) {
 const defaults = {
   sciThreshold: '1e6',     // 普通记数（千分位）→ 科学记数的阈值（绝对值）
   banThreshold: '1.8e308', // 科学记数 → MegotaNum 记法的阈值（float64 上限，超此才落 ban）
+  eeThreshold: '1e1000000',// ban 档内、指数达 7 位数时启用 ee 记法的阈值（#19）
   decimals: 3,             // 小数位数
+  displayMode: 'default',  // 大数记法偏好：'default'（科学记数 / ban）| 'ee'（loglog），由 UI 层设置
 };
+
+/** 大数记法偏好可选值（供设置面板枚举） */
+export const DISPLAY_MODES = ['default', 'ee'];
 
 /** 千分位普通记数：1234.5 -> "1,234.5" */
 function formatFull(n, decimals) {
@@ -77,6 +82,16 @@ function formatScientific(n, decimals, style) {
     return `${sign}${mantNum.toFixed(decimals)}×10^${expNum}`;
   }
   return `${sign}${mantNum.toFixed(decimals)}e${expNum}`;
+}
+
+/** ee 记法（loglog，设计见 #19）：1e1000000 → "ee6.0000"；外层对数保留 decimals 位小数（默认 4） */
+function formatEe(n, decimals) {
+  const sign = n.sign === -1 ? '-' : '';
+  const abs = n.abs();
+  const exp = abs.log10().toNumber(); // 十进制指数（可达 1e6 量级，普通 Number 足够）
+  if (!Number.isFinite(exp) || exp <= 1) return formatBan(n, decimals);
+  const loglog = Math.log10(exp); // 外层对数（loglog）
+  return `${sign}ee${loglog.toFixed(decimals)}`;
 }
 
 export const Num = {
@@ -190,6 +205,8 @@ export const Num = {
     const decimals = opts.decimals ?? defaults.decimals;
     const sciThreshold = toNum(opts.sciThreshold ?? defaults.sciThreshold);
     const banThreshold = toNum(opts.banThreshold ?? defaults.banThreshold);
+    const eeThreshold = toNum(opts.eeThreshold ?? defaults.eeThreshold);
+    const displayMode = opts.displayMode ?? defaults.displayMode;
     const abs = n.abs();
 
     let mode = opts.mode || 'auto';
@@ -197,6 +214,11 @@ export const Num = {
       if (abs.lt(sciThreshold)) mode = 'full';
       else if (abs.lt(banThreshold)) mode = 'scientific';
       else mode = 'ban';
+    }
+
+    // ee 记法（#19）：偏好开启且数值达阈值时，覆盖 ban 档为 eeN（与现有 ban 档并存）
+    if ((displayMode === 'ee' || mode === 'ee') && abs.gte(eeThreshold)) {
+      return formatEe(n, opts.eeDecimals ?? 4);
     }
 
     switch (mode) {
@@ -224,5 +246,17 @@ export const Num = {
 export function configureNum(cfg = {}) {
   if (cfg.sciThreshold !== undefined) defaults.sciThreshold = cfg.sciThreshold;
   if (cfg.banThreshold !== undefined) defaults.banThreshold = cfg.banThreshold;
+  if (cfg.eeThreshold !== undefined) defaults.eeThreshold = cfg.eeThreshold;
   if (cfg.decimals !== undefined) defaults.decimals = cfg.decimals;
+}
+
+/** 设置大数记法偏好（'default' | 'ee'）；由 UI 层在启动与切换时调用。 */
+export function setDisplayMode(mode) {
+  if (!DISPLAY_MODES.includes(mode)) return false;
+  defaults.displayMode = mode;
+  return true;
+}
+
+export function getDisplayMode() {
+  return defaults.displayMode;
 }

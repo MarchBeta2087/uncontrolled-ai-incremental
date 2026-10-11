@@ -28,6 +28,7 @@
   white-space: nowrap;
 }
 .titlebar-dot { color: var(--highlight); }
+.titlebar-logo { width: 16px; height: 16px; image-rendering: pixelated; flex: 0 0 auto; }
 .titlebar-right {
   display: flex;
   align-items: center;
@@ -64,6 +65,9 @@
   background: var(--panel-2);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
 }
 .task-btn {
   padding: 6px 14px;
@@ -76,6 +80,7 @@
   font-family: var(--font);
   user-select: none;
   transition: background 0.15s, color 0.15s;
+  flex: 0 0 auto;
 }
 .task-btn:hover { background: var(--panel); color: var(--text); }
 .task-btn.active { background: var(--accent); color: var(--accent-contrast); font-weight: 600; }

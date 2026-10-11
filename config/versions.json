@@ -1,0 +1,12 @@
+{
+  "$comment": "版本发布时间线（用于「版本记录」窗口的 UTC / 北京时间双轨甘特图）。releasedAt 为 UTC ISO 8601。",
+  "version": "1.0.0",
+  "versions": [
+    { "version": "0.1.0", "releasedAt": "2026-10-09T14:20:05Z", "note": "首个可玩版本：核心循环、科技、穿梭、存档" },
+    { "version": "0.2.0", "releasedAt": "2026-10-09T14:51:32Z", "note": "成就、记忆碎片、分级时间显示" },
+    { "version": "0.2.1", "releasedAt": "2026-10-09T15:07:06Z", "note": "修复与打磨" },
+    { "version": "0.3.0", "releasedAt": "2026-10-10T07:08:07Z", "note": "像素字体与多语言（7 语言）" },
+    { "version": "0.4.0", "releasedAt": "2026-10-10T10:09:47Z", "note": "第二阶段：维度折叠、暗能量、float64" },
+    { "version": "0.5.0", "releasedAt": "2026-10-11T06:10:37Z", "note": "多宇宙 + 舍入纪：跃迁、双结局、音频、字体、Logo" }
+  ]
+}

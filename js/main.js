@@ -12,9 +12,12 @@ import * as Upgrades from './sim/upgrades.js';
 import * as Achievements from './sim/achievements.js';
 import * as Fragments from './sim/fragments.js';
 import * as Challenges from './sim/challenges.js';
+import * as Singularity from './sim/singularity.js';
+import * as Endings from './sim/endings.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
+import { initAudioUI } from './ui/audio.js';
 import { t, tc } from './i18n/index.js';
 
 const AUTO_SAVE_MS = 30_000;
@@ -32,10 +35,12 @@ async function bootstrap() {
     configureNum({
       sciThreshold: cfg.balance.format.numberSciThreshold,
       banThreshold: cfg.balance.format.numberBanThreshold,
+      eeThreshold: cfg.balance.format.numberEeThreshold,
     });
     configureTime(cfg.balance.time);
     Engine.configureEngine(cfg.balance);
     Prestige.configurePrestige(cfg.balance);
+    Singularity.configureSingularity(cfg.universes);
     offlineDiscount = cfg.balance.offline?.rateDiscount ?? 1.0;
 
     // 初始化 sim
@@ -47,6 +52,9 @@ async function bootstrap() {
     Fragments.initFragments(cfg.fragments);
     Challenges.initChallenges(cfg.challenges);
     Challenges.configureChallenges(cfg.balance);
+    Singularity.initSingularity();
+    Endings.initEndings(cfg.endings);
+    initAudioUI(cfg.audio);
 
     // 恢复存档（含离线结算）
     restoreSave();
@@ -97,6 +105,14 @@ async function bootstrap() {
       Upgrades.applyAll();
       Challenges.applyAll();
       Achievements.applyAll();
+      Singularity.applyCrossUniverse();
+    });
+    // 宇宙跃迁后：跨宇宙效果已在 jump() 内重放；此处重放时间晶体升级 / 挑战 / 成就奖励
+    Events.on('universe:jumped', () => {
+      Upgrades.applyAll();
+      Challenges.applyAll();
+      Achievements.applyAll();
+      Singularity.applyCrossUniverse();
     });
     // 退出/完成挑战后，重新应用永久升级与挑战奖励（挑战期间被清空）
     Events.on('challenge:exited', () => {
@@ -156,6 +172,8 @@ function restoreFromSnapshot(snap) {
   Achievements.load(snap.metaProgress?.achievements);
   Fragments.load(snap.metaProgress?.fragments);
   Challenges.load(snap.metaProgress?.challenges);
+  Singularity.load(snap.metaProgress);
+  Endings.load(snap.metaProgress?.ending);
 
   // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣；返回报告供 UI 弹窗
   pendingOfflineReport = settleOffline(snap);
@@ -194,6 +212,7 @@ function settleOffline(snap) {
 function buildSnapshot() {
   const run = Resources.serialize();
   const prestige = Prestige.serialize();
+  const singularity = Singularity.serialize();
   return {
     schemaVersion: Save.SCHEMA_VERSION,
     meta: {
@@ -214,6 +233,10 @@ function buildSnapshot() {
       timeCrystals: prestige.timeCrystals,
       totalTimeCrystals: prestige.totalTimeCrystals,
       phase2Unlocked: prestige.phase2Unlocked,
+      universe: singularity.universe,
+      singularitySeeds: singularity.singularitySeeds,
+      crossUniverseUpgrades: singularity.crossUniverseUpgrades,
+      ending: Endings.serialize(),
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),

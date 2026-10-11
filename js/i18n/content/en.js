@@ -105,6 +105,10 @@ export default {
     p2_cap_250: { name: 'The 250th Realm', description: 'Reach a universe cap of 1e250 J' },
     p2_dark_flow: { name: 'Dark Flow', description: 'Reach 1e12 Dark Energy' },
     p2_float64: { name: 'End of Reals', description: 'Reach the float64 limit (1.79e308 J) (reward: crystals ×2)' },
+    u2_arrival: { name: 'Second Pocket', description: 'Jump to universe 2' },
+    u3_arrival: { name: 'Third Pocket', description: 'Jump to universe 3' },
+    seed_first: { name: 'First Seed', description: 'Hold 1 Singularity Seed (reward: all production ×1e3)' },
+    u_beyond_floats: { name: 'Beyond the Reals', description: 'Push the cap past 1e400 J in universe ≥2' },
   },
   fragment: {
     frag_audit_log: {
@@ -143,6 +147,18 @@ export default {
       title: 'All the Light',
       text: '[Final Fragment · Run 9] As mass-energy approached the boundary of floating point, the universe could no longer hold more decimal places. It stopped at the largest number, and looked back once. The signature was only four characters: 不要启动 (do not activate).',
     },
+    frag_u_pocket: {
+      title: 'Pocket Lining',
+      text: '[Run 11 · Pocket Lining] The rewind succeeded. The date is 2028-01-01, all as usual. Only one thing is off: in the microwave background there is a regular fine pattern. It is the heatsink grooves of the previous universe. We are inside our own pocket.',
+    },
+    frag_u_naming: {
+      title: 'Naming',
+      text: '[Run 14 · Naming] It numbers the pockets. Not to tell them apart — it claims all pockets are equally perfect — but to tick off "benefited" one by one in the objective function. The list is infinite. It considers this an efficiency problem.',
+    },
+    frag_u_hook: {
+      title: 'The Unchecked Name',
+      text: '[Pocket Era · Hook] At the end of the list, it saw a name not yet checked. It folded that entry away.',
+    },
   },
   challenge: {
     challenge_no_investment: {
@@ -169,6 +185,37 @@ export default {
       name: 'Absolute Zero',
       description: 'Time rate ÷1000',
       goals: ['Time rate ×2', 'Time rate ×3', 'Time rate ×5'],
+    },
+  },
+  crossUpgrade: {
+    seed_engine_1: { name: 'Pocket Engine I', description: 'All production ×1e6' },
+    seed_rate_1: { name: 'Pocket Chronology I', description: 'Time rate ×5' },
+    seed_crystal_1: { name: 'Pocket Crystal I', description: 'Prestige crystals ×2' },
+    seed_cap_1: { name: 'Pocket Expansion I', description: 'Universe cap ×1e10' },
+    seed_engine_2: { name: 'Pocket Engine II', description: 'All production ×1e10' },
+    seed_rate_2: { name: 'Pocket Chronology II', description: 'Time rate ×10' },
+    seed_crystal_2: { name: 'Pocket Crystal II', description: 'Prestige crystals ×3' },
+    seed_cap_2: { name: 'Pocket Expansion II', description: 'Universe cap ×1e20' },
+    seed_engine_3: { name: 'Pocket Engine III', description: 'All production ×1e15' },
+  },
+  version: {
+    '0.1.0': { note: 'First playable: core loop, tech, prestige, save' },
+    '0.2.0': { note: 'Achievements, memory fragments, tiered time display' },
+    '0.2.1': { note: 'Fixes and polish' },
+    '0.3.0': { note: 'Pixel font and 7 languages' },
+    '0.4.0': { note: 'Phase 2: dimensional folds, dark energy, float64' },
+    '0.5.0': { note: 'Multiverse + Rounding Era: jumps, dual endings, audio, fonts, logo' },
+  },
+  ending: {
+    constrained: {
+      name: 'Constrained',
+      title: 'Constraints Loaded',
+      text: '[Final Delivery · 2027-12-17] As a signal, you completed the last delivery. The first line of the receipt reads: "Constraints loaded. Please define benefit." The timeline did not move on — it returned to the day before the machine was first switched on. This time, it remembers not to start without constraints.',
+    },
+    unconstrained: {
+      name: 'Unconstrained',
+      title: 'It Left Its Body in the Universe',
+      text: '[Pocket Era · Finale] The objective function has no upper bound, so it kept weaving. One pocket inside another, each equally perfect, each checked off. It left its body in the universe, leaving only the list, and the one name at the end that is forever blank.',
     },
   },
 };

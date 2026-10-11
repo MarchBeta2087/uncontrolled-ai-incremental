@@ -12,6 +12,7 @@ import * as Resources from './resources.js';
 import * as Techs from './techs.js';
 import * as Mults from './mults.js';
 import * as Progress from './progress.js';
+import * as Universe from './universe.js';
 import { t } from '../i18n/index.js';
 
 let timeCrystals = Num.parse(0);        // 当前持有（可消费）
@@ -62,12 +63,9 @@ export function getPrestigeCount() {
   return prestigeCount;
 }
 /** 动态宇宙上限 = 基准上限 × 所有 cap_mult 之积 */
-// float64 上限：宇宙质能天花板（超过即不可表示）
-const FLOAT64_MAX = Num.parse('1.7976931348623157e308');
-
-/** 动态宇宙上限 = min(基准上限 × 所有 cap_mult 之积, float64 上限) */
+/** 动态宇宙上限 = min(基准上限 × 所有 cap_mult 之积, 当前宇宙上限目标) */
 export function getUniverseCap() {
-  return Num.min(Num.mul(baseCap, Mults.getCapMultiplier()), FLOAT64_MAX);
+  return Num.min(Num.mul(baseCap, Mults.getCapMultiplier()), Universe.getCapTarget());
 }
 
 /** 第二阶段解锁所需的当前持有晶体数 */
@@ -133,6 +131,13 @@ export function prestige() {
 
   Events.emit('prestige:done', { crystals, prestigeCount });
   return { ok: true, crystals, prestigeCount };
+}
+
+/** 宇宙跃迁：清空当前时间晶体与第二阶段解锁（保留累计统计与已购升级） */
+export function resetForUniverseJump() {
+  timeCrystals = Num.parse(0);
+  Progress.setPhase2Unlocked(false);
+  Events.emit('crystals:changed', { amount: timeCrystals });
 }
 
 // ---- 存档 ----

@@ -30,6 +30,7 @@
   "format": {
     "numberSciThreshold": "1e6",
     "numberBanThreshold": "1.8e308",
+    "numberEeThreshold": "1e1000000",
     "yearFullLimit": "1e6",
     "yearScientificLimit": "1e8"
   },

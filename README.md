@@ -1,6 +1,6 @@
 # 失控 AI 增量（Uncontrolled AI Incremental）
 
-> 🎮 **当前状态：v0.4.0 可玩版本** —— 已部署于 GitHub Pages：[https://marchbeta2087.github.io/uncontrolled-ai-incremental/](https://marchbeta2087.github.io/uncontrolled-ai-incremental/)，点开即玩。
+> 🎮 **当前状态：v0.5.0 可玩版本** —— 已部署于 GitHub Pages：[https://marchbeta2087.github.io/uncontrolled-ai-incremental/](https://marchbeta2087.github.io/uncontrolled-ai-incremental/)，点开即玩。
 >
 > 📦 **仓库地址**：<https://github.com/MarchBeta2087/uncontrolled-ai-incremental>
 
@@ -11,15 +11,21 @@
 - **核心循环**：点击/自动产出 → 研发技术 → 扩张基建 → 质能触顶（1e70 J）
 - **时空穿梭（Prestige）**：清空物质、保留知识，获得时间晶体购买永久升级
 - **第二阶段（越过本宇宙）**：持有 100 时间晶体后解锁，通过维度折叠把宇宙上限从 1e70 J 推到 float64 上限（1.79e308 J），并引入暗能量与第二纪元叙事
+- **多宇宙（越过单个宇宙）**：完成奇点折叠后可「宇宙跃迁」到下一宇宙；引入元货币「奇点种子」与 9 项跨宇宙升级；9 个宇宙各有上限指数（第 9 宇宙进入 1e1000000 时代）与星场色相换皮；采用自适应难度避免后续宇宙瞬时通关
 - **时间晶体升级树**：全产出乘子 + 时间速率乘子（永久，穿梭保留）
 - **挑战模式**：3 项限制条件挑战（禁用生成器 / 成本 ×10 / 速率 ÷10），每项 3 个阶段目标、逐级奖励
-- **成就系统**：13 项声明式成就
-- **记忆碎片**：6 枚周目叙事碎片（原创短文本日志体）
+- **成就系统**：25 项声明式成就
+- **记忆碎片**：12 枚周目 / 口袋纪叙事碎片（原创短文本日志体）
 - **时间轴**：初始速率 1 物理秒 = 10000 游戏秒；分级显示（完整日期 → 仅年份 → 科学记数 → MegotaNum 记法）
 - **离线收益**：离线结算 + 重开页面弹窗报告
 - **存档**：localStorage + 导出/导入/硬重置
-- **像素字体**：缝合像素字体（[Fusion Pixel Font](https://github.com/TakWolf/fusion-pixel-font)）12px 比例/等宽，覆盖 7 种语言字形
+- **像素字体**：缝合像素字体（[Fusion Pixel Font](https://github.com/TakWolf/fusion-pixel-font)）12px 比例/等宽，覆盖 7 种语言字形；备用字体 [SevenFifteen](https://burpyfresh.itch.io)（CC BY 4.0，兜底天城文/阿拉伯/希腊/西里尔/希伯来/泰文），优先级 **Fusion > SevenFifteen**
 - **多语言**：简体中文 / 繁體中文 / 繁體中文（台灣/香港）/ English / 日本語 / 한국어 界面
+- **设置 / 关于 / 版本记录**：设置模态分三栏；关于页展示项目 Logo；版本记录含 **UTC / 北京时间双轨甘特图**；底部功能栏支持横向滚动
+- **音效**：Web Audio 合成音效（点击 / 购买 / 研发 / 穿梭 / 成就 / 跳跃 / 结局），设置面板可静音与调节音量
+- **美术**：项目 Logo（根 `favicon.ico` + 标题栏）、银河中心星场背景（按宇宙 `hue-rotate` 换皮）
+- **双结局**：集齐记忆碎片后，在终局二选一（约束线 / 无约束线），随后进入自由模式
+- **大数记法**：指数达 7 位数可切换 `ee` 记法（如 `1e1000000 → ee6.0000`）
 
 ## 运行
 
@@ -45,7 +51,9 @@ python -m http.server 8000
 | [设计说明书](docs/失控AI增量-设计说明书-v1.2.md) | 怎么做 |
 | [数值模型](docs/失控AI增量-数值模型-v1.0.md) | 膨胀曲线、时间速率、穿梭结算 |
 | [v0.4 第二阶段设计](docs/v0.4-第二阶段设计.md) | 越过本宇宙：维度折叠、暗能量、float64 上限 |
-| [素材与授权规则](docs/素材与授权规则-v1.1.md) | 素材入库规范、禁用来源黑名单、素材征集 |
+| [v0.5 多宇宙设计](docs/v0.5-多宇宙设计.md) | 越过单个宇宙：奇点种子、宇宙跃迁 |
+| [决策记录](docs/决策记录.md) | ADR：版本 / 架构 / 流程决策（含 ADR-001 / ADR-002） |
+| [素材与授权规则](docs/素材与授权规则-v1.3.md) | 素材入库规范、禁用来源黑名单、素材征集 |
 | [分支与发布流程](docs/分支与发布流程.md) | dev / PR / 发布流程 |
 | [待办事项](TODO.md) | 路线图 |
 
@@ -55,7 +63,7 @@ python -m http.server 8000
 
 - 参与社区即表示遵守 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)（贡献者公约）。
 - 安全漏洞请走 [SECURITY.md](SECURITY.md) 的私密渠道，**勿公开提交 Issue**。
-- 想投稿美术/音乐/音效？见[素材与授权规则 §7 素材征集](docs/素材与授权规则-v1.1.md)。
+- 想投稿美术/音乐/音效？见[素材与授权规则 §7 素材征集](docs/素材与授权规则-v1.3.md)。
 
 ## 许可证
 

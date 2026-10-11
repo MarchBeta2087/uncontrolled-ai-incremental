@@ -22,6 +22,11 @@
     { "id": "p2_cap_150", "name": "百五十界", "description": "宇宙上限达到 1e150 J", "condition": { "type": "cap_ge", "value": "1e150" } },
     { "id": "p2_cap_250", "name": "二百五十界", "description": "宇宙上限达到 1e250 J", "condition": { "type": "cap_ge", "value": "1e250" } },
     { "id": "p2_dark_flow", "name": "暗流", "description": "当前暗能量达到 1e12", "condition": { "type": "dark_energy_ge", "value": "1e12" } },
-    { "id": "p2_float64", "name": "实数终结", "description": "宇宙上限达到 float64 上限（1.79e308 J）（奖励：晶体 ×2）", "condition": { "type": "cap_ge", "value": "1.79e308" }, "reward": { "type": "crystal_mult", "value": "2" } }
+    { "id": "p2_float64", "name": "实数终结", "description": "宇宙上限达到 float64 上限（1.79e308 J）（奖励：晶体 ×2）", "condition": { "type": "cap_ge", "value": "1.79e308" }, "reward": { "type": "crystal_mult", "value": "2" } },
+
+    { "id": "u2_arrival", "name": "第二口袋", "description": "跃迁到第 2 宇宙", "condition": { "type": "universe_ge", "value": 2 } },
+    { "id": "u3_arrival", "name": "第三口袋", "description": "跃迁到第 3 宇宙", "condition": { "type": "universe_ge", "value": 3 } },
+    { "id": "seed_first", "name": "第一枚种子", "description": "持有 1 枚奇点种子（奖励：全产出 ×1e3）", "condition": { "type": "seeds_ge", "value": "1" }, "reward": { "type": "all_generator_mult", "value": "1e3" } },
+    { "id": "u_beyond_floats", "name": "越界之后", "description": "在宇宙 ≥2 把上限推过 1e400 J", "condition": { "type": "cap_ge", "value": "1e400" } }
   ]
 }

@@ -19,6 +19,7 @@ const upgradesCfg = readJSON('config/upgrades.json');
 const achCfg = readJSON('config/achievements.json');
 const fragCfg = readJSON('config/fragments.json');
 const chCfg = readJSON('config/challenges.json');
+const uniCfg = readJSON('config/universes.json');
 
 const numMod = await import('../js/core/num.js');
 const timeMod = await import('../js/core/time.js');
@@ -29,6 +30,7 @@ const upgMod = await import('../js/sim/upgrades.js');
 const achMod = await import('../js/sim/achievements.js');
 const fragMod = await import('../js/sim/fragments.js');
 const chMod = await import('../js/sim/challenges.js');
+const singMod = await import('../js/sim/singularity.js');
 const { Num } = numMod;
 
 // ---- 初始化 ----
@@ -43,6 +45,8 @@ achMod.initAchievements(achCfg);
 fragMod.initFragments(fragCfg);
 chMod.initChallenges(chCfg);
 chMod.configureChallenges(balance);
+singMod.configureSingularity(uniCfg);
+singMod.initSingularity();
 
 const fmtTime = (sec) => {
   if (sec < 60) return `${sec.toFixed(1)}s`;
@@ -51,6 +55,8 @@ const fmtTime = (sec) => {
 };
 
 const DEBUG = process.argv.includes('--debug');
+const MULTIVERSE = process.argv.includes('--multiverse');
+const MAX_UNIVERSES = Number(process.env.MAX_UNIVERSES || 3);
 function dumpState(label) {
   if (!DEBUG) return;
   const mass = resMod.getResource('mass_energy');
@@ -69,29 +75,45 @@ function buyGreedy() {
       if (upgMod.canBuy(uid)) upgMod.buyUpgrade(uid);
     }
   }
+  // 跨宇宙升级（有奇点种子就买）
+  for (const cu of uniCfg.crossUniverseUpgrades ?? []) {
+    if (singMod.canBuyCrossUniverse(cu.id)) singMod.buyCrossUniverse(cu.id);
+  }
   resMod.buyMaxAll();
+}
+
+/** 重置（穿梭 / 跃迁）后重放所有元进度效果，与 main.js 的事件处理一致 */
+function reapplyMeta() {
+  upgMod.applyAll();
+  achMod.applyAll();
+  chMod.applyAll();
+  singMod.applyCrossUniverse();
 }
 
 /** 距「下一次可购买」所需的游戏秒（取最小正等待） */
 function timeToNextPurchase() {
   let minT = Infinity;
-  const consider = (cost, have, rate) => {
+  let minSrc = null;
+  const consider = (cost, have, rate, src) => {
     if (Num.gte(have, cost)) return;
     if (!Num.gt(rate, 0)) return;
     const t = Num.toNumber(Num.div(Num.sub(cost, have), rate));
-    if (t > 0 && t < minT) minT = t;
+    if (t > 0 && t < minT) { minT = t; minSrc = src; }
   };
   for (const gid of resMod.getGeneratorIds()) {
     const def = resMod.getGeneratorDef(gid);
-    consider(resMod.buyCost(gid, 1), resMod.getResource(def.costCurrency), Num.parse(resMod.getProductionPerSecond(def.costCurrency)));
+    consider(resMod.buyCost(gid, 1), resMod.getResource(def.costCurrency), Num.parse(resMod.getProductionPerSecond(def.costCurrency)), `gen:${gid}`);
   }
   for (const tid of techMod.getTechIds()) {
     if (techMod.isOwned(tid)) continue;
     const def = techMod.getTech(tid);
     if ((def.requires ?? []).some((r) => !techMod.isOwned(r))) continue;
     if (def.phase === 2 && !prestigeMod.isPhase2Unlocked()) continue;
-    consider(Num.parse(def.cost), resMod.getResource(def.costCurrency), Num.parse(resMod.getProductionPerSecond(def.costCurrency)));
+    // 成本高于当前宇宙上限的技术本宇宙买不到（待折叠抬升），不由贪心策略追逐
+    if (Num.gt(techMod.getCost(tid), prestigeMod.getUniverseCap())) continue;
+    consider(techMod.getCost(tid), resMod.getResource(def.costCurrency), Num.parse(resMod.getProductionPerSecond(def.costCurrency)), `tech:${tid}`);
   }
+  timeToNextPurchase.last = minSrc;
   return minT;
 }
 
@@ -104,8 +126,11 @@ let prestiges = 0;
 let firstPrestigeAt = null;
 let phase2At = null;
 let phase2WasUnlocked = false;
-const MAX_PHYSICAL = 3 * 3600; // 3 小时物理时间上限
-const MAX_ITER = 3_000_000;
+let universe = 1;
+let universeStart = 0;
+const universeTimes = [];
+const MAX_PHYSICAL = (MULTIVERSE ? 12 : 3) * 3600; // 多宇宙模式放宽到 12 小时
+const MAX_ITER = 6_000_000;
 
 console.log('=== 平衡模拟（估算）===');
 
@@ -121,6 +146,7 @@ while (physical < MAX_PHYSICAL && iterations < MAX_ITER) {
   if (prestigeMod.canPrestige()) {
     prestigeMod.prestige();
     prestiges += 1;
+    reapplyMeta();
     buyGreedy();
   }
 
@@ -138,15 +164,37 @@ while (physical < MAX_PHYSICAL && iterations < MAX_ITER) {
       dumpState(fid);
     }
   }
-  if (foldSeen.size >= folds.length) break;
+  if (foldSeen.size >= folds.length) {
+    universeTimes.push({ universe, seconds: physical - universeStart });
+    console.log(`== 宇宙 ${universe} 完成 12/12 折叠：${fmtTime(physical - universeStart)}（累计 ${fmtTime(physical)}）==`);
+    if (!MULTIVERSE || universe >= MAX_UNIVERSES) break;
+    // 触顶后跃迁（模拟已触及当前宇宙上限）
+    resMod.load({ resources: { mass_energy: Num.toJSON(prestigeMod.getUniverseCap()) }, generators: {} });
+    const jumpRes = singMod.jump();
+    if (!jumpRes.ok) {
+      console.log(`  跃迁失败：${jumpRes.reason}`);
+      break;
+    }
+    console.log(`  → 跃迁至宇宙 ${jumpRes.universe}，获得 ${Num.toString(jumpRes.seeds)} 枚奇点种子`);
+    universe = jumpRes.universe;
+    universeStart = physical;
+    foldSeen.clear();
+    reapplyMeta();
+    buyGreedy();
+    continue;
+  }
 
   const t = timeToNextPurchase();
   let dtGame;
   if (!Number.isFinite(t) || t <= 0) {
     for (let i = 0; i < 10; i += 1) resMod.click();
     dtGame = 10;
+  } else if (t > 1e15) {
+    // 下一购买需超过 1e15 游戏秒：贪心策略陷入停滞，停止本宇宙
+    console.log(`  停滞（宇宙 ${universe}）：下一购买 ${timeToNextPurchase.last} 需 ${t.toExponential(2)} 游戏秒`);
+    break;
   } else {
-    dtGame = Math.min(t * 1.01 + 1, 1e18);
+    dtGame = t * 1.01 + 1;
   }
   const rate = timeMod.Time.getRate();
   const dtReal = Math.max(1e-12, Num.toNumber(Num.div(dtGame, rate)));
@@ -160,6 +208,10 @@ console.log(`迭代次数：${iterations.toLocaleString()}｜穿梭次数：${pr
 console.log(`首次触顶：${firstPrestigeAt ? fmtTime(firstPrestigeAt) : '未达到'}`);
 console.log(`第二阶段解锁：${phase2At ? fmtTime(phase2At) : '未达到'}`);
 console.log(`已完成折叠：${foldSeen.size}/${folds.length}`);
+if (universeTimes.length) {
+  console.log('--- 各宇宙用时 ---');
+  for (const u of universeTimes) console.log(`  宇宙 ${u.universe}：${fmtTime(u.seconds)}`);
+}
 if (foldSeen.size < folds.length) {
   const mass = resMod.getResource('mass_energy');
   const cap = prestigeMod.getUniverseCap();
