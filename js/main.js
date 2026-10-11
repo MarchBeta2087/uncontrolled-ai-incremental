@@ -33,6 +33,7 @@ async function bootstrap() {
     configureNum({
       sciThreshold: cfg.balance.format.numberSciThreshold,
       banThreshold: cfg.balance.format.numberBanThreshold,
+      eeThreshold: cfg.balance.format.numberEeThreshold,
     });
     configureTime(cfg.balance.time);
     Engine.configureEngine(cfg.balance);

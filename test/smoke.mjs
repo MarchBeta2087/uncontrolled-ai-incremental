@@ -47,6 +47,7 @@ const conditionsMod = await import('../js/sim/conditions.js');
 const universeMod = await import('../js/sim/universe.js');
 const singularityMod = await import('../js/sim/singularity.js');
 const Num = numMod.Num;
+const setDisplayMode = numMod.setDisplayMode;
 
 console.log('== 配置校验 ==');
 try {
@@ -64,6 +65,14 @@ assert('科学记数 1e6', Num.format('1e6') === '1.000e6');
 assert('舍入进位 999999999', Num.format(999999999) === '1.000e9');
 assert('ban 记法截断 3 位小数', Num.format(Num.parse('1.7976931348623157e318'), { mode: 'ban' }) === '1.798e318');
 assert('ban 记法 1e400', Num.format(Num.parse('1e400'), { mode: 'ban' }) === '1.000e400');
+assert('默认 1e1000000 为科学记数', Num.format('1e1000000') === '1.000e1000000');
+setDisplayMode('ee');
+assert('ee 记法 1e1000000 → ee6', Num.format('1e1000000') === 'ee6');
+assert('ee 记法 1e10000000 → ee7', Num.format('1e10000000') === 'ee7');
+assert('ee 阈值下 1e999999 回退科学记数', Num.format('1e999999') === '1.000e999999');
+assert('ee 不影响普通数', Num.format(1234) === '1,234');
+setDisplayMode('default');
+assert('恢复默认后 1e1000000', Num.format('1e1000000') === '1.000e1000000');
 
 console.log('== 初始化 ==');
 timeMod.configureTime(balance.time);

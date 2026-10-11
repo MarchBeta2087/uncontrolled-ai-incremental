@@ -7,6 +7,7 @@
 ### 新增（Added）
 
 - **首张美术素材：银河中心星场背景**（`assets/images/starfield-bg.png`）——Public domain 天体摄影经 GIMP 缩小至 480×240（最近邻）、限色 11 色、压暗偏蓝、边缘暗角融合 `#0d1117` 后接入。CSS 铺于 `body` 底层（`background-size: cover` + `image-rendering: pixelated`），面板维持不透明 `--panel` 以保障 12px 像素数字可读；浅色主题以 `--bg-veil` 淡化星场。许可证与 6 项信息登记于 `ASSETS.md`，许可证文本归档 `assets/LICENSES/starfield-bg.txt`（Issue #20）。
+- **大数记法 ee / loglog 显示开关**（#19 第一步）：新增设置项「大数记法」——指数达 7 位数（≥ `1e1000000`）时可将科学记数折叠为 `eeN`（如 `1e1000000 → ee6`）；偏好存 localStorage，经 `Num.setDisplayMode` 注入格式化默认值，与现有 ban 档并存；`config/balance.json` 新增 `format.numberEeThreshold`；`js/ui/format.js` 为新偏好模块；补齐 5 语言文案与回归测试。
 - **多宇宙引擎地基（v0.5 · PR-A，Issue #16）**：新增 `config/universes.json` 与 `js/sim/universe.js` / `js/sim/singularity.js`——宇宙编号、奇点种子（新货币）、跨宇宙升级、第三层重置「宇宙跃迁」。`getUniverseCap()` 改为 `min(基准 × Πcap_mult, 当前宇宙上限目标)`（宇宙 1 仍封顶 float64，宇宙 ≥2 越过 float64）；第二阶段技术成本随宇宙上限乘子同步缩放；新增条件 `universe_ge` / `seeds_ge`；存档 `schemaVersion` 3→4 + 迁移；标题栏显示宇宙、扩张视图新增「奇点 / 多宇宙」面板与跃迁确认；补齐 5 语言文案。设计见 [docs/v0.5-多宇宙设计.md](docs/v0.5-多宇宙设计.md)。
 
 ### 变更（Changed）
