@@ -52,17 +52,23 @@ function applyEffects(effects, sourceId) {
   }
 }
 
-/** 重放宇宙自身乘子（经济 / 速率）与所有已购跨宇宙升级效果；跨宇宙效果在穿梭后需重放 */
+/** 重放宇宙自身乘子（上限 / 经济 / 速率）与所有已购跨宇宙升级效果；跨宇宙效果在穿梭后需重放 */
 export function applyCrossUniverse() {
-  // 宇宙经济乘子：上限 / 产出 / （由 universe.getCostMultiplier 提供的）第二阶段成本同步缩放，
-  // 保证每宇宙的相对节奏一致（见 docs/v0.5-平衡模拟.md）。
   Mults.setCapMultiplier('universe:cap', Universe.getCapMultiplier());
-  Resources.setGlobalMultiplier('universe:prod', Universe.getCapMultiplier());
-  Time.setRateMultiplier('universe:rate', Universe.getRateMultiplier(), true);
+  // 先应用跨宇宙升级，使元进度产出乘子完整
   for (const id of Universe.getOwnedCrossUpgrades()) {
     const u = Universe.getCrossUniverseUpgrade(id);
     if (u) applyEffects(u.effects ?? [], 'cross:' + id);
   }
+  // 自适应难度：移除宇宙产出乘子后读取其余元进度产出乘子（时间晶体升级 / 成就 / 跨宇宙升级），
+  // 令 universe:prod = 上限乘子 / (静态难度 × metaProd^阻尼)。阻尼使元进度收益有界，
+  // 既保留「越玩越强」，又避免后续宇宙瞬时通关（见 docs/v0.5-平衡模拟.md）。
+  Resources.removeGlobalMultiplier('universe:prod');
+  const meta = Num.max(Resources.getGlobalMultiplier(), Num.parse(1));
+  const damped = Num.pow(meta, Universe.getDifficultyExponent());
+  const prodMult = Num.div(Universe.getProductionMultiplier(), damped);
+  Resources.setGlobalMultiplier('universe:prod', prodMult);
+  Time.setRateMultiplier('universe:rate', Universe.getRateMultiplier(), true);
 }
 
 // ---- 跃迁 ----
