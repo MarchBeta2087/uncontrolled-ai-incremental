@@ -198,6 +198,14 @@ export default {
     seed_cap_2: { name: 'Pocket Expansion II', description: 'Universe cap ×1e20' },
     seed_engine_3: { name: 'Pocket Engine III', description: 'All production ×1e15' },
   },
+  version: {
+    '0.1.0': { note: 'First playable: core loop, tech, prestige, save' },
+    '0.2.0': { note: 'Achievements, memory fragments, tiered time display' },
+    '0.2.1': { note: 'Fixes and polish' },
+    '0.3.0': { note: 'Pixel font and 7 languages' },
+    '0.4.0': { note: 'Phase 2: dimensional folds, dark energy, float64' },
+    '0.5.0': { note: 'Multiverse + Rounding Era: jumps, dual endings, audio, fonts, logo' },
+  },
   ending: {
     constrained: {
       name: 'Constrained',

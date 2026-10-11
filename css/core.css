@@ -30,6 +30,9 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* 保证 hidden 生效（否则会被 .modal-body{display:flex} 等规则覆盖） */
+[hidden] { display: none !important; }
+
 html, body { height: 100%; }
 
 body {
@@ -316,6 +319,95 @@ body.phase2 .phase-lock { display: none; }
 .modal-section { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
 .modal-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .modal-text { font-size: 12px; color: var(--text-dim); }
+
+/* ---- 模态 Tab（设置 / 关于 / 版本记录） ---- */
+.modal-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  margin: -4px 0 4px;
+}
+.modal-tab {
+  padding: 6px 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 12px;
+}
+.modal-tab:hover { color: var(--text); }
+.modal-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ---- 关于：Logo ---- */
+.about-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 4px auto 0;
+  image-rendering: pixelated;
+}
+
+/* ---- 版本记录：一行一版本（可上下滚动）+ 底部 UTC / 北京时间双轨时间轴 ---- */
+.gantt-host { overflow: auto; max-height: 340px; border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
+.gantt-inner { min-width: 720px; display: flex; flex-direction: column; gap: 6px; }
+.gantt-rows { display: flex; flex-direction: column; gap: 3px; }
+.gantt-row,
+.gantt-axis-row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) minmax(0, 34%);
+  gap: 8px;
+  align-items: center;
+}
+.gantt-row { cursor: pointer; }
+.gantt-row:hover { background: var(--panel-2); }
+.gantt-row.selected { outline: 1px solid var(--accent); border-radius: 4px; }
+.gantt-ver {
+  text-align: right;
+  font-size: 12px;
+  color: var(--accent);
+  font-family: var(--mono);
+}
+.gantt-track {
+  position: relative;
+  height: 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.gantt-bar {
+  position: absolute;
+  top: 1px;
+  height: 12px;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: 3px;
+}
+.gantt-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gantt-axis { display: flex; flex-direction: column; gap: 1px; margin-top: 2px; }
+.gantt-axis-label { text-align: right; font-size: 11px; color: var(--text-dim); }
+.gantt-axis-line { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); }
+.gantt-tick { white-space: nowrap; }
+
+/* ---- 版本详情 ---- */
+.changelog-detail { margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px; }
+.changelog-detail-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.changelog-detail-title { font-size: 14px; font-weight: 700; color: var(--accent); font-family: var(--mono); }
+.changelog-detail-body {
+  white-space: pre-wrap;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  max-height: 260px;
+  overflow: auto;
+  margin-top: 4px;
+}
 
 /* ---- 终局视图 ---- */
 .endgame-title {

@@ -127,6 +127,16 @@ export default {
   'settings.aboutOrdinal': '設計は Ordinal Markup を参照（メカニクスのみ。コード/素材は未使用）',
   'settings.aboutRepo': 'リポジトリ：github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '閉じる',
+  'settings.tabSettings': '設定',
+  'settings.tabAbout': 'このゲームについて',
+  'settings.tabChangelog': 'バージョン履歴',
+  'changelog.loading': '読み込み中…',
+  'changelog.loadFailed': 'バージョン情報の読み込みに失敗しました',
+  'changelog.empty': 'バージョン履歴なし',
+  'changelog.utcTrack': 'UTC',
+  'changelog.beijingTrack': '北京 UTC+8',
+  'changelog.fullLog': '完全な変更履歴（CHANGELOG.md）',
+  'changelog.noDetail': '（このバージョンの詳細はありません）',
 
   // 終局
   'endgame.title': '終局はまだ来ない',

@@ -127,6 +127,16 @@ export default {
   'settings.aboutOrdinal': 'Ordinal Markup 의 설계를 참고（메커니즘만, 코드/에셋 미사용）',
   'settings.aboutRepo': '저장소: github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '닫기',
+  'settings.tabSettings': '설정',
+  'settings.tabAbout': '정보',
+  'settings.tabChangelog': '버전 기록',
+  'changelog.loading': '불러오는 중…',
+  'changelog.loadFailed': '버전 데이터를 불러오지 못했습니다',
+  'changelog.empty': '버전 기록 없음',
+  'changelog.utcTrack': 'UTC',
+  'changelog.beijingTrack': '베이징 UTC+8',
+  'changelog.fullLog': '전체 변경 로그(CHANGELOG.md)',
+  'changelog.noDetail': '(이 버전의 상세 정보 없음)',
 
   // 종국
   'endgame.title': '종국은 아직 오지 않았다',

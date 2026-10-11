@@ -128,6 +128,16 @@ export default {
   'settings.aboutOrdinal': '设计参照 Ordinal Markup（机制理念，未复用其代码/素材）',
   'settings.aboutRepo': '项目仓库：github.com/MarchBeta2087/uncontrolled-ai-incremental',
   'settings.close': '关闭',
+  'settings.tabSettings': '设置',
+  'settings.tabAbout': '关于',
+  'settings.tabChangelog': '版本记录',
+  'changelog.loading': '加载中…',
+  'changelog.loadFailed': '版本数据加载失败',
+  'changelog.empty': '暂无版本记录',
+  'changelog.utcTrack': 'UTC',
+  'changelog.beijingTrack': '北京 UTC+8',
+  'changelog.fullLog': '完整变更日志（CHANGELOG.md）',
+  'changelog.noDetail': '（该版本无详情）',
 
   // 终局
   'endgame.title': '终局尚未抵达',

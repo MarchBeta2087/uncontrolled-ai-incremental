@@ -479,7 +479,33 @@ function buildShell() {
   modalOverlay.style.display = 'none';
   const modal = el('div', 'modal');
   modal.append(el('div', 'modal-title', t('settings.title')));
+
+  // Tab 栏：设置 / 关于 / 版本记录
+  const tabBar = el('div', 'modal-tabs');
+  const tabBtns = {};
+  const aboutBody = el('div', 'modal-body');
+  const changelogBody = el('div', 'modal-body');
+  aboutBody.hidden = true;
+  changelogBody.hidden = true;
+  const tabBodies = {};
+  function switchTab(name) {
+    for (const [k, b] of Object.entries(tabBtns)) b.classList.toggle('active', k === name);
+    for (const [k, body] of Object.entries(tabBodies)) body.hidden = k !== name;
+    if (name === 'changelog') ensureChangelog();
+  }
+  for (const [id, key] of [['settings', 'settings.tabSettings'], ['about', 'settings.tabAbout'], ['changelog', 'settings.tabChangelog']]) {
+    const tabBtn = el('button', 'modal-tab', t(key));
+    tabBtn.type = 'button';
+    tabBtn.onclick = () => switchTab(id);
+    tabBtns[id] = tabBtn;
+    tabBar.append(tabBtn);
+  }
+  modal.append(tabBar);
+
   const modalBody = el('div', 'modal-body');
+  tabBodies.settings = modalBody;
+  tabBodies.about = aboutBody;
+  tabBodies.changelog = changelogBody;
 
   modalBody.append(el('div', 'modal-section', t('settings.saveSection')));
   const row1 = el('div', 'modal-row');
@@ -606,21 +632,44 @@ function buildShell() {
   audioRow.append(muteBtn, volInput);
   modalBody.append(audioRow);
 
-  modalBody.append(el('div', 'modal-section', t('settings.aboutSection')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutGame')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutVersion', { version: VERSION })));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutLicense')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutNumLib')));
-  modalBody.append(el('p', 'modal-text', t('settings.aboutOrdinal')));
+  // ---- 关于 tab（带 Logo）----
+  const aboutLogo = document.createElement('img');
+  aboutLogo.className = 'about-logo';
+  aboutLogo.src = 'assets/images/logo.png';
+  aboutLogo.alt = t('settings.aboutGame');
+  aboutLogo.width = 64;
+  aboutLogo.height = 64;
+  aboutBody.append(aboutLogo);
+  aboutBody.append(el('div', 'modal-section', t('settings.aboutSection')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutGame')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutVersion', { version: VERSION })));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutLicense')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutNumLib')));
+  aboutBody.append(el('p', 'modal-text', t('settings.aboutOrdinal')));
   const repoLink = el('a', 'modal-text', t('settings.aboutRepo'));
   repoLink.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental';
   repoLink.target = '_blank';
   repoLink.rel = 'noopener noreferrer';
-  modalBody.append(repoLink);
+  aboutBody.append(repoLink);
+
+  // ---- 版本记录 tab（UTC / 北京时间双轨甘特图 + 点击查看详情）----
+  changelogBody.append(el('div', 'modal-section', t('settings.tabChangelog')));
+  const ganttHost = el('div', 'gantt-host');
+  ganttHost.append(el('p', 'modal-text', t('changelog.loading')));
+  changelogBody.append(ganttHost);
+  const ganttDetail = el('div', 'changelog-detail');
+  ganttDetail.hidden = true;
+  changelogBody.append(ganttDetail);
+  refs.ganttHost = ganttHost;
+  refs.ganttDetail = ganttDetail;
+  refs.changelogLoaded = false;
+  refs.changelogMap = null;
+  refs.versionsData = null;
 
   const closeBtn = el('button', 'btn', t('settings.close'));
   closeBtn.onclick = () => closeModal();
-  modal.append(modalBody, closeBtn);
+  modal.append(modalBody, aboutBody, changelogBody, closeBtn);
+  switchTab('settings');
   modalOverlay.append(modal);
   refs.modalOverlay = modalOverlay;
 
@@ -681,6 +730,149 @@ function openModal() {
 }
 function closeModal() {
   if (refs.modalOverlay) refs.modalOverlay.style.display = 'none';
+}
+
+/** 版本记录：懒加载 versions.json + CHANGELOG.md 并渲染（只执行一次）。
+    用 fetch().text() 读取 CHANGELOG —— Fetch 规范默认按 UTF-8 解码，
+    避免直接打开原始 .md 时浏览器用本地编码猜测导致的乱码。 */
+async function ensureChangelog() {
+  if (refs.changelogLoaded || !refs.ganttHost) return;
+  refs.changelogLoaded = true;
+  try {
+    const [vResp, cResp] = await Promise.all([fetch('config/versions.json'), fetch('CHANGELOG.md')]);
+    if (!vResp.ok) throw new Error(String(vResp.status));
+    const data = await vResp.json();
+    refs.versionsData = data.versions ?? [];
+    refs.changelogMap = cResp.ok ? parseChangelog(await cResp.text()) : {};
+    renderGantt(refs.ganttHost, refs.versionsData);
+  } catch (err) {
+    console.error('[UI] 版本记录加载失败：', err);
+    refs.ganttHost.innerHTML = '';
+    refs.ganttHost.append(el('p', 'modal-text', t('changelog.loadFailed')));
+  }
+}
+
+/** 渲染「一行一版本」甘特图（可上下左右滚动）+ 底部 UTC / 北京时间双轨时间轴 */
+function renderGantt(host, versions) {
+  host.innerHTML = '';
+  const items = versions
+    .map((v) => ({ ...v, ts: Date.parse(v.releasedAt) }))
+    .filter((v) => Number.isFinite(v.ts))
+    .sort((a, b) => a.ts - b.ts);
+  if (!items.length) {
+    host.append(el('p', 'modal-text', t('changelog.empty')));
+    return;
+  }
+  const t0 = items[0].ts;
+  const t1 = items[items.length - 1].ts;
+  const span = Math.max(1, t1 - t0);
+  const pct = (ts) => ((ts - t0) / span) * 100;
+
+  const fmtOpts = { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+  const utcFmt = new Intl.DateTimeFormat(getLocale(), { ...fmtOpts, timeZone: 'UTC' });
+  const bjFmt = new Intl.DateTimeFormat(getLocale(), { ...fmtOpts, timeZone: 'Asia/Shanghai' });
+  const fmtUTC = (ts) => utcFmt.format(new Date(ts));
+  const fmtBJ = (ts) => bjFmt.format(new Date(ts));
+
+  const inner = el('div', 'gantt-inner');
+
+  // 一行一个版本（点击查看详情）
+  const rows = el('div', 'gantt-rows');
+  items.forEach((v, i) => {
+    const start = i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts;
+    const left = pct(start);
+    const row = el('div', 'gantt-row');
+    row.dataset.version = v.version;
+    row.onclick = () => showVersionDetail(v.version);
+    const track = el('div', 'gantt-track');
+    const bar = el('div', 'gantt-bar');
+    bar.style.left = `${left}%`;
+    bar.style.width = `${Math.max(1, pct(v.ts) - left)}%`;
+    const note = tc('version', v.version, 'note', v.note || '');
+    row.title = `v${v.version} · ${fmtUTC(v.ts)} UTC / ${fmtBJ(v.ts)} 北京${note ? ' · ' + note : ''}`;
+    track.append(bar);
+    row.append(el('span', 'gantt-ver', `v${v.version}`), track, el('span', 'gantt-note', note));
+    rows.append(row);
+  });
+  inner.append(rows);
+
+  // 底部两条时间轴：UTC / 北京时间（相同刻度位置，不同时区读数）
+  const axis = el('div', 'gantt-axis');
+  for (const [key, fmt] of [['changelog.utcTrack', fmtUTC], ['changelog.beijingTrack', fmtBJ]]) {
+    const ar = el('div', 'gantt-axis-row');
+    ar.append(el('span', 'gantt-axis-label', t(key)));
+    const line = el('div', 'gantt-axis-line');
+    for (const frac of [0, 0.5, 1]) line.append(el('span', 'gantt-tick num', fmt(t0 + frac * span)));
+    ar.append(line);
+    axis.append(ar);
+  }
+  inner.append(axis);
+
+  const full = el('a', 'modal-text', t('changelog.fullLog'));
+  full.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental/blob/dev/CHANGELOG.md';
+  full.target = '_blank';
+  full.rel = 'noopener noreferrer';
+  inner.append(full);
+
+  host.append(inner);
+}
+
+/** 解析 CHANGELOG.md：version -> 该版本正文 */
+function parseChangelog(text) {
+  const map = {};
+  let current = null;
+  for (const line of text.split('\n')) {
+    const m = line.match(/^## \[([^\]]+)\]/);
+    if (m) {
+      current = m[1];
+      map[current] = [];
+      continue;
+    }
+    if (current) map[current].push(line);
+  }
+  for (const k of Object.keys(map)) map[k] = map[k].join('\n').trim();
+  return map;
+}
+
+/** 极简 markdown → 纯文本（保留换行） */
+function markdownToText(md) {
+  return md
+    .replace(/^### (.+)$/gm, '▸ $1')
+    .replace(/^\s*[-*] (.+)$/gm, '• $1')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1（$2）')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/`([^`]+)`/g, '$1');
+}
+
+/** 显示某版本详情（CHANGELOG 章节；无则回退到版本说明） */
+function showVersionDetail(version) {
+  const host = refs.ganttDetail;
+  if (!host) return;
+  host.innerHTML = '';
+  const head = el('div', 'changelog-detail-head');
+  head.append(el('span', 'changelog-detail-title', `v${version}`));
+  const close = el('button', 'btn', t('settings.close'));
+  close.type = 'button';
+  close.onclick = () => {
+    host.hidden = true;
+  };
+  head.append(close);
+  host.append(head);
+  const md = refs.changelogMap?.[version];
+  const body = el('div', 'changelog-detail-body');
+  if (md) {
+    body.textContent = markdownToText(md);
+  } else {
+    const v = (refs.versionsData ?? []).find((x) => x.version === version);
+    body.textContent = v?.note ?? t('changelog.noDetail');
+  }
+  host.append(body);
+  host.hidden = false;
+  if (refs.ganttHost) {
+    for (const r of refs.ganttHost.querySelectorAll('.gantt-row')) {
+      r.classList.toggle('selected', r.dataset.version === version);
+    }
+  }
 }
 
 function showToast(text) {
