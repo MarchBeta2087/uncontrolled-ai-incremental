@@ -16,7 +16,7 @@
 - **音频基建（舍入纪）**：新增 `js/core/audio.js`（Web Audio 封装，无 AudioContext 环境静默降级）+ `js/ui/audio.js`（音量/静音偏好存 localStorage + 游戏事件→音效接线）+ `config/audio.json`（声明式音效：`file` 素材或 `synth` 振荡器合成，规避授权）。已接入点击/购买/研发/穿梭/成就/碎片/**宇宙跃迁 sting**/结局音效；设置面板新增音频区（静音 + 音量滑杆）；补齐 5 语言文案。
 - **多宇宙平衡调优（自适应难度）**：新增自适应阻尼——`universe:prod = 上限乘子 / 静态难度 / metaProd^difficultyExponent`（`difficultyExponent` 默认 `0.95`，`config/universes.json`）；消除后续宇宙「瞬时通关」，模拟结果宇宙 2/3 约 29 min / 8.3 min；`Resources` 新增 `removeGlobalMultiplier`；更新 `docs/v0.5-平衡模拟.md` 与设计文档。
 - **九宇宙换皮联动（#19）**：`config/universes.json` 显式定义宇宙 1–9（含 `hue` 色相：U1 0° → U9 320°，每宇宙 +40°）；星场背景按当前宇宙的 `hue` 施加 `hue-rotate`；第 9 宇宙「舍入纪」上限 1e2020788（跨过 `1e1000000`，衔接 #19 叙事）。
-- **项目 Logo**：接入维护者原创 64×64 像素图标（`assets/images/logo.png`，另附 `.ico` favicon 与 `.xcf` 源文件）——用于浏览器 favicon 与标题栏；登记 `ASSETS.md` 与 `assets/LICENSES/logo.txt`（CC BY-SA 4.0）。
+- **项目 Logo**：接入维护者原创 64×64 像素图标（`assets/images/logo.png` + `.xcf` 源文件）——用于**根目录 `favicon.ico`**（16/32/48/64 多尺寸，由 `logo.png` 最近邻生成）与标题栏；登记 `ASSETS.md` 与 `assets/LICENSES/logo.txt`（CC BY-SA 4.0）。
 
 ### 变更（Changed）
 
