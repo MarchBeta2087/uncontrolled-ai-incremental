@@ -1174,7 +1174,7 @@ function updateExpand() {
       if (owned) {
         btn.textContent = t('singularity.owned');
         btn.disabled = true;
-        costEl.textContent = t('singularity.effect', { desc: cu.description || '' });
+        costEl.textContent = t('singularity.effect', { desc: tc('crossUpgrade', cid, 'description', cu.description || '') });
       } else {
         btn.textContent = t('singularity.buy');
         btn.disabled = !Singularity.canBuyCrossUniverse(cid);
