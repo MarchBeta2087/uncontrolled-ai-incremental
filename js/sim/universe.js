@@ -23,7 +23,8 @@ let costMult = Num.parse(1);
 let prodMult = Num.parse(1);
 let difficulty = Num.parse(1);
 let rateMult = Num.parse(1);
-let currentDef = { id: 1, capExponent: 308, seedReward: '1', rateMult: '1', difficulty: '1' };
+let hue = 0;
+let currentDef = { id: 1, capExponent: 308, seedReward: '1', rateMult: '1', difficulty: '1', hue: 0 };
 
 export function configureUniverse(cfg = {}) {
   config = cfg;
@@ -48,6 +49,7 @@ export function getUniverseDef(n) {
       seedReward: Num.parse(explicit.seedReward ?? '1'),
       rateMult: Num.parse(explicit.rateMult ?? '1'),
       difficulty: Num.parse(explicit.difficulty ?? '1'),
+      hue: Number(explicit.hue ?? (((Number(n) - 1) * 40) % 360)),
       restrictions: explicit.restrictions ?? [],
     };
   }
@@ -65,6 +67,7 @@ export function getUniverseDef(n) {
     seedReward: Num.mul(seedBase, Num.pow(seedGrowth, Num.parse(Number(n) - 1))),
     rateMult: Num.parse(fb.rateMultiplier ?? '1'),
     difficulty: Num.mul(diffBase, Num.pow(diffGrowth, Num.parse(Number(n) - 1))),
+    hue: ((Number(n) - 1) * Number(fb.hueStep ?? 40)) % 360,
     restrictions: [],
   };
 }
@@ -89,6 +92,7 @@ function computeDerived() {
   difficulty = currentDef.difficulty;
   prodMult = Num.div(capMult, difficulty);
   rateMult = currentDef.rateMult;
+  hue = currentDef.hue;
 }
 
 // ---- 读取 ----
@@ -118,6 +122,10 @@ export function getProductionMultiplier() {
 }
 export function getRateMultiplier() {
   return rateMult;
+}
+/** 星场背景色相（度，0–360）：每宇宙 +40°，用于九宇宙换皮 */
+export function getHue() {
+  return hue;
 }
 export function getSeeds() {
   return seeds;
