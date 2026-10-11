@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 6;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -43,6 +43,12 @@ const migrations = {
     if (mp.ending === undefined) mp.ending = null;
     return { ...s, schemaVersion: 5, metaProgress: mp };
   },
+  // v5 → v6：新增时间倍增（v0.5.1）
+  5: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.timeBoost === undefined) mp.timeBoost = { multiplier: Num.toJSON(Num.parse(1)), count: 0 };
+    return { ...s, schemaVersion: 6, metaProgress: mp };
+  },
 };
 
 /** 生成初始存档快照（纯 JSON，Num 字段已是 MegotaNum JSON 表示） */
@@ -71,6 +77,7 @@ export function createInitialSnapshot() {
       singularitySeeds: Num.toJSON(Num.parse(0)),
       crossUniverseUpgrades: [],
       ending: null,   // 已选结局 id（v0.6）
+      timeBoost: { multiplier: Num.toJSON(Num.parse(1)), count: 0 }, // 时间倍增（v0.5.1）
       upgrades: [],    // [upgradeId, ...]
       achievements: [],// [achievementId, ...]
       fragments: [],   // [fragmentId, ...]

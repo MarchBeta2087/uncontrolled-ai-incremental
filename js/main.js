@@ -14,6 +14,7 @@ import * as Fragments from './sim/fragments.js';
 import * as Challenges from './sim/challenges.js';
 import * as Singularity from './sim/singularity.js';
 import * as Endings from './sim/endings.js';
+import * as TimeBoost from './sim/timeboost.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
@@ -41,6 +42,7 @@ async function bootstrap() {
     Engine.configureEngine(cfg.balance);
     Prestige.configurePrestige(cfg.balance);
     Singularity.configureSingularity(cfg.universes);
+    TimeBoost.configureTimeBoost(cfg.balance.timeBoost ?? {});
     offlineDiscount = cfg.balance.offline?.rateDiscount ?? 1.0;
 
     // 初始化 sim
@@ -54,6 +56,7 @@ async function bootstrap() {
     Challenges.configureChallenges(cfg.balance);
     Singularity.initSingularity();
     Endings.initEndings(cfg.endings);
+    TimeBoost.initTimeBoost();
     initAudioUI(cfg.audio);
 
     // 恢复存档（含离线结算）
@@ -106,6 +109,7 @@ async function bootstrap() {
       Challenges.applyAll();
       Achievements.applyAll();
       Singularity.applyCrossUniverse();
+      TimeBoost.apply();
     });
     // 宇宙跃迁后：跨宇宙效果已在 jump() 内重放；此处重放时间晶体升级 / 挑战 / 成就奖励
     Events.on('universe:jumped', () => {
@@ -113,6 +117,7 @@ async function bootstrap() {
       Challenges.applyAll();
       Achievements.applyAll();
       Singularity.applyCrossUniverse();
+      TimeBoost.apply();
     });
     // 退出/完成挑战后，重新应用永久升级与挑战奖励（挑战期间被清空）
     Events.on('challenge:exited', () => {
@@ -174,6 +179,7 @@ function restoreFromSnapshot(snap) {
   Challenges.load(snap.metaProgress?.challenges);
   Singularity.load(snap.metaProgress);
   Endings.load(snap.metaProgress?.ending);
+  TimeBoost.load(snap.metaProgress?.timeBoost);
 
   // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣；返回报告供 UI 弹窗
   pendingOfflineReport = settleOffline(snap);
@@ -237,6 +243,7 @@ function buildSnapshot() {
       singularitySeeds: singularity.singularitySeeds,
       crossUniverseUpgrades: singularity.crossUniverseUpgrades,
       ending: Endings.serialize(),
+      timeBoost: TimeBoost.serialize(),
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),

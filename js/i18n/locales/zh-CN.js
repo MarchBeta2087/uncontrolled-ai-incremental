@@ -138,6 +138,12 @@ export default {
   'changelog.beijingTrack': '北京 UTC+8',
   'changelog.fullLog': '完整变更日志（CHANGELOG.md）',
   'changelog.noDetail': '（该版本无详情）',
+  'timeboost.section': '时间倍增',
+  'timeboost.boost': '时间倍增',
+  'timeboost.locked': '宇宙 ≥4 解锁',
+  'timeboost.cooling': '冷却 {s}s',
+  'timeboost.info': '累计 ×{mult}（已按 {count} 次）· 本次 ×{factor}',
+  'timeboost.done': '时间速率 ×{factor}，累计 ×{mult}',
 
   // 终局
   'endgame.title': '终局尚未抵达',

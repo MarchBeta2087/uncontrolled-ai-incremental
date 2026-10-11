@@ -13,6 +13,7 @@ import * as Resources from './resources.js';
 import * as Techs from './techs.js';
 import * as Prestige from './prestige.js';
 import * as Mults from './mults.js';
+import * as TimeBoost from './timeboost.js';
 import { t } from '../i18n/index.js';
 
 export function configureSingularity(cfg = {}) {
@@ -94,6 +95,7 @@ export function jump() {
   Techs.resetAll();
   Time.reset();
   Prestige.resetForUniverseJump();
+  TimeBoost.reset();
 
   // 前进到下一宇宙并重放跨宇宙永久效果
   Universe.setUniverse(from + 1);

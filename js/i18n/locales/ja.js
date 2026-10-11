@@ -137,6 +137,12 @@ export default {
   'changelog.beijingTrack': '北京 UTC+8',
   'changelog.fullLog': '完全な変更履歴（CHANGELOG.md）',
   'changelog.noDetail': '（このバージョンの詳細はありません）',
+  'timeboost.section': '時間倍増',
+  'timeboost.boost': '時間倍増',
+  'timeboost.locked': '宇宙 ≥4 で解放',
+  'timeboost.cooling': 'クールダウン {s}s',
+  'timeboost.info': '累計 ×{mult}（{count} 回）· 今回 ×{factor}',
+  'timeboost.done': '時間速度 ×{factor}、累計 ×{mult}',
 
   // 終局
   'endgame.title': '終局はまだ来ない',

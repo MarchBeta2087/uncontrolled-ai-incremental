@@ -15,6 +15,7 @@ import * as Challenges from '../sim/challenges.js';
 import * as Universe from '../sim/universe.js';
 import * as Singularity from '../sim/singularity.js';
 import * as Endings from '../sim/endings.js';
+import * as TimeBoost from '../sim/timeboost.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
@@ -338,6 +339,28 @@ function buildShell() {
   }
   expPanel.append(crossGrid);
   refs.crossGrid = crossGrid;
+
+  // 时间倍增（v0.5.1）
+  expPanel.append(el('div', 'panel-title', t('timeboost.section')));
+  const tbInfo = el('div', '', t('timeboost.locked'));
+  const tbRow = el('div', 'modal-row');
+  const tbBtn = el('button', 'btn btn-primary', t('timeboost.boost'));
+  tbBtn.type = 'button';
+  tbBtn.onclick = () => {
+    const now = Date.now();
+    const r = TimeBoost.boost(now);
+    if (!r.ok) {
+      if (r.reason === 'cooling') showToast(t('timeboost.cooling', { s: (TimeBoost.getCooldownRemaining(now) / 1000).toFixed(1) }));
+      else showToast(t('timeboost.locked'));
+    } else {
+      showToast(t('timeboost.done', { factor: r.factor.toFixed(3), mult: Num.format(r.multiplier) }));
+    }
+    markDirty();
+  };
+  tbRow.append(tbBtn);
+  expPanel.append(tbInfo, tbRow);
+  refs.tbInfo = tbInfo;
+  refs.tbBtn = tbBtn;
 
   viewExpand.append(expPanel);
   refs.massBig = massBig;
@@ -1155,6 +1178,19 @@ function updateExpand() {
         btn.disabled = !Singularity.canBuyCrossUniverse(cid);
         costEl.textContent = t('singularity.cost', { cost: Num.format(Num.parse(cu.cost)) });
       }
+    }
+  }
+
+  // 时间倍增
+  if (refs.tbInfo) {
+    const unlocked = TimeBoost.isUnlocked();
+    const remain = TimeBoost.getCooldownRemaining();
+    refs.tbInfo.textContent = unlocked
+      ? t('timeboost.info', { mult: Num.format(TimeBoost.getMultiplier()), count: TimeBoost.getCount(), factor: TimeBoost.currentFactor().toFixed(3) })
+      : t('timeboost.locked');
+    if (refs.tbBtn) {
+      refs.tbBtn.disabled = !TimeBoost.canBoost();
+      refs.tbBtn.textContent = remain > 0 ? t('timeboost.cooling', { s: (remain / 1000).toFixed(1) }) : t('timeboost.boost');
     }
   }
 

@@ -137,6 +137,12 @@ export default {
   'changelog.beijingTrack': '베이징 UTC+8',
   'changelog.fullLog': '전체 변경 로그(CHANGELOG.md)',
   'changelog.noDetail': '(이 버전의 상세 정보 없음)',
+  'timeboost.section': '시간 배증',
+  'timeboost.boost': '시간 배증',
+  'timeboost.locked': '우주 ≥4에서 해금',
+  'timeboost.cooling': '쿨다운 {s}s',
+  'timeboost.info': '누적 ×{mult}({count}회) · 이번 ×{factor}',
+  'timeboost.done': '시간 속도 ×{factor}, 누적 ×{mult}',
 
   // 종국
   'endgame.title': '종국은 아직 오지 않았다',

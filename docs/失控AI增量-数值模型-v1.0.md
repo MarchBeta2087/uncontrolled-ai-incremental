@@ -32,6 +32,8 @@
 | 时间速率乘子软上限 | `RATE_CAP` | `1e30` | 设计 §3.1 防拖慢 tick |
 
 > 所有可调数值进 `config/balance.json`，本文档中每个参数标注对应 JSON 键。
+>
+> **v0.5.1 注**：时间速率乘子软上限（`RATE_CAP` / `time.rateMultiplierCap`）已**取消**——`Time.getRate()` 不再封顶，`config/balance.json` 中该项已删除（配合「时间倍增」按钮）。
 
 ---
 

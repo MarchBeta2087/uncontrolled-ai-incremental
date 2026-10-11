@@ -138,6 +138,12 @@ export default {
   'changelog.beijingTrack': 'Beijing UTC+8',
   'changelog.fullLog': 'Full changelog (CHANGELOG.md)',
   'changelog.noDetail': '(No details for this version)',
+  'timeboost.section': 'Time Boost',
+  'timeboost.boost': 'Boost Time',
+  'timeboost.locked': 'Unlocks at universe ≥4',
+  'timeboost.cooling': 'Cooldown {s}s',
+  'timeboost.info': 'Total ×{mult} (pressed {count}×) · this ×{factor}',
+  'timeboost.done': 'Time rate ×{factor}, total ×{mult}',
 
   // Endgame
   'endgame.title': 'The End Has Not Arrived',
