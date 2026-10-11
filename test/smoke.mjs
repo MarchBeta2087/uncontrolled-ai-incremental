@@ -399,10 +399,10 @@ prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON(
 assert('x=1e100 → ×4', Math.abs(timeBoostMod.currentFactor() - 4) < 1e-9);
 prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('5'), prestigeCount: 0, phase2Unlocked: false });
 assert('x<10 → ×2', timeBoostMod.currentFactor() === 2);
+universeMod.setUniverse(2);
+assert('宇宙 2 未解锁', timeBoostMod.isUnlocked() === false);
 universeMod.setUniverse(3);
-assert('宇宙 3 未解锁', timeBoostMod.isUnlocked() === false);
-universeMod.setUniverse(4);
-assert('宇宙 4 解锁', timeBoostMod.isUnlocked() === true);
+assert('宇宙 3 解锁', timeBoostMod.isUnlocked() === true);
 timeBoostMod.initTimeBoost();
 prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('1e10'), prestigeCount: 0, phase2Unlocked: false });
 const tbT0 = 1000000;

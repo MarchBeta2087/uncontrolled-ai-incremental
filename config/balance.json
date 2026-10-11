@@ -7,7 +7,7 @@
     "baseRate": 10000
   },
   "timeBoost": {
-    "unlockUniverse": 4,
+    "unlockUniverse": 3,
     "cooldownMs": 3000
   },
   "universe": {

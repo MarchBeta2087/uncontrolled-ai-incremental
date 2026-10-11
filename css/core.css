@@ -33,6 +33,9 @@
 /* 保证 hidden 生效（否则会被 .modal-body{display:flex} 等规则覆盖） */
 [hidden] { display: none !important; }
 
+/* 按钮统一使用像素字体（浏览器默认会给 button 套系统字体） */
+button { font-family: var(--font); }
+
 html, body { height: 100%; }
 
 body {

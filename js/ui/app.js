@@ -123,6 +123,30 @@ function buildShell() {
   leftCol.append(resPanel);
   refs.resList = resList;
 
+  // 时间倍增（宇宙 ≥3 解锁）
+  const tbPanel = el('div', 'panel');
+  tbPanel.append(el('div', 'panel-title', t('timeboost.section')));
+  const tbInfo = el('div', '', t('timeboost.locked'));
+  const tbRow = el('div', 'modal-row');
+  const tbBtn = el('button', 'btn btn-primary', t('timeboost.boost'));
+  tbBtn.type = 'button';
+  tbBtn.onclick = () => {
+    const now = Date.now();
+    const r = TimeBoost.boost(now);
+    if (!r.ok) {
+      if (r.reason === 'cooling') showToast(t('timeboost.cooling', { s: (TimeBoost.getCooldownRemaining(now) / 1000).toFixed(1) }));
+      else showToast(t('timeboost.locked'));
+    } else {
+      showToast(t('timeboost.done', { factor: r.factor.toFixed(3), mult: Num.format(r.multiplier) }));
+    }
+    markDirty();
+  };
+  tbRow.append(tbBtn);
+  tbPanel.append(tbInfo, tbRow);
+  leftCol.append(tbPanel);
+  refs.tbInfo = tbInfo;
+  refs.tbBtn = tbBtn;
+
   // 生成器面板
   const genPanel = el('div', 'panel');
   const genHeader = el('div', 'gen-header');
@@ -339,28 +363,6 @@ function buildShell() {
   }
   expPanel.append(crossGrid);
   refs.crossGrid = crossGrid;
-
-  // 时间倍增（v0.5.1）
-  expPanel.append(el('div', 'panel-title', t('timeboost.section')));
-  const tbInfo = el('div', '', t('timeboost.locked'));
-  const tbRow = el('div', 'modal-row');
-  const tbBtn = el('button', 'btn btn-primary', t('timeboost.boost'));
-  tbBtn.type = 'button';
-  tbBtn.onclick = () => {
-    const now = Date.now();
-    const r = TimeBoost.boost(now);
-    if (!r.ok) {
-      if (r.reason === 'cooling') showToast(t('timeboost.cooling', { s: (TimeBoost.getCooldownRemaining(now) / 1000).toFixed(1) }));
-      else showToast(t('timeboost.locked'));
-    } else {
-      showToast(t('timeboost.done', { factor: r.factor.toFixed(3), mult: Num.format(r.multiplier) }));
-    }
-    markDirty();
-  };
-  tbRow.append(tbBtn);
-  expPanel.append(tbInfo, tbRow);
-  refs.tbInfo = tbInfo;
-  refs.tbBtn = tbBtn;
 
   viewExpand.append(expPanel);
   refs.massBig = massBig;
