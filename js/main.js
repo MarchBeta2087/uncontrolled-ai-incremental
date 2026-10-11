@@ -13,6 +13,7 @@ import * as Achievements from './sim/achievements.js';
 import * as Fragments from './sim/fragments.js';
 import * as Challenges from './sim/challenges.js';
 import * as Singularity from './sim/singularity.js';
+import * as Endings from './sim/endings.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
@@ -51,6 +52,7 @@ async function bootstrap() {
     Challenges.initChallenges(cfg.challenges);
     Challenges.configureChallenges(cfg.balance);
     Singularity.initSingularity();
+    Endings.initEndings(cfg.endings);
 
     // 恢复存档（含离线结算）
     restoreSave();
@@ -169,6 +171,7 @@ function restoreFromSnapshot(snap) {
   Fragments.load(snap.metaProgress?.fragments);
   Challenges.load(snap.metaProgress?.challenges);
   Singularity.load(snap.metaProgress);
+  Endings.load(snap.metaProgress?.ending);
 
   // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣；返回报告供 UI 弹窗
   pendingOfflineReport = settleOffline(snap);
@@ -231,6 +234,7 @@ function buildSnapshot() {
       universe: singularity.universe,
       singularitySeeds: singularity.singularitySeeds,
       crossUniverseUpgrades: singularity.crossUniverseUpgrades,
+      ending: Endings.serialize(),
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),

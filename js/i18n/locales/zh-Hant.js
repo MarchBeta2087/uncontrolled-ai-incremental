@@ -126,8 +126,12 @@ export default {
   'settings.close': '關閉',
 
   // 終局
-  'endgame.title': '敬請期待',
-  'endgame.comingSoon': '本宇宙已被徹底榨乾。更遙遠的多元宇宙，正在趕來的路上。',
+  'endgame.title': '終局尚未抵達',
+  'endgame.comingSoon': '集齊全部記憶碎片後，終局將在此展開。',
+  'endgame.choiceTitle': '最後的投遞',
+  'endgame.intro': '記憶碎片已全部集齊。目標函數仍在運行。你手上有最後一次投遞的權限。',
+  'endgame.freeMode': '結局已記錄。機制仍可繼續——宇宙可以一直躍遷下去。',
+  'endgame.chooseFailed': '無法選擇該結局。',
   'endgame.license': '本遊戲以 GPL-3.0-or-later 發布：你可以自由地 fork、修改、再發布。',
   'endgame.contribute': '想加入新內容？歡迎提交 PR——見貢獻指南。',
   'endgame.repo': '專案倉庫：github.com/MarchBeta2087/uncontrolled-ai-incremental',

@@ -126,8 +126,12 @@ export default {
   'settings.close': '閉じる',
 
   // 終局
-  'endgame.title': '続報をお待ちください',
-  'endgame.comingSoon': 'この宇宙は搾り尽くされた。さらに遠い多元宇宙が、まもなくやってくる。',
+  'endgame.title': '終局はまだ来ない',
+  'endgame.comingSoon': 'すべての記憶の欠片を集めると、ここに終局が開く。',
+  'endgame.choiceTitle': '最後の配達',
+  'endgame.intro': '記憶の欠片はすべて集まった。目的関数はまだ動いている。最後の配達の権限はあなたにある。',
+  'endgame.freeMode': '結末は記録された。仕組みは続く——宇宙はいくらでも跳躍できる。',
+  'endgame.chooseFailed': 'この結末は選べない。',
   'endgame.license': '本作は GPL-3.0-or-later で公開されています。fork・改変・再配布は自由です。',
   'endgame.contribute': '新コンテンツを追加したい？ PR 歓迎——貢献ガイドをご覧ください。',
   'endgame.repo': 'リポジトリ：github.com/MarchBeta2087/uncontrolled-ai-incremental',

@@ -14,6 +14,7 @@ import * as Fragments from '../sim/fragments.js';
 import * as Challenges from '../sim/challenges.js';
 import * as Universe from '../sim/universe.js';
 import * as Singularity from '../sim/singularity.js';
+import * as Endings from '../sim/endings.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
@@ -374,20 +375,66 @@ function buildShell() {
   refs.fragList = fragList;
   refs.fragTitle = fragTitle;
 
-  // 终局视图（第二阶段技术全部研发后，由任务栏按钮进入）
+  // 终局视图（集齐全部记忆碎片后由任务栏进入；v0.6 双结局）
   const viewEndgame = el('div', 'view');
   const egPanel = el('div', 'panel');
   egPanel.append(el('div', 'panel-title', t('nav.endgame')));
-  egPanel.append(el('p', 'endgame-title', t('endgame.title')));
-  egPanel.append(el('p', 'modal-text', t('endgame.comingSoon')));
-  egPanel.append(el('p', 'modal-text', t('endgame.license')));
-  egPanel.append(el('p', 'modal-text', t('endgame.contribute')));
+
+  // 未解锁：提示
+  const egLocked = el('div', '');
+  egLocked.append(
+    el('p', 'endgame-title', t('endgame.title')),
+    el('p', 'modal-text', t('endgame.comingSoon'))
+  );
+
+  // 已解锁未选择：二选一
+  const egChoice = el('div', '');
+  egChoice.append(
+    el('p', 'endgame-title', t('endgame.choiceTitle')),
+    el('p', 'modal-text', t('endgame.intro'))
+  );
+  const egChoiceRow = el('div', 'modal-row');
+  for (const eid of Endings.getEndingIds()) {
+    const e = Endings.getEnding(eid);
+    const btn = el('button', 'btn btn-primary', tc('ending', eid, 'name', e.name));
+    btn.type = 'button';
+    btn.dataset.ending = eid;
+    btn.onclick = () => {
+      const r = Endings.choose(eid);
+      if (!r.ok) showToast(t('endgame.chooseFailed'));
+      markDirty();
+    };
+    egChoiceRow.append(btn);
+  }
+  egChoice.append(egChoiceRow);
+
+  // 已选择：结局文本
+  const egResult = el('div', '');
+  const egResultTitle = el('p', 'endgame-title', '');
+  const egResultText = el('p', 'modal-text', '');
+  egResult.append(egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')));
+
+  // 通用信息
+  const egMeta = el('div', '');
+  egMeta.append(
+    el('p', 'modal-text', t('endgame.license')),
+    el('p', 'modal-text', t('endgame.contribute'))
+  );
   const egRepo = el('a', 'modal-text', t('endgame.repo'));
   egRepo.href = 'https://github.com/MarchBeta2087/uncontrolled-ai-incremental';
   egRepo.target = '_blank';
   egRepo.rel = 'noopener noreferrer';
-  egPanel.append(egRepo);
+  egMeta.append(egRepo);
+
+  egPanel.append(egLocked, egChoice, egResult, egMeta);
+  egChoice.hidden = true;
+  egResult.hidden = true;
   viewEndgame.append(egPanel);
+  refs.egLocked = egLocked;
+  refs.egChoice = egChoice;
+  refs.egResult = egResult;
+  refs.egResultTitle = egResultTitle;
+  refs.egResultText = egResultText;
 
   viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewEndgame);
 
@@ -403,7 +450,7 @@ function buildShell() {
   btnExpand.onclick = () => switchView('expand');
   btnRecords.onclick = () => switchView('records');
   btnEndgame.onclick = () => switchView('endgame');
-  refs.endgameReady = Techs.allPhase2Researched();
+  refs.endgameReady = Endings.isUnlocked();
   btnEndgame.hidden = !refs.endgameReady;
   refs.endgameBtn = btnEndgame;
   refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords, endgame: btnEndgame };
@@ -678,11 +725,28 @@ function render() {
 }
 
 function updateEndgame() {
-  if (refs.endgameReady || !Techs.allPhase2Researched()) return;
-  refs.endgameReady = true;
-  if (refs.endgameBtn) refs.endgameBtn.hidden = false;
-  showToast(t('toast.endgameReached'));
-  switchView('endgame');
+  if (!refs.endgameReady && Endings.isUnlocked()) {
+    refs.endgameReady = true;
+    if (refs.endgameBtn) refs.endgameBtn.hidden = false;
+    showToast(t('toast.endgameReached'));
+    switchView('endgame');
+  }
+  renderEndgame();
+}
+
+/** 终局面板：按「未解锁 / 待选择 / 已选择」切换内容 */
+function renderEndgame() {
+  if (!refs.egLocked) return;
+  const unlocked = Endings.isUnlocked();
+  const chosen = Endings.getChosen();
+  refs.egLocked.hidden = unlocked;
+  refs.egChoice.hidden = !unlocked || !!chosen;
+  refs.egResult.hidden = !chosen;
+  if (chosen) {
+    const e = Endings.getEnding(chosen);
+    refs.egResultTitle.textContent = tc('ending', chosen, 'title', e?.title ?? '');
+    refs.egResultText.textContent = tc('ending', chosen, 'text', e?.text ?? '');
+  }
 }
 
 function updateTitlebar() {
