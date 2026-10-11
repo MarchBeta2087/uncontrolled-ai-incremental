@@ -43,6 +43,7 @@ function applyUniverseHue() {
 
 export function initUI() {
   document.body.classList.add(platformClass());
+  document.title = t('app.title'); // 浏览器标签页标题随语言本地化
   if (Prestige.isPhase2Unlocked()) document.body.classList.add('phase2');
   buildShell();
   bindEvents();
