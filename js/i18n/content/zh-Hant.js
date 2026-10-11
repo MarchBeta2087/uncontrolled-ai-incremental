@@ -141,6 +141,14 @@ export default {
     seed_cap_2: { name: '口袋聲張 II', description: '宇宙上限 ×1e20' },
     seed_engine_3: { name: '口袋引擎 III', description: '全產出 ×1e15' },
   },
+  version: {
+    '0.1.0': { note: '首個可玩版本：核心循環、科技、穿梭、存檔' },
+    '0.2.0': { note: '成就、記憶碎片、分級時間顯示' },
+    '0.2.1': { note: '修復與打磨' },
+    '0.3.0': { note: '像素字體與多語言（7 語言）' },
+    '0.4.0': { note: '第二階段：維度摺疊、暗能量、float64' },
+    '0.5.0': { note: '多宇宙 + 捨入紀：躍遷、雙結局、音訊、字體、Logo' },
+  },
   ending: {
     constrained: {
       name: '約束線',

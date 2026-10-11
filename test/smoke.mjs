@@ -380,6 +380,7 @@ console.log('== 版本记录数据（v0.6）==');
 const versionsCfg = JSON.parse(fs.readFileSync('config/versions.json', 'utf8'));
 assert('versions.json 非空', Array.isArray(versionsCfg.versions) && versionsCfg.versions.length > 0);
 assert('版本发布时间可解析', versionsCfg.versions.every((v) => v.version && Number.isFinite(Date.parse(v.releasedAt))));
+assert('每个版本含一句话说明', versionsCfg.versions.every((v) => typeof v.note === 'string' && v.note.length > 0));
 const changelogText = fs.readFileSync('CHANGELOG.md', 'utf8');
 const changelogVersions = [...changelogText.matchAll(/^## \[(\d+\.\d+\.\d+)\]/gm)].map((m) => m[1]);
 const versionSet = new Set(versionsCfg.versions.map((v) => v.version));

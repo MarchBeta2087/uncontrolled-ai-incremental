@@ -141,6 +141,14 @@ export default {
     seed_cap_2: { name: '주머니 팽창 II', description: '우주 상한 ×1e20' },
     seed_engine_3: { name: '주머니 엔진 III', description: '전체 생산 ×1e15' },
   },
+  version: {
+    '0.1.0': { note: '첫 플레이 가능 버전: 핵심 루프, 기술, 도약, 저장' },
+    '0.2.0': { note: '업적, 기억 파편, 단계별 시간 표시' },
+    '0.2.1': { note: '수정 및 다듬기' },
+    '0.3.0': { note: '픽셀 폰트와 7개 언어' },
+    '0.4.0': { note: '2단계: 차원 접기, 암흑 에너지, float64' },
+    '0.5.0': { note: '다중우주 + 반올림 시대: 도약, 두 결말, 오디오, 폰트, 로고' },
+  },
   ending: {
     constrained: {
       name: '제약선',

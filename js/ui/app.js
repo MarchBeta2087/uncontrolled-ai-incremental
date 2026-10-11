@@ -770,14 +770,14 @@ function renderGantt(host, versions) {
     const start = i === 0 ? v.ts - (items[1] ? items[1].ts - v.ts : 3600e3) : items[i - 1].ts;
     const left = pct(start);
     const row = el('div', 'gantt-row');
-    row.append(el('span', 'gantt-ver', `v${v.version}`));
     const track = el('div', 'gantt-track');
     const bar = el('div', 'gantt-bar');
     bar.style.left = `${left}%`;
     bar.style.width = `${Math.max(1, pct(v.ts) - left)}%`;
-    bar.title = `v${v.version} · ${fmtUTC(v.ts)} UTC / ${fmtBJ(v.ts)} 北京${v.note ? ' · ' + v.note : ''}`;
+    const note = tc('version', v.version, 'note', v.note || '');
+    bar.title = `v${v.version} · ${fmtUTC(v.ts)} UTC / ${fmtBJ(v.ts)} 北京${note ? ' · ' + note : ''}`;
     track.append(bar);
-    row.append(track);
+    row.append(el('span', 'gantt-ver', `v${v.version}`), track, el('span', 'gantt-note', note));
     rows.append(row);
   });
   host.append(rows);

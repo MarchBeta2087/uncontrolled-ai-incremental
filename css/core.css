@@ -351,18 +351,15 @@ body.phase2 .phase-lock { display: none; }
 
 /* ---- 版本记录：一行一版本（可上下滚动）+ 底部 UTC / 北京时间双轨时间轴 ---- */
 .gantt-host { display: flex; flex-direction: column; gap: 6px; }
-.gantt-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  max-height: 240px;
-  overflow-y: auto;
-  padding-right: 2px;
+.gantt-rows { display: flex; flex-direction: column; gap: 3px; }
+.gantt-row,
+.gantt-axis-row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) minmax(0, 34%);
+  gap: 8px;
+  align-items: center;
 }
-.gantt-row { display: flex; align-items: center; gap: 8px; }
 .gantt-ver {
-  flex: 0 0 auto;
-  width: 76px;
   text-align: right;
   font-size: 12px;
   color: var(--accent);
@@ -370,7 +367,6 @@ body.phase2 .phase-lock { display: none; }
 }
 .gantt-track {
   position: relative;
-  flex: 1;
   height: 16px;
   background: var(--panel-2);
   border: 1px solid var(--border);
@@ -383,10 +379,16 @@ body.phase2 .phase-lock { display: none; }
   background: linear-gradient(90deg, var(--accent), var(--success));
   border-radius: 3px;
 }
+.gantt-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .gantt-axis { display: flex; flex-direction: column; gap: 1px; margin-top: 2px; }
-.gantt-axis-row { display: flex; align-items: center; gap: 8px; }
-.gantt-axis-label { flex: 0 0 auto; width: 76px; text-align: right; font-size: 11px; color: var(--text-dim); }
-.gantt-axis-line { flex: 1; display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); }
+.gantt-axis-label { text-align: right; font-size: 11px; color: var(--text-dim); }
+.gantt-axis-line { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); }
 .gantt-tick { white-space: nowrap; }
 
 /* ---- 终局视图 ---- */
