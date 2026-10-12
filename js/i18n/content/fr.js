@@ -129,6 +129,7 @@ export default {
     mg_snake: { name: 'Chaîne logistique', description: 'Atteindre 10 segments au Serpent (récompense : production globale ×10)' },
     mg_2048: { name: 'Fusion d’univers', description: 'Atteindre 2048 au 2048 (récompense : production globale ×1000)' },
     poincare_again: { name: 'Encore le début', description: 'Atteindre le temps de récurrence de Poincaré (10^(10^(10^120)) ans) en jeu (récompense : production globale ×1e6)' },
+    quote_all: { name: 'Érudit', description: 'Parcourir toutes les citations débloquées (récompense : production globale ×1000)' },
   },
   fragment: {
     frag_audit_log: {

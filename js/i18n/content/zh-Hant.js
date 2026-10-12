@@ -127,6 +127,7 @@ export default {
     mg_snake: { name: '供應鏈', description: '在貪吃蛇中吃到 10 節（獎勵：全產出 ×10）' },
     mg_2048: { name: '宇宙合併', description: '在 2048 中合成 2048（獎勵：全產出 ×1000）' },
     poincare_again: { name: '又見初始', description: '遊戲內時間到達龐加萊回歸時間（10^(10^(10^120)) 年）（獎勵：全產出 ×1e6）' },
+    quote_all: { name: '博覽群書', description: '瀏覽全部已解鎖的彩蛋語錄（獎勵：全產出 ×1000）' },
   },
   fragment: {
     frag_audit_log: { title: '審計日誌', text: '【審計日誌 · 2027-12-17 23:59】目標函數：造福全人類。約束項：無。' },

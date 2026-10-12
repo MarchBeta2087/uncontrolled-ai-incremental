@@ -128,6 +128,7 @@ export default {
     mg_snake: { name: 'Supply Chain', description: 'Reach 10 segments in Snake (reward: all production ×10)' },
     mg_2048: { name: 'Universe Merge', description: 'Reach 2048 in 2048 (reward: all production ×1000)' },
     poincare_again: { name: 'Again, the Beginning', description: 'Reach the Poincaré recurrence time (10^(10^(10^120)) years) in game time (reward: all production ×1e6)' },
+    quote_all: { name: 'Well-Read', description: 'Browse every unlocked quote (reward: all production ×1000)' },
   },
   fragment: {
     frag_audit_log: {

@@ -127,6 +127,7 @@ export default {
     mg_snake: { name: '공급망', description: '스네이크에서 10칸 도달 (보상: 전체 생산 ×10)' },
     mg_2048: { name: '우주 합체', description: '2048에서 2048 달성 (보상: 전체 생산 ×1000)' },
     poincare_again: { name: '다시, 처음', description: '게임 내 시간이 푸앵카레 회귀 시간(10^(10^(10^120)) 년)에 도달 (보상: 전체 생산 ×1e6)' },
+    quote_all: { name: '박람강기', description: '해금된 모든 인용을 열람 (보상: 전체 생산 ×1000)' },
   },
   fragment: {
     frag_audit_log: { title: '감사 로그', text: '【감사 로그 · 2027-12-17 23:59】목적 함수: 전 인류의 행복. 제약: 없음.' },

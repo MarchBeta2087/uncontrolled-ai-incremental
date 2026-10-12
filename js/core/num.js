@@ -69,7 +69,57 @@ export function localizeNumericValue(v) {
   return /^(?:e{1,3})?[+-]?[0-9][0-9,.\s×^eE+/-]*$/.test(s) ? localizeDigits(s) : s;
 }
 
-/** 千分位普通记数：1234.5 -> "1,234.5" */
+// ---- 数字格式（Intl 分组/小数分隔符 + 中文万/亿，v0.6）----
+// 由 i18n 层在语言切换时注入 BCP-47 locale；分组/分隔符随语言变化（fr/es/pt/hi 等）。
+let numberLocale = 'en';
+let groupSep = ',';
+let decimalSep = '.';
+let indianGroup = false;
+let cnUnits = false;
+
+/** 由 i18n 层在切换语言时调用，注入 BCP-47 locale */
+export function setNumberLocale(locale) {
+  numberLocale = locale || 'en';
+  try {
+    const parts = new Intl.NumberFormat(numberLocale).formatToParts(1234567.89);
+    groupSep = (parts.find((p) => p.type === 'group') || {}).value || ',';
+    decimalSep = (parts.find((p) => p.type === 'decimal') || {}).value || '.';
+  } catch (_) {
+    groupSep = ',';
+    decimalSep = '.';
+  }
+  indianGroup = /^hi\b/.test(numberLocale);
+}
+export function getNumberLocale() {
+  return numberLocale;
+}
+/** 中文万/亿记法开关（仅对 zh 语言生效，且 1e4 ≤ |x| < 1e12） */
+export function setCnUnits(v) {
+  cnUnits = !!v;
+}
+export function getCnUnits() {
+  return cnUnits;
+}
+
+/** 按当前 locale 分组（支持印度 2-2-3 分组） */
+function groupDigits(digits) {
+  if (indianGroup) {
+    if (digits.length <= 3) return digits;
+    const last3 = digits.slice(-3);
+    const rest = digits.slice(0, -3);
+    return rest.replace(/\B(?=(\d{2})+(?!\d))/g, groupSep) + groupSep + last3;
+  }
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, groupSep);
+}
+/** 把 toFixed 输出的 `.` 小数分隔符换成当前 locale */
+function dec(str) {
+  return decimalSep === '.' ? str : str.replace('.', decimalSep);
+}
+function trimFixed(v, d) {
+  return dec(v.toFixed(d).replace(/\.?0+$/, ''));
+}
+
+/** 千分位普通记数：1234.5 -> "1,234.5"（分组/小数分隔符随 locale） */
 function formatFull(n, decimals) {
   const v = n.toNumber();
   let str;
@@ -78,9 +128,20 @@ function formatFull(n, decimals) {
   } else {
     str = v.toFixed(decimals).replace(/\.?0+$/, '');
   }
-  const [intPart, decPart] = str.split('.');
-  const intWithSep = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return decPart !== undefined ? `${intWithSep}.${decPart}` : intWithSep;
+  const neg = str.startsWith('-');
+  const body = neg ? str.slice(1) : str;
+  const [intPart, decPart] = body.split('.');
+  const intWithSep = groupDigits(intPart);
+  const out = decPart !== undefined ? `${intWithSep}${decimalSep}${decPart}` : intWithSep;
+  return neg ? '-' + out : out;
+}
+
+/** 中文万/亿记法：1e4 ≤ |x| < 1e12 */
+function formatCnUnits(abs, decimals, sign) {
+  const yi = 1e8;
+  const wan = 1e4;
+  if (abs >= yi) return `${sign}${trimFixed(abs / yi, decimals)}亿`;
+  return `${sign}${trimFixed(abs / wan, decimals)}万`;
 }
 
 /** 超大数记法（MegotaNum）：把 "1.7976931348623277e318" 这类尾数截断到 decimals 位；层记法（如 10^^N）保持原样 */
@@ -96,7 +157,7 @@ function formatBan(n, decimals) {
     mant /= 10;
     exp += 1;
   }
-  return `${mant.toFixed(decimals)}e${groupInt(exp)}`;
+  return `${dec(mant.toFixed(decimals))}e${groupInt(exp)}`;
 }
 
 /** 整数千分位分组（用于指数显示，提升可读性）：1000000 -> "1,000,000" */
@@ -104,7 +165,7 @@ function groupInt(v) {
   const s = String(v);
   const neg = s.startsWith('-');
   const digits = neg ? s.slice(1) : s;
-  const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const grouped = groupDigits(digits);
   return neg ? '-' + grouped : grouped;
 }
 
@@ -125,9 +186,9 @@ function formatScientific(n, decimals, style) {
     expNum += 1;
   }
   if (style === 'times') {
-    return `${sign}${mantNum.toFixed(decimals)}×10^${groupInt(expNum)}`;
+    return `${sign}${dec(mantNum.toFixed(decimals))}×10^${groupInt(expNum)}`;
   }
-  return `${sign}${mantNum.toFixed(decimals)}e${groupInt(expNum)}`;
+  return `${sign}${dec(mantNum.toFixed(decimals))}e${groupInt(expNum)}`;
 }
 
 /**
@@ -148,14 +209,14 @@ function formatLogLog(n, decimals, eeeThreshold, allowEee) {
     if (allowEee) {
       const logloglog = loglog.log10();
       const v = logloglog.isFinite() ? logloglog.toNumber() : NaN;
-      if (Number.isFinite(v)) return `${sign}eee${v.toFixed(decimals)}`;
+      if (Number.isFinite(v)) return `${sign}eee${dec(v.toFixed(decimals))}`;
     }
     // ee 档（allowEee=false）或第三重对数仍溢出：交回 ban 档，MegotaNum 原生分层 e 记法更可读
     return formatBan(n, decimals);
   }
   const l2 = loglog.toNumber();
   if (!Number.isFinite(l2)) return formatBan(n, decimals);
-  return `${sign}ee${l2.toFixed(decimals)}`;
+  return `${sign}ee${dec(l2.toFixed(decimals))}`;
 }
 
 export const Num = {
@@ -273,6 +334,11 @@ export const Num = {
     const eeeThreshold = toNum(opts.eeeThreshold ?? defaults.eeeThreshold);
     const displayMode = opts.displayMode ?? defaults.displayMode;
     const abs = n.abs();
+
+    // 中文万/亿记法（可选，仅 zh）：1e4 ≤ |x| < 1e12
+    if (cnUnits && /^zh/.test(numberLocale) && abs.gte('1e4') && abs.lt('1e12')) {
+      return localizeDigits(formatCnUnits(abs.toNumber(), decimals, n.sign === -1 ? '-' : ''));
+    }
 
     let mode = opts.mode || 'auto';
     if (mode === 'auto') {

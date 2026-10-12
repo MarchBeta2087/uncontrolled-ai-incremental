@@ -21,11 +21,16 @@
 - **文档同步约定**：`CONTRIBUTING.md` 新增「文档同步」必做项（功能/配置/数值/流程改动须同步 README / `docs/` / TODO / CHANGELOG）；PR 模板加自检；新增 `docs/archived/` 归档目录与规则（过时文档移入并登记）。
 - **法语界面（fr）**：新增 `js/i18n/locales/fr.js`（UI 外壳 222 键）与 `js/i18n/content/fr.js`（游戏内容 315 键），与基准语言逐键对齐；`css/fonts.css` 新增 `[data-lang="fr"]`（Fusion latin）；`README` 语言列表更新。翻译为机器 + 人工，母语者复核见 [docs/开放任务.md](docs/开放任务.md) 与 Discussion #67。
 - **西班牙语 / 葡萄牙语 / 印地语界面**：新增 `es` / `pt` / `hi` 的 UI 外壳（各 **222 键**）与游戏内容（各 **315 键**），逐键对齐；`css/fonts.css` 新增对应 `[data-lang]` 规则（es/pt 走 Fusion latin，hi 优先回退 SevenFifteen 天城文）；`getLocales()` 现含 12 个语言代码。
+- **数字格式（Intl）**：`Num.format` 按语言注入分组 / 小数分隔符（`Num.setNumberLocale`，由 i18n 在切语言时注入）——fr 空格分组、es/pt 点分组、hi 印度 2-2-3 分组、ar 阿拉伯分隔符；科学计数 / ban / ee / eee 的尾数与指数同步。新增可选 **中文万/亿记法**（设置面板，仅中文界面；1e4–1e12 显示为万/亿，如 `12345 → 1.235万`）。
 
 ### 修复（Fixed）
 
 - **多宇宙高宇宙停滞**：`config/universes.json` 的 `difficultyExponent` **0.95 → 0.5**。自适应难度 `universe:prod = capMult / metaProd^exp` 在高宇宙把产出压到低于生成器成本，导致第 7/8 宇宙停滞（下一购买需 1e15 游戏秒）；降低阻尼后第 1–9 宇宙全部可达。诊断与遗留见 [docs/v0.5-高宇宙平衡评估.md](docs/v0.5-高宇宙平衡评估.md)。
 - **`tools/balance-sim.mjs`**：停滞时打印各生成器数量/成本/持有/产出与 `globalMult`/`capMult`/`cap`，便于诊断高宇宙瓶颈。
+
+### 修复（Fixed）
+
+- **成就「博览群书」译文缺失**：`quote_all` 在全部 `content/` 中漏译（回退中文）——已补齐 9 语言的名称与描述。同类检查：新增配置—内容覆盖探针，确认其余内容无缺口（英文原句语录按设计不回退，见 #52）。
 
 ## [0.5.1] - 2026-10-11
 
