@@ -24,6 +24,7 @@
 - **西班牙语 / 葡萄牙语 / 印地语界面**：新增 `es` / `pt` / `hi` 的 UI 外壳（各 **222 键**）与游戏内容（各 **315 键**），逐键对齐；`css/fonts.css` 新增对应 `[data-lang]` 规则（es/pt 走 Fusion latin，hi 优先回退 SevenFifteen 天城文）；`getLocales()` 现含 12 个语言代码。
 - **数字格式（Intl）**：`Num.format` 按语言注入分组 / 小数分隔符（`Num.setNumberLocale`，由 i18n 在切语言时注入）——fr 空格分组、es/pt 点分组、hi 印度 2-2-3 分组、ar 阿拉伯分隔符；科学计数 / ban / ee / eee 的尾数与指数同步。新增可选 **中文万/亿记法**（设置面板，仅中文界面；1e4–1e12 显示为万/亿，如 `12345 → 1.235万`）。
 - **音频素材包（v0.6）**：新增 `tools/audio-gen.py`（numpy/scipy 合成 → **OGG/Vorbis** via soundfile）——程序生成 **7 个事件音效**（click / buy / tech / prestige / achievement / universe / ending）+ **1 段环境循环 BGM**，置于 `assets/audio/`；`config/audio.json` 以 `file` 接入（保留 `synth` 作为无素材兜底）；音频引擎新增 **BGM 循环播放**（`startBgm`/`stopBgm`，随首次手势解锁启动）与设置面板「背景音乐」开关（`js/core/audio.js` / `js/ui/audio.js`）；`ASSETS.md` 登记、`tools/requirements.txt` 声明生成期依赖。
+- **结局过场像素画细化（v0.6）**：重写 `tools/ending-art.py`，三张 192×108 过场图（约束线 / 无约束线 / 庞加莱终章）由占位升级为**分层渐变 + 细节**（机柜指示灯 / 终端首行 / 约束锁 / 时间回卷弧 / 嵌套口袋 / 无限清单 / 幂塔高光 / 回归环箭头 / 粒子回位）；`ASSETS.md` 更新说明。
 
 ### 修复（Fixed）
 
