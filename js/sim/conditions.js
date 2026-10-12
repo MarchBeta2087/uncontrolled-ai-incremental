@@ -41,6 +41,8 @@ export function checkCondition(cond) {
       return Num.gte(Time.getCurrentYear(), Num.parse(cond.value));
     case 'phase2_unlocked':
       return Progress.isPhase2Unlocked();
+    case 'phase3_unlocked':
+      return Progress.isPhase3Unlocked();
     case 'prestige_gain_ge':
       return Num.gte(Prestige.getLastPrestigeCrystals(), Num.parse(cond.value));
     case 'cap_ge':

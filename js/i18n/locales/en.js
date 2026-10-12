@@ -206,4 +206,5 @@ export default {
   'reason.saveVersionTooNew': 'Save version v{version} is newer than supported v{current}, refusing to load',
   'reason.missingMigration': 'Missing migration function {key}',
   'reason.phase2Locked': 'Phase 2 is not unlocked yet',
+  'reason.phase3Locked': 'Phase 3 is not unlocked yet',
 };

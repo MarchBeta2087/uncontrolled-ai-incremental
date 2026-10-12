@@ -205,4 +205,5 @@ export default {
   'reason.saveVersionTooNew': '存檔版本 v{version} 高於目前支援的 v{current}，拒絕載入',
   'reason.missingMigration': '缺少遷移函式 {key}',
   'reason.phase2Locked': '第二階段尚未解鎖',
+  'reason.phase3Locked': '第三階段尚未解鎖',
 };

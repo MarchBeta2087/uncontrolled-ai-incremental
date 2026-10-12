@@ -52,6 +52,7 @@ function loop() {
   const dtGame = Time.tick(dtReal);      // 游戏秒增量（含速率乘子）
   Resources.tick(dtGame);                // 生产链结算
   Prestige.checkPhase2Unlock();          // 第二阶段解锁检查
+  Prestige.checkPhase3Unlock();          // 第三阶段（庞加莱纪）解锁检查
   checkPrestige();                       // 穿梭触发检查
   Events.emit('tick', { dtReal, dtGame });
 }

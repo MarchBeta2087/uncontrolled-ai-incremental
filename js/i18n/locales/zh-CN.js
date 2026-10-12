@@ -206,4 +206,5 @@ export default {
   'reason.saveVersionTooNew': '存档版本 v{version} 高于当前支持的 v{current}，拒绝加载',
   'reason.missingMigration': '缺少迁移函数 {key}',
   'reason.phase2Locked': '第二阶段尚未解锁',
+  'reason.phase3Locked': '第三阶段尚未解锁',
 };

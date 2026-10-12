@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 7;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -49,6 +49,12 @@ const migrations = {
     if (mp.timeBoost === undefined) mp.timeBoost = { multiplier: Num.toJSON(Num.parse(1)), count: 0 };
     return { ...s, schemaVersion: 6, metaProgress: mp };
   },
+  // v6 → v7：新增第三阶段（庞加莱纪）解锁标志
+  6: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.phase3Unlocked === undefined) mp.phase3Unlocked = false;
+    return { ...s, schemaVersion: 7, metaProgress: mp };
+  },
 };
 
 /** 生成初始存档快照（纯 JSON，Num 字段已是 MegotaNum JSON 表示） */
@@ -73,6 +79,7 @@ export function createInitialSnapshot() {
       timeCrystals: Num.toJSON(Num.parse(0)),
       totalTimeCrystals: Num.toJSON(Num.parse(0)),
       phase2Unlocked: false,
+      phase3Unlocked: false,
       universe: 1,
       singularitySeeds: Num.toJSON(Num.parse(0)),
       crossUniverseUpgrades: [],
