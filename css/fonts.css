@@ -165,6 +165,19 @@ body {
   --mono: "Fusion Pixel 12 Mono latin", "Fusion Pixel 12 latin", "SevenFifteen", ui-monospace, "Cascadia Code", Consolas, monospace;
 }
 
+/* 西班牙语 / 葡萄牙语（拉丁文，同 fr）。 */
+:root[data-lang="es"],
+:root[data-lang="pt"] {
+  --font: "Fusion Pixel 12 latin", "SevenFifteen", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Fusion Pixel 12 Mono latin", "Fusion Pixel 12 latin", "SevenFifteen", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+/* 印地语（天城文）：Fusion 无字形，优先回退 SevenFifteen（含连字）。 */
+:root[data-lang="hi"] {
+  --font: "Fusion Pixel 12 latin", "SevenFifteen", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Fusion Pixel 12 Mono latin", "Fusion Pixel 12 latin", "SevenFifteen", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
 /* 阿拉伯语（RTL）：Fusion 无阿拉伯字形，按字形回退到 SevenFifteen（含连写）。
    拉丁数字仍走 Fusion，保持与其它语言一致，且应保持拉丁数字而非阿拉伯-印度数字。 */
 :root[data-lang="ar"] {
