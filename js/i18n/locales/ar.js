@@ -48,6 +48,8 @@ export default {
   'tech.phase1': 'المرحلة الأولى',
   'tech.phase2': 'المرحلة الثانية · تجاوز هذا الكون',
   'tech.phase2LockNotice': 'المرحلة الثانية: تتطلب حيازة {n} بلورة زمنية للفتح',
+  'tech.phase3': 'المرحلة الثالثة · حقبة بوانكاريه',
+  'tech.phase3LockNotice': 'المرحلة الثالثة: بلوغ الكون {n} للفتح',
 
   // 扩张视图
   'expand.panel': 'التهام الكون',
@@ -95,6 +97,7 @@ export default {
   'toast.challengeExit': 'خرجت من التحدي',
   'toast.challengeEntered': 'دخلت التحدي: {name}',
   'toast.phase2Unlocked': 'فُتحت المرحلة الثانية: تجاوز هذا الكون',
+  'toast.phase3Unlocked': 'فُتحت المرحلة الثالثة: حقبة بوانكاريه',
   'toast.endgameReached': 'تحققت النهاية: حدود هذا الكون',
 
   // 离线收益报告

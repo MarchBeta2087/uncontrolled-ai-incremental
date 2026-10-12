@@ -13,13 +13,13 @@ import * as Techs from './techs.js';
 import * as Mults from './mults.js';
 import * as Progress from './progress.js';
 import * as Universe from './universe.js';
+import * as Cap from './cap.js';
 import { t } from '../i18n/index.js';
 
 let timeCrystals = Num.parse(0);        // 当前持有（可消费）
 let totalTimeCrystals = Num.parse(0);   // 历史累计获得（只增不减）
 let prestigeCount = 0;
 
-let baseCap = Num.parse('1e70');        // 基准宇宙上限（由 balance.json 注入）
 let crystalBase = Num.parse(2);
 let exponent = Num.parse(0.5);
 let prestigeExponent = Num.parse(0.5);
@@ -30,12 +30,13 @@ let phase3UnlockUniverse = 9; // 第三阶段（庞加莱纪）：宇宙编号�
 let lastPrestigeCrystals = Num.parse(0); // 上一次穿梭所得晶体（供成就条件 prestige_gain_ge）
 
 export function configurePrestige(cfg = {}) {
-  if (cfg.universe?.massEnergyCap !== undefined) baseCap = Num.parse(cfg.universe.massEnergyCap);
+  Cap.configureCap(cfg);
   if (cfg.prestige?.crystalBase !== undefined) crystalBase = Num.parse(cfg.prestige.crystalBase);
   if (cfg.prestige?.exponent !== undefined) exponent = Num.parse(cfg.prestige.exponent);
   if (cfg.prestige?.prestigeExponent !== undefined) prestigeExponent = Num.parse(cfg.prestige.prestigeExponent);
   if (cfg.phase2?.unlockCrystals !== undefined) phase2UnlockCrystals = Num.parse(cfg.phase2.unlockCrystals);
   if (cfg.phase3?.unlockUniverse !== undefined) phase3UnlockUniverse = Number(cfg.phase3.unlockUniverse);
+  Resources.configureCapLink(cfg.phase3?.capLink);
 }
 
 export function initPrestige() {
@@ -65,10 +66,9 @@ export function spendCrystals(amount) {
 export function getPrestigeCount() {
   return prestigeCount;
 }
-/** 动态宇宙上限 = min(基准上限 × 所有 cap_mult 之积, 当前宇宙上限目标)，再叠 cap_tetrate 塔层 */
+/** 动态宇宙上限（委托 cap.js）：min(基准 × cap_mult, 当前宇宙上限目标)，再叠 cap_tetrate 塔层 */
 export function getUniverseCap() {
-  const base = Num.min(Num.mul(baseCap, Mults.getCapMultiplier()), Universe.getCapTarget());
-  return Mults.tower(base, Mults.getArrows('cap'));
+  return Cap.getUniverseCap();
 }
 
 /** 第二阶段解锁所需的当前持有晶体数 */

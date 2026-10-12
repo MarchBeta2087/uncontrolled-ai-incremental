@@ -39,6 +39,8 @@ export default {
   'tech.phase1': '第一階段',
   'tech.phase2': '第二階段 · 越過本宇宙',
   'tech.phase2LockNotice': '第二階段：需目前持有 {n} 時間晶體解鎖',
+  'tech.phase3': '第三階段 · 龐加萊紀',
+  'tech.phase3LockNotice': '第三階段：需抵達第 {n} 宇宙解鎖',
 
   // 擴張視圖
   'expand.panel': '宇宙吞噬',
@@ -86,6 +88,7 @@ export default {
   'toast.challengeExit': '已退出挑戰',
   'toast.challengeEntered': '已進入挑戰：{name}',
   'toast.phase2Unlocked': '第二階段已解鎖：越過本宇宙',
+  'toast.phase3Unlocked': '第三階段已解鎖：龐加萊紀',
   'toast.endgameReached': '終局已達成：本宇宙的盡頭',
 
   // 離線收益報告

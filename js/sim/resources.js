@@ -10,6 +10,7 @@ import { Num } from '../core/num.js';
 import { Events } from '../core/events.js';
 import * as Progress from './progress.js';
 import * as Mults from './mults.js';
+import * as Cap from './cap.js';
 import { t } from '../i18n/index.js';
 
 const resources = new Map();       // id -> { amount: Num, def: Object }
@@ -23,6 +24,24 @@ let challengeNerfExp = Num.parse(1); // 挑战削弱指数（作用于永久全�
 
 let clickProduction = Num.parse(0);
 let clickResourceId = 'funds'; // MVP：点击产出资金
+// 第三阶段（v0.6 庞加莱纪）：上限资源产出下限 = cap / divisor，叠至少一层 cap 塔后生效。
+let capLink = null; // { resourceId, divisor: Num }
+
+/** 配置第三阶段「产出与上限挂钩」（balance.json: phase3.capLink） */
+export function configureCapLink(cfg = {}) {
+  if (cfg && cfg.resource && cfg.divisor !== undefined) {
+    capLink = { resourceId: cfg.resource, divisor: Num.parse(cfg.divisor) };
+  } else {
+    capLink = null;
+  }
+}
+
+/** 某资源的上限挂钩产出下限（0 表示不挂钩） */
+function capLinkedFloor(resourceId) {
+  if (!capLink || resourceId !== capLink.resourceId) return Num.parse(0);
+  if (Mults.getArrows('cap') <= 0) return Num.parse(0);
+  return Num.div(Cap.getUniverseCap(), capLink.divisor);
+}
 
 export function initResources(cfg) {
   resources.clear();
@@ -92,13 +111,12 @@ export function getGeneratorMultiplier(genId) {
   return m;
 }
 
-/** 全局产出乘子（含第三阶段箭塔）：tower(globalMult^challengeNerfExp, prodArrows) */
+/** 全局产出乘子：globalMult^challengeNerfExp */
 function effectiveGlobalMult() {
-  const base = Num.pow(getGlobalMultiplier(), challengeNerfExp);
-  return Mults.tower(base, Mults.getArrows('prod'));
+  return Num.pow(getGlobalMultiplier(), challengeNerfExp);
 }
 
-/** 某资源的总产出速率（游戏秒），用于 UI 展示 */
+/** 某资源的总产出速率（游戏秒）：生成器产出与（第三阶段）上限挂钩下限取大，用于 UI 展示 */
 export function getProductionPerSecond(resourceId) {
   let total = Num.parse(0);
   const globalMult = effectiveGlobalMult();
@@ -110,7 +128,7 @@ export function getProductionPerSecond(resourceId) {
     );
     total = Num.add(total, perSec);
   }
-  return total;
+  return Num.max(total, capLinkedFloor(resourceId));
 }
 export function setClickMultiplier(sourceId, value) {
   clickMults.set(sourceId, Num.parse(value));
@@ -254,6 +272,7 @@ export function buyMaxAll() {
 export function tick(dtGameSeconds) {
   const dt = Num.parse(dtGameSeconds);
   const globalMult = effectiveGlobalMult();
+  const producedByResource = new Map();
   for (const [genId, g] of generators) {
     const perSec = Num.mul(
       Num.mul(Num.mul(Num.parse(g.def.baseProduction), g.count), getGeneratorMultiplier(genId)),
@@ -262,6 +281,20 @@ export function tick(dtGameSeconds) {
     const produced = Num.mul(perSec, dt);
     const res = resources.get(g.def.produces);
     res.amount = Num.add(res.amount, produced);
+    producedByResource.set(
+      g.def.produces,
+      Num.add(producedByResource.get(g.def.produces) ?? Num.parse(0), produced)
+    );
+  }
+  // 第三阶段：上限资源产出下限 = cap / divisor（保证每层塔约 divisor 秒填满）
+  if (capLink) {
+    const floorPerSec = capLinkedFloor(capLink.resourceId);
+    const got = producedByResource.get(capLink.resourceId) ?? Num.parse(0);
+    const floorProduced = Num.mul(floorPerSec, dt);
+    if (Num.gt(floorProduced, got)) {
+      const res = resources.get(capLink.resourceId);
+      res.amount = Num.add(res.amount, Num.sub(floorProduced, got));
+    }
   }
   Events.emit('resources:tick');
 }

@@ -39,6 +39,8 @@ export default {
   'tech.phase1': 'フェーズ 1',
   'tech.phase2': 'フェーズ 2 · この宇宙の彼方',
   'tech.phase2LockNotice': 'フェーズ 2：時間結晶を {n} 保有で解放',
+  'tech.phase3': '第3段階 · ポアンカレ紀',
+  'tech.phase3LockNotice': '第3段階：宇宙 {n} 到達で解放',
 
   // 拡張ビュー
   'expand.panel': '宇宙喰らい',
@@ -86,6 +88,7 @@ export default {
   'toast.challengeExit': 'チャレンジを退出しました',
   'toast.challengeEntered': 'チャレンジ開始：{name}',
   'toast.phase2Unlocked': 'フェーズ 2 解放：この宇宙の彼方',
+  'toast.phase3Unlocked': '第3段階が解放されました：ポアンカレ紀',
   'toast.endgameReached': '終局に到達：この宇宙の果て',
 
   // オフライン収益レポート

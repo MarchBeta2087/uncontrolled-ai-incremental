@@ -31,7 +31,7 @@ const uniCfg = JSON.parse(fs.readFileSync('config/universes.json', 'utf8'));
 const endingCfg = JSON.parse(fs.readFileSync('config/endings.json', 'utf8'));
 const audioCfg = JSON.parse(fs.readFileSync('config/audio.json', 'utf8'));
 // 第一阶段技术 id（校验第一阶段行为时只加载这些，排除第二阶段的永久乘子）
-const p1TechIds = techsCfg.techs.filter((t) => t.phase !== 2).map((t) => t.id);
+const p1TechIds = techsCfg.techs.filter((t) => (t.phase ?? 1) === 1).map((t) => t.id);
 
 const numMod = await import('../js/core/num.js');
 const timeMod = await import('../js/core/time.js');
@@ -263,7 +263,7 @@ assert('cap 箭塔累加 = 3', multsMod.getArrows('cap') === 3);
 multsMod.removeArrow('cap', 'a2');
 assert('移除后 cap 箭塔 = 1', multsMod.getArrows('cap') === 1);
 multsMod.clearArrows();
-assert('清空后 cap = 0 且 prod = 0', multsMod.getArrows('cap') === 0 && multsMod.getArrows('prod') === 0);
+assert('清空后 cap = 0', multsMod.getArrows('cap') === 0);
 
 // tower 基本语义
 assert('tower(x,0)=x', Num.eq(multsMod.tower('1e10', 0), Num.parse('1e10')));
@@ -283,8 +283,7 @@ multsMod.clearArrows();
 
 // 阶段门控 + 效果落地（用临时配置，不依赖第三阶段内容）
 const p3TechCfg = { techs: [
-  { id: 'p3_cap', name: 'c', phase: 3, costCurrency: 'mass_energy', cost: '1', requires: [], effects: [{ type: 'cap_tetrate', value: 1 }] },
-  { id: 'p3_prod', name: 'p', phase: 3, costCurrency: 'mass_energy', cost: '1', requires: [], effects: [{ type: 'all_generator_tetrate', value: 1 }] },
+  { id: 'p3_cap', name: 'c', phase: 3, costCurrency: 'mass_energy', costFraction: '0.5', requires: [], effects: [{ type: 'cap_tetrate', value: 1 }] },
 ] };
 techMod.initTechs(p3TechCfg);
 techMod.load([]);
@@ -293,12 +292,28 @@ assert('未解锁：第三阶段技术不可购', techMod.canBuy('p3_cap') === f
 assert('未解锁：购买被拒', techMod.buyTech('p3_cap').ok === false);
 progressMod.setPhase3Unlocked(true);
 resMod.initResources(resourcesCfg);
-resMod.load({ resources: { mass_energy: Num.toJSON('1000') }, generators: {} });
+multsMod.clearCapMultipliers();
+prestigeMod.configurePrestige({ universe: { massEnergyCap: '1e70' }, phase3: { unlockUniverse: 9, capLink: { resource: 'mass_energy', divisor: '120' } } });
+resMod.load({ resources: { mass_energy: Num.toJSON(Num.mul(techMod.getCost('p3_cap'), 2)) }, generators: {} });
 assert('解锁后：第三阶段技术可购', techMod.canBuy('p3_cap') === true);
 assert('购买 cap_tetrate：塔高 = 1', techMod.buyTech('p3_cap').ok === true && multsMod.getArrows('cap') === 1);
-assert('购买 all_generator_tetrate：prod 塔高 = 1', techMod.buyTech('p3_prod').ok === true && multsMod.getArrows('prod') === 1);
 techMod.reset();
-assert('重置后箭塔清空', multsMod.getArrows('cap') === 0 && multsMod.getArrows('prod') === 0);
+assert('重置后箭塔清空', multsMod.getArrows('cap') === 0);
+
+// 第三阶段 cap-link（修法 A）：叠至少一层 cap 塔后，上限资源产出不低于 cap / divisor
+multsMod.clearArrows();
+multsMod.clearCapMultipliers();
+universeMod.initUniverse();
+prestigeMod.configurePrestige({ universe: { massEnergyCap: '1e70' }, phase3: { unlockUniverse: 9, capLink: { resource: 'mass_energy', divisor: '120' } } });
+resMod.initResources(resourcesCfg);
+resMod.load({ resources: { mass_energy: Num.toJSON('0') }, generators: {} });
+assert('cap-link：未叠塔层时不挂钩', Num.eq(resMod.getProductionPerSecond('mass_energy'), 0));
+multsMod.setArrow('cap', 't', 1);
+const capLinkCap = prestigeMod.getUniverseCap();
+assert('cap-link：叠 1 层后产出 = 上限/120', Num.eq(resMod.getProductionPerSecond('mass_energy'), Num.div(capLinkCap, 120)));
+resMod.tick(1);
+assert('cap-link：tick 1 游戏秒至少产出 cap/120', Num.gte(resMod.getResource('mass_energy'), Num.div(capLinkCap, 120)));
+multsMod.clearArrows();
 
 // 解锁检查（宇宙 ≥ 9）
 progressMod.setPhase3Unlocked(false);

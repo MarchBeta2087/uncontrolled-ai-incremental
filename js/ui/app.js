@@ -45,6 +45,7 @@ export function initUI() {
   document.body.classList.add(platformClass());
   document.title = t('app.title'); // 浏览器标签页标题随语言本地化
   if (Prestige.isPhase2Unlocked()) document.body.classList.add('phase2');
+  if (Prestige.isPhase3Unlocked()) document.body.classList.add('phase3');
   buildShell();
   bindEvents();
   switchView('resources');
@@ -203,15 +204,21 @@ function buildShell() {
   const techWrap = el('div', '');
   const p1Heading = el('div', 'phase-heading', t('tech.phase1'));
   const p1Grid = el('div', 'tech-grid');
-  const p2Lock = el('div', 'phase-lock', t('tech.phase2LockNotice', { n: Num.format(Prestige.getPhase2UnlockCrystals()) }));
+  const p2Lock = el('div', 'phase-lock phase2', t('tech.phase2LockNotice', { n: Num.format(Prestige.getPhase2UnlockCrystals()) }));
   const p2Heading = el('div', 'phase-heading', t('tech.phase2'));
   p2Heading.dataset.phase = '2';
   const p2Grid = el('div', 'tech-grid');
   p2Grid.dataset.phase = '2';
+  const p3Lock = el('div', 'phase-lock phase3', t('tech.phase3LockNotice', { n: Prestige.getPhase3UnlockUniverse() }));
+  const p3Heading = el('div', 'phase-heading', t('tech.phase3'));
+  p3Heading.dataset.phase = '3';
+  const p3Grid = el('div', 'tech-grid');
+  p3Grid.dataset.phase = '3';
   for (const tid of Techs.getTechIds()) {
     const def = Techs.getTech(tid);
     const card = el('div', 'tech-card');
     if (def.phase === 2) card.dataset.phase = '2';
+    else if (def.phase === 3) card.dataset.phase = '3';
     const name = el('div', 'tech-name', tc('tech', tid, 'name', def.name));
     const desc = el('div', 'tech-desc', tc('tech', tid, 'description', def.description || ''));
     const cost = el('div', 'tech-cost', '');
@@ -224,9 +231,9 @@ function buildShell() {
       markDirty();
     };
     card.append(name, desc, cost, btn);
-    (def.phase === 2 ? p2Grid : p1Grid).append(card);
+    (def.phase === 3 ? p3Grid : def.phase === 2 ? p2Grid : p1Grid).append(card);
   }
-  techWrap.append(p1Heading, p1Grid, p2Lock, p2Heading, p2Grid);
+  techWrap.append(p1Heading, p1Grid, p2Lock, p2Heading, p2Grid, p3Lock, p3Heading, p3Grid);
   techPanel.append(techWrap);
   viewTechs.append(techPanel);
   refs.techGrid = techWrap;
@@ -747,6 +754,11 @@ function bindEvents() {
   Events.on('phase2:unlocked', () => {
     document.body.classList.add('phase2');
     showToast(t('toast.phase2Unlocked'));
+    renderNow();
+  });
+  Events.on('phase3:unlocked', () => {
+    document.body.classList.add('phase3');
+    showToast(t('toast.phase3Unlocked'));
     renderNow();
   });
   Events.on('ui:toast', (p) => showToast(p?.text));

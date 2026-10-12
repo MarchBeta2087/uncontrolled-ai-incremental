@@ -40,6 +40,8 @@ export default {
   'tech.phase1': 'Phase 1',
   'tech.phase2': 'Phase 2 · Beyond This Universe',
   'tech.phase2LockNotice': 'Phase 2: hold {n} Time Crystals to unlock',
+  'tech.phase3': 'Phase 3 · Poincaré Era',
+  'tech.phase3LockNotice': 'Phase 3: reach universe {n} to unlock',
 
   // Expand view
   'expand.panel': 'Devour the Universe',
@@ -87,6 +89,7 @@ export default {
   'toast.challengeExit': 'Challenge exited',
   'toast.challengeEntered': 'Challenge started: {name}',
   'toast.phase2Unlocked': 'Phase 2 unlocked: Beyond This Universe',
+  'toast.phase3Unlocked': 'Phase 3 unlocked: Poincaré Era',
   'toast.endgameReached': 'Endgame reached: the edge of this universe',
 
   // Offline earnings report

@@ -40,6 +40,8 @@ export default {
   'tech.phase1': '第一阶段',
   'tech.phase2': '第二阶段 · 越过本宇宙',
   'tech.phase2LockNotice': '第二阶段：需当前持有 {n} 时间晶体解锁',
+  'tech.phase3': '第三阶段 · 庞加莱纪',
+  'tech.phase3LockNotice': '第三阶段：需抵达第 {n} 宇宙解锁',
 
   // 扩张视图
   'expand.panel': '宇宙吞噬',
@@ -87,6 +89,7 @@ export default {
   'toast.challengeExit': '已退出挑战',
   'toast.challengeEntered': '已进入挑战：{name}',
   'toast.phase2Unlocked': '第二阶段已解锁：越过本宇宙',
+  'toast.phase3Unlocked': '第三阶段已解锁：庞加莱纪',
   'toast.endgameReached': '终局已达成：本宇宙的尽头',
 
   // 离线收益报告

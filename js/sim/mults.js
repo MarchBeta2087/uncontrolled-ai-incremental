@@ -1,6 +1,6 @@
 // js/sim/mults.js
 // 共享乘子容器：宇宙上限乘子（cap_mult）、晶体产出乘子（crystal_mult），
-// 以及第三阶段（v0.6）的「箭塔层数」（cap_tetrate / all_generator_tetrate）。
+// 以及第三阶段（v0.6）的「上限箭塔层数」（cap_tetrate）。
 //
 // 独立于 resources / prestige / techs，避免模块循环依赖：
 //   - prestige 读取（计算动态上限、穿梭结算）；
@@ -10,8 +10,8 @@ import { Num } from '../core/num.js';
 
 const capMults = new Map();     // sourceId -> Num
 const crystalMults = new Map(); // sourceId -> Num
-// 箭塔层数：kind = 'cap'（上限）| 'prod'（全局产出）；sourceId -> Number（整数层数）
-const arrows = { cap: new Map(), prod: new Map() };
+// 箭塔层数：kind = 'cap'（上限）；sourceId -> Number（整数层数）
+const arrows = { cap: new Map() };
 
 function product(map) {
   let m = Num.parse(1);
@@ -71,7 +71,6 @@ export function removeArrow(kind, sourceId) {
 export function clearArrows(kind) {
   if (kind === undefined) {
     arrows.cap.clear();
-    arrows.prod.clear();
     return;
   }
   arrows[kind]?.clear();

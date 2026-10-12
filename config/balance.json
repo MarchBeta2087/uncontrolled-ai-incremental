@@ -31,7 +31,8 @@
     "unlockCrystals": "100"
   },
   "phase3": {
-    "unlockUniverse": 9
+    "unlockUniverse": 9,
+    "capLink": { "resource": "mass_energy", "divisor": "120" }
   },
   "format": {
     "numberSciThreshold": "1e6",
