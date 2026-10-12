@@ -10,6 +10,7 @@ import * as Resources from './resources.js';
 import * as Mults from './mults.js';
 import * as Progress from './progress.js';
 import * as Universe from './universe.js';
+import * as Cap from './cap.js';
 import { Events } from '../core/events.js';
 import { t } from '../i18n/index.js';
 
@@ -39,12 +40,15 @@ function isPhaseLocked(def) {
   return false;
 }
 
-/** 技术实际成本：第二阶段及以后的成本随宇宙上限乘子同步缩放（保持上限/成本比例） */
+/** 技术实际成本：第二阶段成本随宇宙上限乘子同步缩放；第三阶段按「当前上限 × costFraction」动态定价 */
 export function getCost(id) {
   const t = techs.get(id);
   if (!t) return null;
+  if (t.def.phase === 3 && t.def.costFraction !== undefined) {
+    return Num.mul(Cap.getUniverseCap(), Num.parse(t.def.costFraction));
+  }
   let c = Num.parse(t.def.cost);
-  if (t.def.phase >= 2) c = Num.mul(c, Universe.getCostMultiplier());
+  if (t.def.phase === 2) c = Num.mul(c, Universe.getCostMultiplier());
   return c;
 }
 
@@ -113,9 +117,6 @@ function applyEffects(effects, sourceId, skipRate = false) {
       case 'cap_tetrate':
         Mults.setArrow('cap', sourceId, e.value);
         break;
-      case 'all_generator_tetrate':
-        Mults.setArrow('prod', sourceId, e.value);
-        break;
       default:
         console.warn(`[Techs] 未知效果类型: ${e.type}`);
     }
@@ -133,7 +134,6 @@ function removeEffects(id, def) {
     else if (e.type === 'cap_mult') Mults.removeCapMultiplier(id);
     else if (e.type === 'crystal_mult') Mults.removeCrystalMultiplier(id);
     else if (e.type === 'cap_tetrate') Mults.removeArrow('cap', id);
-    else if (e.type === 'all_generator_tetrate') Mults.removeArrow('prod', id);
   }
 }
 

@@ -39,6 +39,8 @@ export default {
   'tech.phase1': '1단계',
   'tech.phase2': '2단계 · 이 우주 너머',
   'tech.phase2LockNotice': '2단계: 시간 결정 {n}개 보유 시 해금',
+  'tech.phase3': '3단계 · 푸앵카레 시대',
+  'tech.phase3LockNotice': '3단계: 우주 {n} 도달 시 해금',
 
   // 확장 뷰
   'expand.panel': '우주 삼키기',
@@ -86,6 +88,7 @@ export default {
   'toast.challengeExit': '도전을 나감',
   'toast.challengeEntered': '도전 시작：{name}',
   'toast.phase2Unlocked': '2단계 해금: 이 우주 너머',
+  'toast.phase3Unlocked': '3단계 해금: 푸앵카레 시대',
   'toast.endgameReached': '종국 달성: 이 우주의 끝',
 
   // 오프라인 수익 보고

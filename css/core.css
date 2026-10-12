@@ -157,7 +157,9 @@ body::before {
 
 /* ---- 第二阶段门控 ---- */
 body:not(.phase2) [data-phase="2"] { display: none; }
-body.phase2 .phase-lock { display: none; }
+body:not(.phase3) [data-phase="3"] { display: none; }
+body.phase2 .phase-lock.phase2 { display: none; }
+body.phase3 .phase-lock.phase3 { display: none; }
 .phase-heading {
   font-size: 12px;
   color: var(--text-dim);

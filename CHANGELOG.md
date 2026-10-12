@@ -11,6 +11,7 @@
 - **阿拉伯语游戏内容本地化**：新增 `js/i18n/content/ar.js`（资源 / 生成器 / 技术 / 升级 / 成就 / 碎片 / 挑战 / 跨宇宙升级 / 版本说明 / 结局，**258 个叶子键，与 en.js 逐键对齐**）并在 `js/i18n/index.js` 的 `CONTENT` 注册；至此切到阿拉伯语不再有中文回退（剧情中的 `不要启动` 字符保留原文并加阿拉伯语译注，与 en 的处理一致）。
 - **阿拉伯语双数字系统（玩家可选）**：设置面板为阿拉伯语界面新增「数字样式」二选一——西阿拉伯数字 `0-9` / 东阿拉伯-印度数字 `٠-٩`。`js/core/num.js` 新增数字系统（`setNumeralSystem` / `localizeDigits` / `localizeNumericValue`），在 `Num.format` 与时间显示层统一替换数字；`t()` 参数按「看起来是数」启发式本地化（id / 版本号前缀不受影响）；偏好存 localStorage，不进存档；6 语言文案 + smoke 新增 8 条断言。
 - **第三阶段（庞加莱纪）引擎地基（Issue #51，PR B）**：新增**箭头（塔层）增速引擎**。① `mults.js` 新增箭塔容器：`tower(x,n)`（连续 `10^x` n 次）、`setArrow/removeArrow/getArrows/clearArrows`（kind = `cap` 上限 / `prod` 产出）；② 新效果类型 `cap_tetrate`（上限叠塔：`getUniverseCap() = tower(min(基准×cap_mult, 宇宙上限), capArrows)`）与 `all_generator_tetrate`（全局产出叠塔）；③ 第三阶段解锁：`Universe ≥ phase3.unlockUniverse`（默认 9），`progress.js` / `prestige.js` 新增 `phase3Unlocked` 标志与 `checkPhase3Unlock()`；④ 新条件类型 `phase3_unlocked`；⑤ 存档 `schemaVersion 6 → 7` + 迁移；⑥ 设计文档 `docs/v0.6-庞加莱纪设计.md`；smoke 新增 21 条断言。数值/技术树见后续 PR C。
+- **第三阶段（庞加莱纪）内容与平衡（Issue #51，PR C）**：① **修法 A**：产出侧改为「与上限挂钩」（cap-link，`phase3.capLink`，默认上限资源 `mass_energy` 产出 ≥ 上限 / 120 游戏秒），移除了 PR B 的 `all_generator_tetrate`（同阶 `10^` 叠塔在数学上无法与上限成比例）；② 上限计算抽到低层模块 `js/sim/cap.js`（供 resources/techs 读取，避免循环依赖）；③ 第三阶段技术树 12 项（`config/techs.json`，`phase: 3`、动态 `costFraction` 定价、`cap_tetrate` / `rate_mult` / `crystal_mult` / `all_generator_mult`）；④ UI 新增第三阶段分区与解锁（`body.phase3`）；⑤ `tools/balance-sim.mjs` 新增 `--phase3` 靶场 + `docs/v0.6-平衡模拟.md`；⑥ 全语言技术文案。
 
 ## [0.5.1] - 2026-10-11
 

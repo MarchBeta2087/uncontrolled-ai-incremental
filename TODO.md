@@ -80,7 +80,7 @@
 
 - [x] **PR A**：eee 记法档位（`Num.format` + 设置面板 + 5 语言）
 - [x] **PR B**：第三阶段引擎地基（箭塔容器 + `cap_tetrate` / `all_generator_tetrate` + 阶段解锁 + 存档 v7）
-- [ ] **PR C**：第三阶段技术树 + `docs/v0.6-平衡模拟.md`（balance-sim 推演后再写数值）
+- [x] **PR C**：第三阶段内容与平衡（cap-link 修法 A + 技术树 12 项 + balance-sim `--phase3` + `docs/v0.6-平衡模拟.md`）
 - [ ] **PR D**：小游戏（PONG / 扫雷 / 贪吃蛇 / 2048；配置驱动 + 成就 + 增益结算）
 - [ ] **PR E**：新挑战 + 记忆碎片 + 庞加莱事件（到达即触发）+ 全语言 i18n
 

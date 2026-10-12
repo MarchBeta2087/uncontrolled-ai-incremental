@@ -14,7 +14,6 @@ export const EFFECT_TYPES = new Set([
   'cap_mult',            // 宇宙上限 ×value
   'crystal_mult',        // 穿梭晶体 ×value
   'cap_tetrate',         // 宇宙上限叠 value 层 10^ 塔（第三阶段，v0.6）
-  'all_generator_tetrate',// 全局产出叠 value 层 10^ 塔（第三阶段，v0.6）
 ]);
 
 // 成就/碎片条件类型（有限枚举，见 js/sim/conditions.js）
