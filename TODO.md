@@ -89,3 +89,13 @@
 - [ ] 结局过场像素画 ×2（素材征集）
 - [ ] 音乐 / 美术素材包（按素材规则入库）
 - [ ] 彩蛋 / 隐藏内容
+
+## v2.0 红线与三条件跟踪（长期）
+
+红线与任务见 [ADR-003](docs/决策记录.md)；内容纪律：**v2.0 前一切数值不得超过 MegotaNum 上限（≈ $f_{\omega^2+1}$）**，v2.0 后只修 Bug，直至三条件任意一项满足。
+
+- [ ] 条件 1：metanum [Issue #17](https://github.com/dlsdl/metanum/issues/17) 被关闭**且修复随发布版可用**
+- [ ] 条件 2：PowiainaNum.js [Issue #19](https://github.com/VeryrrDefine/PowiainaNum.js/issues/19) 关闭，仓库内出现 OSI 批准许可证文本
+- [ ] 条件 3：出现强于/相当于 PowiainaNum.js（$f_{\omega^3+1}$）、兼容 GPL-3.0-or-later 且无严重 Bug 的大数库（含本项目自造 HeptoNum.js）
+- [ ] （分支 B）HeptoNum.js：记号规范文档 → 实现 → 与 MegotaNum 在 $f_{\omega^2+1}$ 以下差分测试 → MIT 发布
+- [ ] 每版本评审时例行扫描三条件状态（maintainer）
