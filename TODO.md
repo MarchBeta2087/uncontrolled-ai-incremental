@@ -73,6 +73,7 @@
 - [ ] 阿拉伯语母语者复核：UI 外壳 + 游戏内容文案校对（当前为机器 + 人工粗译）
 - [ ] 其他语言复核（en / zh-Hant / ja / ko）：长期开放，见 [docs/开放任务.md](docs/开放任务.md) 与 [Discussion #67](https://github.com/MarchBeta2087/uncontrolled-ai-incremental/discussions/67)
 - [ ] 法语 / 西班牙语 / 葡萄牙语界面（用 Fusion；考虑 `Intl.NumberFormat` 数字格式）
+  - [x] 法语（`fr`）：UI 外壳 222 键 + 游戏内容 315 键，已逐键对齐
 - [ ] 结局过场像素画 ×3（舍入纪 ×2 + 庞加莱终章 ×1；当前为程序生成 192×108：`assets/images/ending-*.png` + `tools/ending-art.py`；可替换为手绘/征集稿）
 - [ ] 音频素材包（BGM / 音效，按素材规则入库）
 

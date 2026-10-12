@@ -15,11 +15,13 @@ import en from './locales/en.js';
 import ja from './locales/ja.js';
 import ko from './locales/ko.js';
 import ar from './locales/ar.js';
+import fr from './locales/fr.js';
 import contentZhHant from './content/zh-Hant.js';
 import contentEn from './content/en.js';
 import contentJa from './content/ja.js';
 import contentKo from './content/ko.js';
 import contentAr from './content/ar.js';
+import contentFr from './content/fr.js';
 import { localizeNumericValue } from '../core/num.js';
 
 const DEFAULT_LOCALE = 'zh-CN';
@@ -36,6 +38,7 @@ const REGISTRY = [
   { code: 'en', name: 'English', fontVariant: 'latin', dict: en },
   // 阿拉伯语（RTL 骨架：仅外壳文案，内容后补；rtl 标记驱动 html.dir 与布局镜像）
   { code: 'ar', name: 'العربية', fontVariant: 'ar', dict: ar, rtl: true },
+  { code: 'fr', name: 'Français', fontVariant: 'latin', dict: fr },
 ];
 
 const byCode = new Map(REGISTRY.map((l) => [l.code, l]));
@@ -47,6 +50,7 @@ const CONTENT = {
   ja: contentJa,
   ko: contentKo,
   ar: contentAr,
+  fr: contentFr,
 };
 
 function readStoredLocale() {
