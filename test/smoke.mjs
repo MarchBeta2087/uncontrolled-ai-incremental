@@ -554,6 +554,15 @@ endingsMod.load(null);
 assert('清空后未选择', endingsMod.getChosen() === null);
 endingsMod.load(endSnap);
 assert('load 恢复结局', endingsMod.getChosen() === 'constrained');
+console.log('== 终局：中途节点 + 庞加莱终章 ==');
+assert('中途结局 2 个 + 最终 1 个', endingsMod.getMidEndingIds().length === 2 && !!endingsMod.getFinalEnding() && endingsMod.getFinalEnding().id === 'recurrence');
+assert('中途不能选最终结局', endingsMod.choose('recurrence').ok === false);
+prestigeMod.configurePrestige({ phase3: { poincareYear: 'eee120' } });
+timeMod.Time.load(Num.toJSON(0));
+assert('未到 eee120：最终未解锁', endingsMod.isFinalUnlocked() === false);
+timeMod.Time.load(Num.toJSON(Num.mul(Num.parse('eee120'), '31557600')));
+assert('到 eee120：最终解锁', endingsMod.isFinalUnlocked() === true);
+timeMod.Time.load(Num.toJSON(0));
 
 console.log('== 音频基建（v0.6）==');
 audioMod.configureAudio(audioCfg);

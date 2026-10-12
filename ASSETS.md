@@ -40,6 +40,7 @@
 | `favicon.ico` + `assets/images/logo.png` + `assets/images/logo.xcf` | MarchBeta2087 | 项目维护者原创 | CC BY-SA 4.0 | 2026-10-11 | `logo.png` 原样（64×64）；`favicon.ico` 由 `logo.png` 生成（16/32/48/64，最近邻）；`logo.xcf` 为 GIMP 源文件 |
 | assets/images/ending-constrained.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-11 | 192×108 像素合成（约束线结局过场）；可修改源脚本随仓库 |
 | assets/images/ending-unconstrained.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-11 | 192×108 像素合成（无约束线结局过场）；可修改源脚本随仓库 |
+| assets/images/ending-recurrence.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-12 | 192×108 像素合成（庞加莱终章过场：幂塔 + 回归环 + 首行日志）；可修改源脚本随仓库 |
 
 ## 字体
 

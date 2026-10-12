@@ -468,7 +468,7 @@ function buildShell() {
     el('p', 'modal-text', t('endgame.intro'))
   );
   const egChoiceRow = el('div', 'modal-row');
-  for (const eid of Endings.getEndingIds()) {
+  for (const eid of Endings.getMidEndingIds()) {
     const e = Endings.getEnding(eid);
     const btn = el('button', 'btn btn-primary', tc('ending', eid, 'name', e.name));
     btn.type = 'button';
@@ -491,7 +491,18 @@ function buildShell() {
   const egArtPlaceholder = el('div', 'ending-art-placeholder', t('endgame.artPending'));
   const egResultTitle = el('p', 'endgame-title', '');
   const egResultText = el('p', 'modal-text', '');
-  egResult.append(egArt, egArtPlaceholder, egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')));
+  egResult.append(egArt, egArtPlaceholder, egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')), el('p', 'modal-text', t('endgame.midNote')));
+
+  // 最终终局（庞加莱终章）：到达 eee120 解锁，单选收束
+  const egFinal = el('div', '');
+  const egFinalArt = document.createElement('img');
+  egFinalArt.className = 'ending-art';
+  egFinalArt.alt = '';
+  egFinalArt.hidden = true;
+  const egFinalArtPlaceholder = el('div', 'ending-art-placeholder', t('endgame.artPending'));
+  const egFinalTitle = el('p', 'endgame-title', '');
+  const egFinalText = el('p', 'modal-text', '');
+  egFinal.append(egFinalArt, egFinalArtPlaceholder, egFinalTitle, egFinalText, el('p', 'modal-text', t('endgame.finalNote')));
 
   // 通用信息
   const egMeta = el('div', '');
@@ -505,9 +516,10 @@ function buildShell() {
   egRepo.rel = 'noopener noreferrer';
   egMeta.append(egRepo);
 
-  egPanel.append(egLocked, egChoice, egResult, egMeta);
+  egPanel.append(egLocked, egChoice, egResult, egFinal, egMeta);
   egChoice.hidden = true;
   egResult.hidden = true;
+  egFinal.hidden = true;
   viewEndgame.append(egPanel);
   refs.egLocked = egLocked;
   refs.egChoice = egChoice;
@@ -515,6 +527,11 @@ function buildShell() {
   refs.egResultTitle = egResultTitle;
   refs.egResultText = egResultText;
   refs.egArt = egArt;
+  refs.egFinal = egFinal;
+  refs.egFinalArt = egFinalArt;
+  refs.egFinalArtPlaceholder = egFinalArtPlaceholder;
+  refs.egFinalTitle = egFinalTitle;
+  refs.egFinalText = egFinalText;
   refs.egArtPlaceholder = egArtPlaceholder;
 
   viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewMinigames, viewEndgame);
@@ -1086,7 +1103,8 @@ function updateMinigames() {
 }
 
 function updateEndgame() {
-  if (!refs.endgameReady && Endings.isUnlocked()) {
+  const ready = Endings.isUnlocked() || Endings.isFinalUnlocked();
+  if (!refs.endgameReady && ready) {
     refs.endgameReady = true;
     if (refs.endgameBtn) refs.endgameBtn.hidden = false;
     showToast(t('toast.endgameReached'));
@@ -1095,33 +1113,44 @@ function updateEndgame() {
   renderEndgame();
 }
 
-/** 终局面板：按「未解锁 / 待选择 / 已选择」切换内容 */
+/** 结局过场图：有则显示，缺失/加载失败则显示占位 */
+function setEndingArt(img, placeholder, imagePath, key) {
+  if (!img) return;
+  if (img.dataset.ending === key) return;
+  img.dataset.ending = key;
+  if (imagePath) {
+    img.hidden = true;
+    placeholder.hidden = false;
+    img.onload = () => { img.hidden = false; placeholder.hidden = true; };
+    img.onerror = () => { img.hidden = true; placeholder.hidden = false; };
+    img.src = imagePath;
+  } else {
+    img.hidden = true;
+    placeholder.hidden = false;
+  }
+}
+
+/** 终局面板：未解锁 / 待选择 / 中途已选 / 最终终局 */
 function renderEndgame() {
   if (!refs.egLocked) return;
-  const unlocked = Endings.isUnlocked();
+  const midUnlocked = Endings.isUnlocked();
   const chosen = Endings.getChosen();
-  refs.egLocked.hidden = unlocked;
-  refs.egChoice.hidden = !unlocked || !!chosen;
+  const finalUnlocked = Endings.isFinalUnlocked();
+  refs.egLocked.hidden = midUnlocked || finalUnlocked;
+  refs.egChoice.hidden = !midUnlocked || !!chosen || finalUnlocked;
   refs.egResult.hidden = !chosen;
+  if (refs.egFinal) refs.egFinal.hidden = !finalUnlocked;
   if (chosen) {
     const e = Endings.getEnding(chosen);
     refs.egResultTitle.textContent = tc('ending', chosen, 'title', e?.title ?? '');
     refs.egResultText.textContent = tc('ending', chosen, 'text', e?.text ?? '');
-    // 结局过场图（有则显示；缺失/加载失败则显示占位）
-    if (refs.egArt && refs.egArt.dataset.ending !== chosen) {
-      refs.egArt.dataset.ending = chosen;
-      const img = e?.image || '';
-      if (img) {
-        refs.egArt.hidden = true;
-        refs.egArtPlaceholder.hidden = false;
-        refs.egArt.onload = () => { refs.egArt.hidden = false; refs.egArtPlaceholder.hidden = true; };
-        refs.egArt.onerror = () => { refs.egArt.hidden = true; refs.egArtPlaceholder.hidden = false; };
-        refs.egArt.src = img;
-      } else {
-        refs.egArt.hidden = true;
-        refs.egArtPlaceholder.hidden = false;
-      }
-    }
+    setEndingArt(refs.egArt, refs.egArtPlaceholder, e?.image || '', chosen);
+  }
+  if (finalUnlocked && refs.egFinal) {
+    const f = Endings.getFinalEnding();
+    refs.egFinalTitle.textContent = tc('ending', f.id, 'title', f?.title ?? '');
+    refs.egFinalText.textContent = tc('ending', f.id, 'text', f?.text ?? '');
+    setEndingArt(refs.egFinalArt, refs.egFinalArtPlaceholder, f?.image || '', f.id);
   }
 }
 

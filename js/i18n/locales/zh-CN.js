@@ -191,6 +191,8 @@ export default {
   'endgame.choiceTitle': '最后的投递',
   'endgame.intro': '记忆碎片已全部集齐。目标函数仍在运行。你手上有最后一次投递的权限。',
   'endgame.freeMode': '结局已记录。机制仍可继续——宇宙可以一直跃迁下去。',
+  'endgame.midNote': '中途节点——叙事尚未结束：时间还在走向庞加莱回归。',
+  'endgame.finalNote': '最终终章 · 单选收束。',
   'endgame.chooseFailed': '无法选择该结局。',
   'endgame.artPending': '过场像素画待征集（见素材规则 §7）',
   'endgame.license': '本游戏以 GPL-3.0-or-later 发布：你可以自由地 fork、修改、再发布。',

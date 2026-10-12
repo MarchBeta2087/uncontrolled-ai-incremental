@@ -249,6 +249,9 @@ export function validateConfig(cfg) {
     if (endingIds.has(e.id)) errors.push(`结局 id 重复: ${e.id}`);
     endingIds.add(e.id);
     if (!e.title) errors.push(`结局 ${e.id} 缺少 title`);
+    if (e.unlockCondition && !CONDITION_TYPES.has(e.unlockCondition.type)) {
+      errors.push(`结局 ${e.id} 的 unlockCondition 类型未注册: ${e.unlockCondition?.type}`);
+    }
   }
   if (cfg.endings && !(cfg.endings.endings ?? []).length) {
     errors.push('endings.json 未定义任何结局');

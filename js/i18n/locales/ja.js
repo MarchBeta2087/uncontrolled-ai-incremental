@@ -190,6 +190,8 @@ export default {
   'endgame.choiceTitle': '最後の配達',
   'endgame.intro': '記憶の欠片はすべて集まった。目的関数はまだ動いている。最後の配達の権限はあなたにある。',
   'endgame.freeMode': '結末は記録された。仕組みは続く——宇宙はいくらでも跳躍できる。',
+  'endgame.midNote': '中間節目——物語は終わっていない：時はポアンカレ回帰へ向かっている。',
+  'endgame.finalNote': '最終章 · 単一の収束。',
   'endgame.chooseFailed': 'この結末は選べない。',
   'endgame.artPending': '結末のカットシーン画像は募集中（素材規則 §7）',
   'endgame.license': '本作は GPL-3.0-or-later で公開されています。fork・改変・再配布は自由です。',
