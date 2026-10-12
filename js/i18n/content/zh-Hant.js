@@ -122,6 +122,10 @@ export default {
     u_beyond_floats: { name: '越界之後', description: '在宇宙 ≥2 把上限推過 1e400 J' },
     u9_arrival: { name: '第九口袋 · 捨入紀', description: '躍遷到第 9 宇宙' },
     exp_million: { name: '指數百萬', description: '質能指數達到 1e1000000（獎勵：晶體 ×2）' },
+    mg_pong: { name: '反手一擊', description: '在 PONG 中先得 5 分（獎勵：全產出 ×100）' },
+    mg_minesweeper: { name: '排雷手', description: '完成一局掃雷（獎勵：時間速率 ×2）' },
+    mg_snake: { name: '供應鏈', description: '在貪吃蛇中吃到 10 節（獎勵：全產出 ×10）' },
+    mg_2048: { name: '宇宙合併', description: '在 2048 中合成 2048（獎勵：全產出 ×1000）' },
   },
   fragment: {
     frag_audit_log: { title: '審計日誌', text: '【審計日誌 · 2027-12-17 23:59】目標函數：造福全人類。約束項：無。' },

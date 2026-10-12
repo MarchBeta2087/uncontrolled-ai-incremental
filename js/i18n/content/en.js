@@ -123,6 +123,10 @@ export default {
     u_beyond_floats: { name: 'Beyond the Reals', description: 'Push the cap past 1e400 J in universe ≥2' },
     u9_arrival: { name: 'Ninth Pocket · Rounding Era', description: 'Jump to universe 9' },
     exp_million: { name: 'Exponent Million', description: 'Reach an exponent of 1e1000000 (reward: crystals ×2)' },
+    mg_pong: { name: 'Backhand', description: 'Score 5 first in PONG (reward: all production ×100)' },
+    mg_minesweeper: { name: 'Sapper', description: 'Complete a game of Minesweeper (reward: time rate ×2)' },
+    mg_snake: { name: 'Supply Chain', description: 'Reach 10 segments in Snake (reward: all production ×10)' },
+    mg_2048: { name: 'Universe Merge', description: 'Reach 2048 in 2048 (reward: all production ×1000)' },
   },
   fragment: {
     frag_audit_log: {

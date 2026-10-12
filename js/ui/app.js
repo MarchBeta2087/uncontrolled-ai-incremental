@@ -15,6 +15,8 @@ import * as Challenges from '../sim/challenges.js';
 import * as Universe from '../sim/universe.js';
 import * as Singularity from '../sim/singularity.js';
 import * as Cycle from '../sim/cycle.js';
+import * as Minigames from '../sim/minigames.js';
+import { checkCondition } from '../sim/conditions.js';
 import * as Endings from '../sim/endings.js';
 import * as TimeBoost from '../sim/timeboost.js';
 import * as Save from '../data/save.js';
@@ -22,6 +24,7 @@ import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
 import { BIG_NUMBER_MODES, NUMERAL_STYLES, getBigNumberMode, setBigNumberMode, getNumeralStyle, setNumeralStyle } from './format.js';
 import { playSfx } from '../core/audio.js';
+import { openMinigame } from './minigames.js';
 import { getVolumePref, setVolumePref, getMutedPref, setMutedPref } from './audio.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
@@ -420,6 +423,32 @@ function buildShell() {
   refs.fragList = fragList;
   refs.fragTitle = fragTitle;
 
+  // 小游戏视图（v0.6 庞加莱纪）
+  const viewMinigames = el('div', 'view');
+  const mgPanel = el('div', 'panel');
+  mgPanel.append(el('div', 'panel-title', t('nav.minigames')));
+  const mgGrid = el('div', 'mg-grid');
+  for (const gid of Minigames.getMinigameIds()) {
+    const g = Minigames.getMinigame(gid);
+    const card = el('div', 'mg-card');
+    card.dataset.mg = gid;
+    const name = el('div', 'mg-card-name', t('mg.' + gid + '.name'));
+    const desc = el('div', 'mg-card-desc', t('mg.' + gid + '.desc'));
+    const best = el('div', 'mg-card-best', '');
+    const play = el('button', 'btn', t('mg.play'));
+    play.type = 'button';
+    play.dataset.mgPlay = gid;
+    play.onclick = () => {
+      if (checkCondition(g.unlockCondition)) openMinigame(gid);
+      else showToast(t('mg.locked'));
+    };
+    card.append(name, desc, best, play);
+    mgGrid.append(card);
+  }
+  mgPanel.append(mgGrid, el('p', 'modal-text', t('mg.note')));
+  viewMinigames.append(mgPanel);
+  refs.mgGrid = mgGrid;
+
   // 终局视图（集齐全部记忆碎片后由任务栏进入；v0.6 双结局）
   const viewEndgame = el('div', 'view');
   const egPanel = el('div', 'panel');
@@ -488,7 +517,7 @@ function buildShell() {
   refs.egArt = egArt;
   refs.egArtPlaceholder = egArtPlaceholder;
 
-  viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewEndgame);
+  viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewMinigames, viewEndgame);
 
   // ---- 任务栏 ----
   const taskbar = el('div', 'taskbar');
@@ -496,16 +525,18 @@ function buildShell() {
   const btnTech = el('button', 'task-btn', t('nav.techs'));
   const btnExpand = el('button', 'task-btn', t('nav.expand'));
   const btnRecords = el('button', 'task-btn', t('nav.records'));
+  const btnMinigames = el('button', 'task-btn', t('nav.minigames'));
   const btnEndgame = el('button', 'task-btn', t('nav.endgame'));
   btnRes.onclick = () => switchView('resources');
   btnTech.onclick = () => switchView('techs');
   btnExpand.onclick = () => switchView('expand');
   btnRecords.onclick = () => switchView('records');
+  btnMinigames.onclick = () => switchView('minigames');
   btnEndgame.onclick = () => switchView('endgame');
   refs.endgameReady = Endings.isUnlocked();
   btnEndgame.hidden = !refs.endgameReady;
   refs.endgameBtn = btnEndgame;
-  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords, endgame: btnEndgame };
+  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords, minigames: btnMinigames, endgame: btnEndgame };
   const spacer = el('div', 'taskbar-spacer');
   const saveBtn = el('button', 'task-btn', t('nav.save'));
   saveBtn.onclick = () => Events.emit('save:request');
@@ -513,7 +544,7 @@ function buildShell() {
   exportBtn.onclick = () => Events.emit('export:request');
   const settingsBtn = el('button', 'task-btn', t('nav.settings'));
   settingsBtn.onclick = () => openModal();
-  taskbar.append(btnRes, btnTech, btnExpand, btnRecords, btnEndgame, spacer, saveBtn, exportBtn, settingsBtn);
+  taskbar.append(btnRes, btnTech, btnExpand, btnRecords, btnMinigames, btnEndgame, spacer, saveBtn, exportBtn, settingsBtn);
 
   const toast = el('div', 'toast');
   refs.toast = toast;
@@ -757,7 +788,7 @@ function buildShell() {
 
   shell.append(titlebar, viewContainer, taskbar, toast, modalOverlay, offlineOverlay);
   app.append(shell);
-  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords, endgame: viewEndgame };
+  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords, minigames: viewMinigames, endgame: viewEndgame };
 }
 
 function bindEvents() {
@@ -1022,7 +1053,20 @@ function render() {
   safeUpdate(updateTechs, 'updateTechs');
   safeUpdate(updateExpand, 'updateExpand');
   safeUpdate(updateRecords, 'updateRecords');
+  safeUpdate(updateMinigames, 'updateMinigames');
   safeUpdate(updateEndgame, 'updateEndgame');
+}
+
+function updateMinigames() {
+  if (!refs.mgGrid) return;
+  for (const card of refs.mgGrid.querySelectorAll('.mg-card')) {
+    const gid = card.dataset.mg;
+    const unlocked = checkCondition(Minigames.getUnlockCondition(gid));
+    card.classList.toggle('locked', !unlocked);
+    card.querySelector('.mg-card-best').textContent = t('mg.best', { best: Minigames.getBest(gid) });
+    const btn = card.querySelector('button');
+    if (btn) btn.disabled = !unlocked;
+  }
 }
 
 function updateEndgame() {

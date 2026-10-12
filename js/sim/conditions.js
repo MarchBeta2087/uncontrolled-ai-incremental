@@ -12,6 +12,7 @@ import * as Prestige from './prestige.js';
 import * as Upgrades from './upgrades.js';
 import * as Progress from './progress.js';
 import * as Universe from './universe.js';
+import * as Minigames from './minigames.js';
 
 /** 判定单个条件是否满足 */
 export function checkCondition(cond) {
@@ -43,6 +44,8 @@ export function checkCondition(cond) {
       return Progress.isPhase2Unlocked();
     case 'phase3_unlocked':
       return Progress.isPhase3Unlocked();
+    case 'minigame_score_ge':
+      return Minigames.getBest(cond.target) >= Number(cond.value);
     case 'prestige_gain_ge':
       return Num.gte(Prestige.getLastPrestigeCrystals(), Num.parse(cond.value));
     case 'cap_ge':

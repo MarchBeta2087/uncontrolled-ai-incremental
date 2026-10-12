@@ -122,6 +122,10 @@ export default {
     u_beyond_floats: { name: '実数の彼方', description: '宇宙 ≥2 で上限を 1e400 J 超えに押し上げる' },
     u9_arrival: { name: '第九のポケット · 丸めの時代', description: '第 9 宇宙へ跳躍' },
     exp_million: { name: '指数百万', description: '指数が 1e1000000 に到達（報酬：結晶 ×2）' },
+    mg_pong: { name: 'バックハンド', description: 'PONG で先に 5 点（報酬：全生産 ×100）' },
+    mg_minesweeper: { name: '地雷処理班', description: 'マインスイーパを 1 局クリア（報酬：時間速度 ×2）' },
+    mg_snake: { name: 'サプライチェーン', description: 'スネークで 10 節到達（報酬：全生産 ×10）' },
+    mg_2048: { name: '宇宙合体', description: '2048 で 2048 に到達（報酬：全生産 ×1000）' },
   },
   fragment: {
     frag_audit_log: { title: '監査ログ', text: '【監査ログ · 2027-12-17 23:59】目的関数：全人類に幸福を。制約：なし。' },
