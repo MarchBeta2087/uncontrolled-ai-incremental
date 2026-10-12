@@ -149,6 +149,8 @@ export default {
   'changelog.beijingTrack': '北京 UTC+8',
   'changelog.fullLog': '完整变更日志（CHANGELOG.md）',
   'changelog.noDetail': '（该版本无详情）',
+  'changelog.unreleased': '开发中',
+  'changelog.unreleasedNote': 'v0.6「庞加莱纪」开发中：第三阶段、小游戏、eee 记法、彩蛋语录、终局重构、12 语言、数字格式。',
   'timeboost.section': '时间倍增',
   'timeboost.boost': '时间倍增',
   'timeboost.locked': '宇宙 ≥3 解锁',

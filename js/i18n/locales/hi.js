@@ -149,6 +149,8 @@ export default {
   'changelog.beijingTrack': 'बीजिंग UTC+8',
   'changelog.fullLog': 'पूरा चेंजलॉग (CHANGELOG.md)',
   'changelog.noDetail': '(इस संस्करण का कोई विवरण नहीं)',
+  'changelog.unreleased': 'विकास में',
+  'changelog.unreleasedNote': 'v0.6 «प्वांकारे युग» विकास में: चरण 3, मिनी गेम, eee संकेतन, उद्धरण, समापन पुनर्गठन, 12 भाषाएँ, संख्या प्रारूप।',
   'timeboost.section': 'समय त्वरण',
   'timeboost.boost': 'समय तेज़ करें',
   'timeboost.locked': 'ब्रह्मांड ≥3 पर अनलॉक',

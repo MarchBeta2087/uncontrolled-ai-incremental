@@ -148,6 +148,8 @@ export default {
   'changelog.beijingTrack': '北京 UTC+8',
   'changelog.fullLog': '完全な変更履歴（CHANGELOG.md）',
   'changelog.noDetail': '（このバージョンの詳細はありません）',
+  'changelog.unreleased': '開発中',
+  'changelog.unreleasedNote': 'v0.6「ポアンカレ紀」開発中：第3段階、ミニゲーム、eee 記法、引用、終局刷新、12 言語、数字形式。',
   'timeboost.section': '時間倍増',
   'timeboost.boost': '時間倍増',
   'timeboost.locked': '宇宙 ≥3 で解放',

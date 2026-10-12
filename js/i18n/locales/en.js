@@ -149,6 +149,8 @@ export default {
   'changelog.beijingTrack': 'Beijing UTC+8',
   'changelog.fullLog': 'Full changelog (CHANGELOG.md)',
   'changelog.noDetail': '(No details for this version)',
+  'changelog.unreleased': 'In development',
+  'changelog.unreleasedNote': 'v0.6 “Poincaré Era” in development: Phase 3, minigames, eee notation, quotes, endgame rework, 12 languages, number format.',
   'timeboost.section': 'Time Boost',
   'timeboost.boost': 'Boost Time',
   'timeboost.locked': 'Unlocks at universe ≥3',

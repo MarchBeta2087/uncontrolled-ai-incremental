@@ -890,16 +890,18 @@ async function ensureChangelog() {
 /** 渲染「一行一版本」甘特图（可上下左右滚动）+ 底部 UTC / 北京时间双轨时间轴 */
 function renderGantt(host, versions) {
   host.innerHTML = '';
-  const items = versions
+  const unreleased = (versions ?? []).filter((v) => v.unreleased);
+  const items = (versions ?? [])
+    .filter((v) => !v.unreleased)
     .map((v) => ({ ...v, ts: Date.parse(v.releasedAt) }))
     .filter((v) => Number.isFinite(v.ts))
     .sort((a, b) => a.ts - b.ts);
-  if (!items.length) {
+  if (!items.length && !unreleased.length) {
     host.append(el('p', 'modal-text', t('changelog.empty')));
     return;
   }
-  const t0 = items[0].ts;
-  const t1 = items[items.length - 1].ts;
+  const t0 = items.length ? items[0].ts : Date.now();
+  const t1 = items.length ? items[items.length - 1].ts : Date.now();
   const span = Math.max(1, t1 - t0);
   const pct = (ts) => ((ts - t0) / span) * 100;
 
@@ -919,6 +921,21 @@ function renderGantt(host, versions) {
 
   // 一行一个版本（点击查看详情）；最新在上，便于查看
   const rows = el('div', 'gantt-rows');
+  // 「开发中」（未发布）行：满格虚线，点击看 [Unreleased] 详情
+  for (const v of unreleased) {
+    const row = el('div', 'gantt-row');
+    row.dataset.version = v.version;
+    row.onclick = () => showVersionDetail(v.version, v.changelogKey);
+    const track = el('div', 'gantt-track');
+    const bar = el('div', 'gantt-bar unreleased');
+    bar.style.setProperty('inset-inline-start', '0%');
+    bar.style.width = '100%';
+    const note = t('changelog.unreleasedNote');
+    row.title = `v${v.version} · ${t('changelog.unreleased')} · ${note}`;
+    track.append(bar);
+    row.append(el('span', 'gantt-ver', `v${v.version}`), track, el('span', 'gantt-note', note));
+    rows.append(row);
+  }
   [...items].reverse().forEach((v) => {
     const start = startOf.get(v.version);
     const left = pct(start);
@@ -987,7 +1004,7 @@ function markdownToText(md) {
 }
 
 /** 显示某版本详情（CHANGELOG 章节；无则回退到版本说明） */
-function showVersionDetail(version) {
+function showVersionDetail(version, changelogKey) {
   const host = refs.ganttDetail;
   if (!host) return;
   host.innerHTML = '';
@@ -1000,7 +1017,7 @@ function showVersionDetail(version) {
   };
   head.append(close);
   host.append(head);
-  const md = refs.changelogMap?.[version];
+  const md = refs.changelogMap?.[changelogKey ?? version];
   const body = el('div', 'changelog-detail-body');
   if (md) {
     body.textContent = markdownToText(md);

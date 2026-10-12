@@ -148,6 +148,8 @@ export default {
   'changelog.beijingTrack': '北京 UTC+8',
   'changelog.fullLog': '完整變更日誌（CHANGELOG.md）',
   'changelog.noDetail': '（該版本無詳情）',
+  'changelog.unreleased': '開發中',
+  'changelog.unreleasedNote': 'v0.6「龐加萊紀」開發中：第三階段、小遊戲、eee 記法、彩蛋語錄、終局重構、12 語言、數字格式。',
   'timeboost.section': '時間倍增',
   'timeboost.boost': '時間倍增',
   'timeboost.locked': '宇宙 ≥3 解鎖',

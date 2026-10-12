@@ -150,6 +150,8 @@ export default {
   'changelog.beijingTrack': 'Pékin UTC+8',
   'changelog.fullLog': 'Journal complet (CHANGELOG.md)',
   'changelog.noDetail': '(Pas de détails pour cette version)',
+  'changelog.unreleased': 'En développement',
+  'changelog.unreleasedNote': 'v0.6 « Ère de Poincaré » en développement : phase 3, mini-jeux, notation eee, citations, refonte de la fin, 12 langues, format des nombres.',
   'timeboost.section': 'Accélération temporelle',
   'timeboost.boost': 'Accélérer le temps',
   'timeboost.locked': 'Débloqué à l’univers ≥3',

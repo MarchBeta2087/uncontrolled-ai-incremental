@@ -158,6 +158,8 @@ export default {
   'changelog.beijingTrack': 'بكين UTC+8',
   'changelog.fullLog': 'سجل التغييرات الكامل (CHANGELOG.md)',
   'changelog.noDetail': '(لا تفاصيل لهذا الإصدار)',
+  'changelog.unreleased': 'قيد التطوير',
+  'changelog.unreleasedNote': 'v0.6 «حقبة بوانكاريه» قيد التطوير: المرحلة الثالثة، الألعاب المصغّرة، تدوين eee، الاقتباسات، إعادة بناء الخاتمة، 12 لغة، تنسيق الأرقام.',
   'timeboost.section': 'مضاعفة الوقت',
   'timeboost.boost': 'مضاعفة الوقت',
   'timeboost.locked': 'تُفتح عند الكون ≥3',
