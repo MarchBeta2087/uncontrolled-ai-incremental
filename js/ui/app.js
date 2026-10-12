@@ -29,7 +29,7 @@ import { openMinigame } from './minigames.js';
 import { getVolumePref, setVolumePref, getMutedPref, setMutedPref, getBgmPref, setBgmPref } from './audio.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
-const VERSION = '0.5.1';
+const VERSION = '0.6.0';
 
 const refs = {};
 let dirty = false;

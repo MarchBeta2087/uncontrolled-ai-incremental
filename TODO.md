@@ -3,19 +3,19 @@
 > **阅读约定**
 > - 本文件只列**版本内、可执行**的任务；勾选表示已完成。
 > - **长期开放 / 外部依赖**（多语言母语者复核、素材征集、v2.0 红线三条件）**不阻塞发布**，统一见 [docs/开放任务.md](docs/开放任务.md) 与 [Discussion #67](https://github.com/MarchBeta2087/uncontrolled-ai-incremental/discussions/67)。
-> - 当前状态：**v0.5.1 已发布；v0.6.0「庞加莱纪」功能全部完成，待发版。**
+> - 当前状态：**v0.6.0「庞加莱纪」已发布。**
 
 ---
 
-## 下一步：发布 v0.6.0
+## v0.6.0 发版（已完成）
 
 > 步骤见 [docs/分支与发布流程.md](docs/分支与发布流程.md) §3。
 
-- [ ] `CHANGELOG`：将 `[Unreleased]` 定版为 `[0.6.0]`
-- [ ] `config/versions.json`：补 `0.6.0` 的 `releasedAt`（移除 `unreleased: true`）
-- [ ] `README`：状态行更新为「v0.6.0 可玩版本」
-- [ ] `js/ui/app.js`：`VERSION` 更新为 `0.6.0`
-- [ ] `dev → main` PR → tag `v0.6.0` → Pages 部署
+- [x] `CHANGELOG`：`[Unreleased]` 已定版为 `[0.6.0]`
+- [x] `config/versions.json`：已补 `0.6.0` 的 `releasedAt`
+- [x] `README`：状态行更新为「v0.6.0 可玩版本」
+- [x] `js/ui/app.js`：`VERSION` 更新为 `0.6.0`
+- [x] `dev → main` PR → tag `v0.6.0` → Pages 部署
 
 ## 待办（版本内 / maintainer 可执行）
 

@@ -634,7 +634,7 @@ const changelogText = fs.readFileSync('CHANGELOG.md', 'utf8');
 const changelogVersions = [...changelogText.matchAll(/^## \[(\d+\.\d+\.\d+)\]/gm)].map((m) => m[1]);
 const versionSet = new Set(versionsCfg.versions.map((v) => v.version));
 assert('版本数据覆盖 CHANGELOG 全部版本', changelogVersions.every((v) => versionSet.has(v)));
-assert('存在「开发中」未发布条目', versionsCfg.versions.some((v) => v.unreleased && v.changelogKey === 'Unreleased'));
+assert('0.6.0 已发布（含 releasedAt）', versionsCfg.versions.some((v) => v.version === '0.6.0' && Number.isFinite(Date.parse(v.releasedAt))));
 
 console.log('== 时间倍增（v0.5.1）==');
 prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('1e10'), prestigeCount: 0, phase2Unlocked: false });
