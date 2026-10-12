@@ -235,6 +235,11 @@ while (physical < MAX_PHYSICAL && iterations < MAX_ITER) {
   } else if (t > 1e15) {
     // 下一购买需超过 1e15 游戏秒：贪心策略陷入停滞，停止本宇宙
     console.log(`  停滞（宇宙 ${universe}）：下一购买 ${timeToNextPurchase.last} 需 ${t.toExponential(2)} 游戏秒`);
+    for (const gid of resMod.getGeneratorIds()) {
+      const def = resMod.getGeneratorDef(gid);
+      console.log(`    gen ${gid}: count=${Num.format(resMod.getGenerator(gid))} cost=${Num.format(resMod.buyCost(gid, 1))} have=${Num.format(resMod.getResource(def.costCurrency))} prod=${Num.format(resMod.getProductionPerSecond(def.costCurrency))}/游戏秒`);
+    }
+    console.log(`    globalMult=${Num.format(resMod.getGlobalMultiplier())} capMult=${Num.format(universeMod.getCapMultiplier())} cap=${Num.format(prestigeMod.getUniverseCap())}`);
     break;
   } else {
     dtGame = t * 1.01 + 1;
