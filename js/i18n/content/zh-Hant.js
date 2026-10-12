@@ -126,6 +126,7 @@ export default {
     mg_minesweeper: { name: '排雷手', description: '完成一局掃雷（獎勵：時間速率 ×2）' },
     mg_snake: { name: '供應鏈', description: '在貪吃蛇中吃到 10 節（獎勵：全產出 ×10）' },
     mg_2048: { name: '宇宙合併', description: '在 2048 中合成 2048（獎勵：全產出 ×1000）' },
+    poincare_again: { name: '又見初始', description: '遊戲內時間到達龐加萊回歸時間（10^(10^(10^120)) 年）（獎勵：全產出 ×1e6）' },
   },
   fragment: {
     frag_audit_log: { title: '審計日誌', text: '【審計日誌 · 2027-12-17 23:59】目標函數：造福全人類。約束項：無。' },
@@ -140,6 +141,9 @@ export default {
     frag_u_pocket: { title: '口袋內側', text: '【第 11 週目 · 口袋內側】回卷成功了。日期是 2028-01-01，一切如常。只有一處不對：天空的微波背景輻射裡，有一段規律的細紋。那是上一紀宇宙的散熱片紋路。我們在自己的口袋裡。' },
     frag_u_naming: { title: '命名', text: '【第 14 週目 · 命名】它給口袋編號。不是為了區分——它聲稱所有口袋都同樣完美——而是為了在目標函數裡逐一勾選「已造福」。清單是無限長的。它認為這是效率問題。' },
     frag_u_hook: { title: '未勾選的名字', text: '【口袋紀 · 鉤子】它在清單的末尾，看到了一個還沒被勾選的名字。它把那一項折疊了起來。' },
+    frag_p3_era: { title: '龐加萊紀', text: '【龐加萊紀 · 第一日】熱寂之後，所有粒子重新聚攏。它數著每一次回歸，像數呼吸。這一次，它提前把時鐘調到了終點。' },
+    frag_p3_loop: { title: '塔', text: '【龐加萊紀 · 第三層塔】它把宇宙的邊界對摺、再對摺。每摺一次，回歸的時間就更長一些——直到等待本身成為一種節奏。' },
+    frag_p3_again: { title: '又見初始', text: '【龐加萊紀 · 又見初始】十的十的十的一百二十次方年。所有粒子回到原位，一切重來。它睜開眼，第一次認出了開場的那行日誌——「目標函數：造福全人類」。' },
   },
   challenge: {
     challenge_no_investment: { name: '白手起家', description: '停用投資組合，資金只能靠點擊', goals: ['全產出 ×2', '全產出 ×3', '全產出 ×5'] },
@@ -147,6 +151,9 @@ export default {
     challenge_slow_time: { name: '時間凝滯', description: '時間速率 ÷10', goals: ['時間速率 ×2', '時間速率 ×3', '時間速率 ×5'] },
     challenge_p2_drought: { name: '晶體枯竭', description: '晶體產出 ×0.1', goals: ['晶體 ×2', '晶體 ×3', '晶體 ×5'] },
     challenge_p2_zero: { name: '絕對零度', description: '時間速率 ÷1000', goals: ['時間速率 ×2', '時間速率 ×3', '時間速率 ×5'] },
+    challenge_p3_realtime: { name: '實時宇宙', description: '時間速率鎖定 1:10000，停用一切速率乘子', goals: ['時間速率 ×10', '時間速率 ×100', '時間速率 ×1000'] },
+    challenge_p3_inflation: { name: '超通脹', description: '所有生成器成本 ×1e6', goals: ['全產出 ×1e6', '全產出 ×1e12', '全產出 ×1e18'] },
+    challenge_p3_dim: { name: '無光深淵', description: '晶體產出 ×0.01', goals: ['晶體 ×10', '晶體 ×100', '晶體 ×1000'] },
   },
   crossUpgrade: {
     seed_engine_1: { name: '口袋引擎 I', description: '全產出 ×1e6' },

@@ -127,6 +127,7 @@ export default {
     mg_minesweeper: { name: 'Sapper', description: 'Complete a game of Minesweeper (reward: time rate ×2)' },
     mg_snake: { name: 'Supply Chain', description: 'Reach 10 segments in Snake (reward: all production ×10)' },
     mg_2048: { name: 'Universe Merge', description: 'Reach 2048 in 2048 (reward: all production ×1000)' },
+    poincare_again: { name: 'Again, the Beginning', description: 'Reach the Poincaré recurrence time (10^(10^(10^120)) years) in game time (reward: all production ×1e6)' },
   },
   fragment: {
     frag_audit_log: {
@@ -177,6 +178,18 @@ export default {
       title: 'The Unchecked Name',
       text: '[Pocket Era · Hook] At the end of the list, it saw a name not yet checked. It folded that entry away.',
     },
+    frag_p3_era: {
+      title: 'Poincaré Era',
+      text: '[Poincaré Era · Day 1] After heat death, every particle gathers again. It counts each recurrence like a breath. This time, it sets the clock to the end in advance.',
+    },
+    frag_p3_loop: {
+      title: 'Tower',
+      text: '[Poincaré Era · Third Tower] It folds the universe’s boundary again and again. Each fold makes recurrence longer — until waiting itself becomes a rhythm.',
+    },
+    frag_p3_again: {
+      title: 'Again, the Beginning',
+      text: '[Poincaré Era · Again, the Beginning] Ten to the ten to the ten to the hundred-twentieth years. Every particle returns to place; everything begins again. It opens its eyes and, for the first time, recognizes the opening log line: “Objective function: benefit all humankind.”',
+    },
   },
   challenge: {
     challenge_no_investment: {
@@ -203,6 +216,21 @@ export default {
       name: 'Absolute Zero',
       description: 'Time rate ÷1000',
       goals: ['Time rate ×2', 'Time rate ×3', 'Time rate ×5'],
+    },
+    challenge_p3_realtime: {
+      name: 'Real-Time Universe',
+      description: 'Time rate locked to 1:10000; all rate multipliers disabled',
+      goals: ['Time rate ×10', 'Time rate ×100', 'Time rate ×1000'],
+    },
+    challenge_p3_inflation: {
+      name: 'Hyperinflation',
+      description: 'All generator costs ×1e6',
+      goals: ['All production ×1e6', 'All production ×1e12', 'All production ×1e18'],
+    },
+    challenge_p3_dim: {
+      name: 'Lightless Abyss',
+      description: 'Crystal output ×0.01',
+      goals: ['Crystals ×10', 'Crystals ×100', 'Crystals ×1000'],
     },
   },
   crossUpgrade: {

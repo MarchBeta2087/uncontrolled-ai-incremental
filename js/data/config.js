@@ -42,6 +42,7 @@ export const RESTRICTION_TYPES = new Set([
   'disable_generator',   // 禁用某生成器（target）
   'all_cost_mult',       // 所有生成器成本 ×value
   'rate_div',            // 时间速率 ÷value
+  'rate_base_lock',      // 时间速率锁定为基础速率（禁用一切速率乘子，v0.6）
   'crystal_mult',        // 晶体产出 ×value（挑战限制）
 ]);
 

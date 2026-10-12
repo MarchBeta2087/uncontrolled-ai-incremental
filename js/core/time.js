@@ -37,6 +37,7 @@ const rateMultipliers = new Map(); // id -> Num（各机制贡献的时间速率
 const permanentRateSources = new Set(); // 永久速率乘子来源 id（升级/挑战/成就）
 let challengeRateDiv = Num.parse(1); // 挑战速率惩罚（默认 1）
 let challengeRateNerfExp = Num.parse(1); // 挑战削弱指数（作用于永久速率乘子，默认 1）
+let challengeBaseLock = false; // 挑战：锁定为基础速率（禁用一切速率乘子）
 
 function pad(n) {
   return String(n).padStart(2, '0');
@@ -87,6 +88,13 @@ export const Time = {
   clearChallengeRateDiv() {
     challengeRateDiv = Num.parse(1);
   },
+  /** 挑战限制：锁定为基础速率（禁用一切速率乘子） */
+  setChallengeBaseLock(v) {
+    challengeBaseLock = !!v;
+  },
+  clearChallengeBaseLock() {
+    challengeBaseLock = false;
+  },
 
   /** 挑战削弱：永久速率乘子的削弱指数 */
   setChallengeRateNerfExp(value) {
@@ -103,6 +111,8 @@ export const Time = {
 
   /** 当前时间速率（游戏秒/物理秒），永久速率乘子在挑战中取 ^nerfExp 削弱 */
   getRate() {
+    // 挑战限制：锁定为初始速率（1 物理秒 = BASE_RATE 游戏秒），忽略一切乘子
+    if (challengeBaseLock) return BASE_RATE;
     let r = BASE_RATE;
     for (const [id, m] of rateMultipliers) {
       const eff = permanentRateSources.has(id) ? Num.pow(m, challengeRateNerfExp) : m;

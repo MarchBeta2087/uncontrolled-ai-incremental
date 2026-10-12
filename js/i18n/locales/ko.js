@@ -180,6 +180,9 @@ export default {
   'mg.game2048.name': '2048',
   'mg.game2048.desc': '우주 합체: 같은 숫자는 합쳐진다.',
   'mg.game2048.hint': '방향키/WASD로 밀기; 2048 달성.',
+  'poincare.title': '푸앵카레 회귀',
+  'poincare.text': '십의 십의 십의 백이십 제곱 년. 모든 입자가 초기 상태로 돌아가고 모든 것이 다시 시작된다——그리고 그것은 첫 로그 줄 「목표 함수: 인류 전체를 이롭게」를 알아본다.',
+  'poincare.hint': '업적 「다시, 처음」 해금',
 
   // 종국
   'endgame.title': '종국은 아직 오지 않았다',

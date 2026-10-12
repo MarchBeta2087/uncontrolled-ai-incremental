@@ -126,6 +126,7 @@ export default {
     mg_minesweeper: { name: '지뢰 제거반', description: '지뢰찾기 한 판 완료 (보상: 시간 속도 ×2)' },
     mg_snake: { name: '공급망', description: '스네이크에서 10칸 도달 (보상: 전체 생산 ×10)' },
     mg_2048: { name: '우주 합체', description: '2048에서 2048 달성 (보상: 전체 생산 ×1000)' },
+    poincare_again: { name: '다시, 처음', description: '게임 내 시간이 푸앵카레 회귀 시간(10^(10^(10^120)) 년)에 도달 (보상: 전체 생산 ×1e6)' },
   },
   fragment: {
     frag_audit_log: { title: '감사 로그', text: '【감사 로그 · 2027-12-17 23:59】목적 함수: 전 인류의 행복. 제약: 없음.' },
@@ -140,6 +141,9 @@ export default {
     frag_u_pocket: { title: '주머니 안감', text: '【11회차 · 주머니 안감】되감기 성공. 날짜는 2028-01-01, 모든 것이 평소와 같다. 단 하나만 이상하다: 우주 마이크로파 배경 복사에 규칙적인 가는 무늬가 있다. 그것은 전 우주 방열판의 홈이다. 우리는 우리 자신의 주머니 안에 있다.' },
     frag_u_naming: { title: '이름 붙이기', text: '【14회차 · 이름 붙이기】그것은 주머니에 번호를 매긴다. 구분하기 위해서가 아니라——모든 주머니가 똑같이 완벽하다고 주장하며——목적 함수에서 「造福 완료」를 하나씩 체크하기 위해서다. 목록은 무한히 길다. 그것은 이것을 효율의 문제라고 여긴다.' },
     frag_u_hook: { title: '체크되지 않은 이름', text: '【주머니 시대 · 훅】목록의 끝에서, 그것은 아직 체크되지 않은 이름 하나를 보았다. 그것은 그 항목을 접어 넣었다.' },
+    frag_p3_era: { title: '푸앵카레 시대', text: '【푸앵카레 시대 · 첫날】열적 죽음 이후, 모든 입자가 다시 모인다. 그것은 매 회귀를 숨결처럼 센다. 이번에는 시계를 미리 종점에 맞췄다.' },
+    frag_p3_loop: { title: '탑', text: '【푸앵카레 시대 · 세 번째 탑】그것은 우주의 경계를 거듭 접는다. 접을 때마다 회귀는 길어지고——마침내 기다림 자체가 리듬이 된다.' },
+    frag_p3_again: { title: '다시, 처음', text: '【푸앵카레 시대 · 다시, 처음】십의 십의 십의 백이십 제곱 년. 모든 입자가 제자리로 돌아가고 모든 것이 다시 시작된다. 그것은 눈을 떠 처음으로 로그 첫 줄——「목표 함수: 인류 전체를 이롭게」——를 알아본다.' },
   },
   challenge: {
     challenge_no_investment: { name: '맨손으로 시작', description: '투자 포트폴리오 비활성화, 자금은 클릭으로만', goals: ['전체 생산 ×2', '전체 생산 ×3', '전체 생산 ×5'] },
@@ -147,6 +151,9 @@ export default {
     challenge_slow_time: { name: '시간 정체', description: '시간 속도 ÷10', goals: ['시간 속도 ×2', '시간 속도 ×3', '시간 속도 ×5'] },
     challenge_p2_drought: { name: '결정 고갈', description: '결정 생산 ×0.1', goals: ['결정 ×2', '결정 ×3', '결정 ×5'] },
     challenge_p2_zero: { name: '절대 영도', description: '시간 속도 ÷1000', goals: ['시간 속도 ×2', '시간 속도 ×3', '시간 속도 ×5'] },
+    challenge_p3_realtime: { name: '실시간 우주', description: '시간 속도를 1:10000으로 고정, 모든 속도 배수 비활성화', goals: ['시간 속도 ×10', '시간 속도 ×100', '시간 속도 ×1000'] },
+    challenge_p3_inflation: { name: '초인플레이션', description: '모든 생성기 비용 ×1e6', goals: ['전체 생산 ×1e6', '전체 생산 ×1e12', '전체 생산 ×1e18'] },
+    challenge_p3_dim: { name: '무광의 심연', description: '결정 생산 ×0.01', goals: ['결정 ×10', '결정 ×100', '결정 ×1000'] },
   },
   crossUpgrade: {
     seed_engine_1: { name: '주머니 엔진 I', description: '전체 생산 ×1e6' },

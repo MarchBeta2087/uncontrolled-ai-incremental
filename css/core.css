@@ -519,6 +519,35 @@ body.phase3 .phase-lock.phase3 { display: none; }
 .mg-dir:nth-child(3) { grid-column: 3; grid-row: 2; }
 .mg-dir:nth-child(4) { grid-column: 2; grid-row: 2; }
 
+/* ---- 庞加莱回归事件（v0.6）---- */
+.poincare-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #050a05;
+  color: #7bf07b;
+  font-family: var(--mono);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+  animation: poincare-in 0.4s steps(2) both;
+}
+.poincare-overlay.fade { opacity: 0; transition: opacity 1s; }
+.poincare-title { font-size: 20px; letter-spacing: 2px; }
+.poincare-text { font-size: 13px; max-width: 520px; line-height: 1.7; }
+.poincare-hint { font-size: 12px; color: #4f9f4f; }
+body.poincare-flash { animation: poincare-flash 0.7s steps(2); }
+@keyframes poincare-in { from { opacity: 0; transform: scaleY(0.02); } to { opacity: 1; transform: scaleY(1); } }
+@keyframes poincare-flash { 0%, 100% { filter: none; } 25% { filter: invert(1); } 50% { filter: none; } 75% { filter: invert(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .poincare-overlay { animation: none; }
+  body.poincare-flash { animation: none; }
+}
+
 .num,
 .mono {
   unicode-bidi: isolate;

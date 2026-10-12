@@ -139,6 +139,9 @@ function applyRestrictions(id) {
       case 'rate_div':
         Time.setChallengeRateDiv(r.value);
         break;
+      case 'rate_base_lock':
+        Time.setChallengeBaseLock(true);
+        break;
       case 'crystal_mult':
         Mults.setCrystalMultiplier('challenge', r.value);
         break;
@@ -150,6 +153,7 @@ function clearRestrictions() {
   Resources.clearGeneratorDisabled();
   Resources.clearChallengeCostMult();
   Time.clearChallengeRateDiv();
+  Time.clearChallengeBaseLock();
   Mults.removeCrystalMultiplier('challenge');
 }
 

@@ -55,6 +55,7 @@ function loop() {
   Resources.tick(dtGame);                // 生产链结算
   Prestige.checkPhase2Unlock();          // 第二阶段解锁检查
   Prestige.checkPhase3Unlock();          // 第三阶段（庞加莱纪）解锁检查
+  Prestige.checkPoincare();              // 庞加莱回归时间（到达即触发）
   checkPrestige();                       // 穿梭触发检查
   Events.emit('tick', { dtReal, dtGame });
 }
