@@ -34,8 +34,9 @@
     { "id": "mg_pong", "name": "反手一击", "description": "在 PONG 中先得 5 分（奖励：全产出 ×100）", "condition": { "type": "minigame_score_ge", "target": "pong", "value": 5 }, "reward": { "type": "all_generator_mult", "value": "100" } },
     { "id": "mg_minesweeper", "name": "排雷手", "description": "完成一局扫雷（奖励：时间速率 ×2）", "condition": { "type": "minigame_score_ge", "target": "minesweeper", "value": 1 }, "reward": { "type": "rate_mult", "value": "2" } },
     { "id": "mg_snake", "name": "供应链", "description": "在贪吃蛇中吃到 10 节（奖励：全产出 ×10）", "condition": { "type": "minigame_score_ge", "target": "snake", "value": 10 }, "reward": { "type": "all_generator_mult", "value": "10" } },
-    { "id": "mg_2048", "name": "宇宙合并", "description": "在 2048 中合成 2048（奖励：全产出 ×1000）", "condition": { "type": "minigame_score_ge", "target": "game2048", "value": 2048 }, "reward": { "type": "all_generator_mult", "value": "1000" } },
+    { "id": "mg_2048", "name": "宇宙合并", "description": "在 2048 中合成 2048（奖励：全产出 ×1000）", "category": "extra", "condition": { "type": "minigame_score_ge", "target": "game2048", "value": 2048 }, "reward": { "type": "all_generator_mult", "value": "1000" } },
 
-    { "id": "poincare_again", "name": "又见初始", "description": "游戏内时间到达庞加莱回归时间（10^(10^(10^120)) 年）（奖励：全产出 ×1e6）", "condition": { "type": "time_years_ge", "value": "eee120" }, "reward": { "type": "all_generator_mult", "value": "1e6" } }
+    { "id": "poincare_again", "name": "又见初始", "description": "游戏内时间到达庞加莱回归时间（10^(10^(10^120)) 年）（奖励：全产出 ×1e6）", "condition": { "type": "time_years_ge", "value": "eee120" }, "reward": { "type": "all_generator_mult", "value": "1e6" } },
+    { "id": "quote_all", "name": "博览群书", "description": "浏览全部已解锁的彩蛋语录（奖励：全产出 ×1000）", "category": "extra", "condition": { "type": "quote_all_seen" }, "reward": { "type": "all_generator_mult", "value": "1000" } }
   ]
 }

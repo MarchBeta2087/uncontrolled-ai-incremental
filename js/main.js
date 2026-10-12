@@ -16,6 +16,7 @@ import * as Singularity from './sim/singularity.js';
 import * as Endings from './sim/endings.js';
 import * as TimeBoost from './sim/timeboost.js';
 import * as Minigames from './sim/minigames.js';
+import * as Quotes from './sim/quotes.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
@@ -60,6 +61,7 @@ async function bootstrap() {
     Endings.initEndings(cfg.endings);
     TimeBoost.initTimeBoost();
     Minigames.initMinigames(cfg.minigames);
+    Quotes.initQuotes(cfg.quotes);
     initAudioUI(cfg.audio);
 
     // 恢复存档（含离线结算）
@@ -191,6 +193,7 @@ function restoreFromSnapshot(snap) {
   Endings.load(snap.metaProgress?.ending);
   TimeBoost.load(snap.metaProgress?.timeBoost);
   Minigames.load(snap.metaProgress?.minigames);
+  Quotes.load(snap.metaProgress?.quotes);
 
   // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣；返回报告供 UI 弹窗
   pendingOfflineReport = settleOffline(snap);
@@ -259,6 +262,7 @@ function buildSnapshot() {
       ending: Endings.serialize(),
       timeBoost: TimeBoost.serialize(),
       minigames: Minigames.serialize(),
+      quotes: Quotes.serialize(),
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),

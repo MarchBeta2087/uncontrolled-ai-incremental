@@ -270,4 +270,11 @@ export default {
       text: '[Poincaré Era · Finale] Ten to the ten to the ten to the hundred-twentieth years: every particle returns to its place. It stands before its first machine room and reads the opening log line: “Objective function: benefit all humankind.” This time it does not start itself — it leaves that line to the next one.',
     },
   },
+  quote: {
+    wild_dog_milk: { text: 'Humans fear time, but time fears wild dog milk. (Chinese meme)' },
+    two_bowls: { text: 'Warm two bowls of books, and a plate of nine coins. (Kong Yiji remix)' },
+    mechanism_beats_numbers: { text: 'Mechanics beat numbers.' },
+    dog_milk_forever: { text: 'All things fall; only dog milk endures forever.' },
+    entropy_save: { text: 'Entropy never reverses — except in this save.' },
+  },
 };

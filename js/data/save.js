@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 10;
+export const SCHEMA_VERSION = 11;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -73,6 +73,12 @@ const migrations = {
     if (mp.poincareSeen === undefined) mp.poincareSeen = false;
     return { ...s, schemaVersion: 10, metaProgress: mp };
   },
+  // v10 → v11：新增彩蛋语录已浏览集合
+  10: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.quotes === undefined) mp.quotes = { seen: [] };
+    return { ...s, schemaVersion: 11, metaProgress: mp };
+  },
 };
 
 /** 生成初始存档快照（纯 JSON，Num 字段已是 MegotaNum JSON 表示） */
@@ -100,6 +106,7 @@ export function createInitialSnapshot() {
       phase3Unlocked: false,
       phase3CycleElapsed: 0,
       poincareSeen: false,
+      quotes: { seen: [] },
       minigames: { best: {}, totalPlays: 0 },
       universe: 1,
       singularitySeeds: Num.toJSON(Num.parse(0)),

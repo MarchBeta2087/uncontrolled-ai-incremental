@@ -68,6 +68,8 @@ export default {
 
   // 記録ビュー
   'records.achievements': '実績',
+  'records.ach_growth': '成長実績',
+  'records.ach_extra': '追加実績',
   'records.achievementsCount': '実績（{n}/{total}）',
   'records.fragments': '記憶の欠片',
   'records.fragmentsCount': '記憶の欠片（{n}/{total}）',

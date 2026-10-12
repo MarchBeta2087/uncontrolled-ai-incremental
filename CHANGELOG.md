@@ -16,6 +16,9 @@
 - **小游戏（v0.6 庞加莱纪，Issue #51）**：新增 **PONG / 扫雷 / 贪吃蛇 / 2048** 四款 Canvas 手写小游戏（零素材；PONG 为**限时赛**，默认 60s、可调 30–3600；扫雷过关进入下一关、雷数递增；全部响应式画布 + 触控（方向键 / 滑动 / 插旗按钮））。① `config/minigames.json` 定义解锁条件与增益；② `js/sim/minigames.js` 记录历史最佳，并按 `乘子 = clamp(1 + best × perScore, 1, max)` 重放永久增益（穿梭/跃迁/挑战后与升级并列重放）；③ `js/ui/minigames.js` Canvas 实现（键盘 / 拖拽 / 触控方向键；PONG 的 AI 逐回合学习玩家偏差）；④ 新条件类型 `minigame_score_ge`；⑤ 4 项成就（反手一击 / 排雷手 / 供应链 / 宇宙合并）+ 奖励；⑥ 新增小游戏视图与任务栏入口；⑦ 存档 `schemaVersion 8 → 9` + 迁移；⑧ 6 语言 UI + 全语言成就文案。
 - **第三阶段内容收尾（Issue #51，PR E）**：① **新挑战 ×3**——「实时宇宙」（新限制类型 `rate_base_lock`：时间速率锁定 1:10000）、「超通胀」（成本 ×1e6，挑战内免费提供 1 个投资组合且不可再购）、「无光深渊」（晶体 ×0.01）；② **庞加莱纪记忆碎片 ×3**（`phase3_unlocked` / `p3_arrow_3` / `time_years_ge: eee120`）；③ **庞加莱回归事件**：游戏内年份到达 `eee120` 即触发（全回卷闪光 + 旧终端风格闪回）与成就「又见初始」；④ 存档 `schemaVersion 9 → 10`（`poincareSeen` + 迁移）；⑤ 全语言内容与 UI 文案。
 - **终局重构（Issue #51 叙事收尾）**：v0.5「舍入纪」双结局降为**中途节点**（保留两张插图，加「叙事尚未结束」提示）；新增 **v0.6「庞加莱终章」**——到达 `eee120` 即解锁的**单选收束**终局，过场插图 `assets/images/ending-recurrence.png`（PIL 程序生成，扩展 `tools/ending-art.py` 的 `recurrence()`，已登记 `ASSETS.md`）。`config/endings.json` 新增 `final` / `unlockCondition` / `chapter`；`Endings` 新增 `getMidEndingIds` / `getFinalEnding` / `isFinalUnlocked`；终局视图渲染最终终章；全语言结局文案与 UI 提示。
+- **彩蛋滚动语录条（Issue #52）**：新增 `config/quotes.json`（首批 8 条：程序员梗 / googology / 时间宇宙仿写，含候选 A/B/C）；任务栏上方**独立细条**轮播（CSS 横向滚动，悬停暂停，尊重 `prefers-reduced-motion`）；`quote` 内容本地化（中文社区梗保留原文，其余语言给译注/译文）；新条件类型 `minigame_played`（玩过任意小游戏，用于 PCF 解锁）与 `quote_all_seen`；成就 **「博览群书」**；存档 `schemaVersion 10 → 11`（`quotes.seen`）+ 迁移。
+- **成就分类**：成就分 **「成长成就 / 附加成就」** 两组（`category`，默认成长）；`mg_2048`（宇宙合并）与「博览群书」归入附加；记录视图按组展示。
+- **文档同步约定**：`CONTRIBUTING.md` 新增「文档同步」必做项（功能/配置/数值/流程改动须同步 README / `docs/` / TODO / CHANGELOG）；PR 模板加自检；新增 `docs/archived/` 归档目录与规则（过时文档移入并登记）。
 
 ### 修复（Fixed）
 

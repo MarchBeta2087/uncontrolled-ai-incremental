@@ -1,0 +1,14 @@
+{
+  "$comment": "彩蛋滚动语录条（Issue #52）。text 为原文（英文全球通用；中文社区梗保留原文，英文语言给译注，见 js/i18n/content/）。unlockCondition 为声明式条件（缺省 = 始终可见）。总量纪律：约 20 条上限。",
+  "version": "1.0.0",
+  "quotes": [
+    { "id": "talk_is_cheap", "text": "Talk is cheap, show me the code.", "attribution": "Linus Torvalds" },
+    { "id": "monad", "text": "A monad is just a monoid in the category of endofunctors, what's the problem?", "attribution": "Haskell" },
+    { "id": "pcf", "text": "Proprietary Content Free!", "attribution": "PCF", "unlockCondition": { "type": "minigame_played" } },
+    { "id": "wild_dog_milk", "text": "人类惧怕时间，而时间惧怕野生狗奶" },
+    { "id": "two_bowls", "text": "温两碗书，要一碟九文大钱" },
+    { "id": "mechanism_beats_numbers", "text": "机制打败数值。", "attribution": "薛定谔的煎饼" },
+    { "id": "dog_milk_forever", "text": "万物皆有落幕，唯有狗奶万古长存。" },
+    { "id": "entropy_save", "text": "熵增不可逆——除了这个存档。" }
+  ]
+}

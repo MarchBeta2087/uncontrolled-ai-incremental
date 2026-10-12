@@ -548,6 +548,40 @@ body.poincare-flash { animation: poincare-flash 0.7s steps(2); }
   body.poincare-flash { animation: none; }
 }
 
+/* ---- 彩蛋语录条（v0.6）---- */
+.quote-bar {
+  height: 22px;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  background: var(--panel-2);
+  position: relative;
+  flex-shrink: 0;
+}
+.quote-text {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 22px;
+  padding: 0 8px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.quote-text.scroll {
+  padding-left: 100%;
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+  animation: quote-scroll 18s linear infinite;
+}
+.quote-bar:hover .quote-text.scroll { animation-play-state: paused; }
+@keyframes quote-scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .quote-text.scroll { animation: none; }
+}
+.ach-cat { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin: 8px 0 6px; }
+
 .num,
 .mono {
   unicode-bidi: isolate;

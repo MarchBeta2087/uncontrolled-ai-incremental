@@ -68,6 +68,8 @@ export default {
 
   // 기록 뷰
   'records.achievements': '업적',
+  'records.ach_growth': '성장 업적',
+  'records.ach_extra': '추가 업적',
   'records.achievementsCount': '업적（{n}/{total}）',
   'records.fragments': '기억의 파편',
   'records.fragmentsCount': '기억의 파편（{n}/{total}）',

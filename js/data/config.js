@@ -35,6 +35,8 @@ export const CONDITION_TYPES = new Set([
   'seeds_ge',            // 奇点种子 >= value（v0.5）
   'phase3_unlocked',     // 第三阶段已解锁（v0.6）
   'minigame_score_ge',   // 小游戏历史最佳 >= value（target = 小游戏 id，v0.6）
+  'minigame_played',     // 玩过任意小游戏（v0.6）
+  'quote_all_seen',      // 已浏览全部已解锁语录（v0.6）
 ]);
 
 // 挑战限制类型（有限枚举，见 js/sim/challenges.js）
@@ -59,6 +61,7 @@ const DEFAULT_PATHS = {
   endings: 'config/endings.json',
   audio: 'config/audio.json',
   minigames: 'config/minigames.json',
+  quotes: 'config/quotes.json',
 };
 
 async function fetchJSON(path) {
@@ -68,7 +71,7 @@ async function fetchJSON(path) {
 }
 
 export async function loadConfig(paths = DEFAULT_PATHS) {
-  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames] = await Promise.all([
+  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames, quotes] = await Promise.all([
     fetchJSON(paths.balance),
     fetchJSON(paths.resources),
     fetchJSON(paths.techs),
@@ -80,9 +83,10 @@ export async function loadConfig(paths = DEFAULT_PATHS) {
     fetchJSON(paths.endings),
     fetchJSON(paths.audio),
     fetchJSON(paths.minigames),
+    fetchJSON(paths.quotes),
   ]);
-  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames });
-  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames };
+  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames, quotes });
+  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames, quotes };
 }
 
 /** 校验配置合法性：id 唯一、引用存在、requires 无环、effect 类型已注册 */
@@ -286,6 +290,23 @@ export function validateConfig(cfg) {
       }
       if (m.gain && !EFFECT_TYPES.has(m.gain.type)) {
         errors.push(`小游戏 ${m.id} 的 gain 类型未注册: ${m.gain.type}`);
+      }
+    }
+  }
+
+  // 彩蛋语录（v0.6）
+  if (cfg.quotes) {
+    const qIds = new Set();
+    for (const q of cfg.quotes.quotes ?? []) {
+      if (!q.id) {
+        errors.push('存在缺少 id 的语录');
+        continue;
+      }
+      if (qIds.has(q.id)) errors.push(`语录 id 重复: ${q.id}`);
+      qIds.add(q.id);
+      if (!q.text) errors.push(`语录 ${q.id} 缺少 text`);
+      if (q.unlockCondition && !CONDITION_TYPES.has(q.unlockCondition.type)) {
+        errors.push(`语录 ${q.id} 的 unlockCondition 类型未注册: ${q.unlockCondition?.type}`);
       }
     }
   }
