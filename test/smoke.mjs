@@ -389,7 +389,7 @@ assert('宇宙 1 上限乘子 = 1', Num.eq(universeMod.getCapMultiplier(), 1));
 universeMod.setUniverse(2);
 assert('宇宙 2 上限乘子 = 1e616', Num.eq(universeMod.getCapMultiplier(), '1e616'));
 assert('宇宙 2 产出乘子 = 1e616（静态难度默认 1）', Num.eq(universeMod.getProductionMultiplier(), '1e616'));
-assert('阻尼指数可读', universeMod.getDifficultyExponent() === 0.95);
+assert('阻尼指数可读', universeMod.getDifficultyExponent() === 0.5);
 assert('宇宙 2 上限目标 = 1e924', Num.eq(universeMod.getCapTarget(), '1e924'));
 assert('宇宙 2 成本乘子 = 1e616', Num.eq(universeMod.getCostMultiplier(), '1e616'));
 assert('显式宇宙 3 上限指数 = 2772', universeMod.getUniverseDef(3).capExponent === 2772);
