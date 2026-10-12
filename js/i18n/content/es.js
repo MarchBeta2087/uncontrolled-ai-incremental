@@ -252,6 +252,7 @@ export default {
     '0.4.0': { note: 'Fase 2: pliegues dimensionales, energía oscura, float64' },
     '0.5.0': { note: 'Multiverso + Era del redondeo: saltos, doble final, audio, fuentes, logo' },
     '0.5.1': { note: 'Aceleración temporal, límite de velocidad eliminado, botones de fuente pixel, i18n del panel multiverso, agrupación de exponentes' },
+    '0.6.0': { note: 'Era de Poincaré: motor de flechas (fase 3), minijuegos, notación eee, citas, renovación del final, 12 idiomas, formato de números' },
   },
   ending: {
     constrained: {

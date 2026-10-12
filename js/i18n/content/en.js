@@ -253,6 +253,7 @@ export default {
     '0.4.0': { note: 'Phase 2: dimensional folds, dark energy, float64' },
     '0.5.0': { note: 'Multiverse + Rounding Era: jumps, dual endings, audio, fonts, logo' },
     '0.5.1': { note: 'Time Boost, rate cap removed, pixel-font buttons, multiverse panel i18n, exponent grouping' },
+    '0.6.0': { note: 'Poincaré Era: Phase 3 arrow engine, minigames, eee notation, quotes, endgame rework, 12 languages, number format' },
   },
   ending: {
     constrained: {
