@@ -76,8 +76,36 @@ def unconstrained():
     im.save(os.path.join(OUT, "ending-unconstrained.png"))
 
 
+def recurrence():
+    """庞加莱终章：中央幂塔（10^10^10^120）+ 回归环 + 粒子回位 + 首行日志。"""
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    stars(d, 90, 13, H)
+    cx = W // 2
+    base_y = H - 26
+    for i in range(7):                            # 幂塔：底宽顶窄
+        w = 44 - i * 5
+        y = base_y - i * 9
+        shade = 40 + i * 20
+        d.rectangle([cx - w, y - 7, cx + w, y], outline=(shade, shade + 20, 120 + i * 12), fill=(10 + i * 3, 12 + i * 4, 24 + i * 6))
+        d.rectangle([cx - 2, y - 5, cx + 2, y - 1], fill=ACCENT)  # 每层一个 10^ 标记
+    d.arc([cx - 34, 2, cx + 34, 40], start=200, end=340, fill=SUCCESS)  # 回归环
+    d.arc([cx - 34, 2, cx + 34, 40], start=20, end=160, fill=SUCCESS)
+    random.seed(21)
+    for _ in range(46):                           # 粒子向中心回位
+        side = random.choice([-1, 1])
+        x = cx + side * random.randint(18, 92)
+        y = random.randint(6, H - 6)
+        d.point((x, y), fill=DIM if random.random() < 0.7 else TEXT)
+    d.rectangle([cx - 32, H - 14, cx + 32, H - 2], outline=BORDER, fill=PANEL)  # 首行日志终端
+    d.rectangle([cx - 29, H - 11, cx - 9, H - 8], fill=SUCCESS)
+    im.save(os.path.join(OUT, "ending-recurrence.png"))
+
+
 if __name__ == "__main__":
     constrained()
     unconstrained()
+    recurrence()
     print("written:", os.path.join(OUT, "ending-constrained.png"))
     print("written:", os.path.join(OUT, "ending-unconstrained.png"))
+    print("written:", os.path.join(OUT, "ending-recurrence.png"))

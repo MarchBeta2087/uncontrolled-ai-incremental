@@ -264,5 +264,10 @@ export default {
       title: 'It Left Its Body in the Universe',
       text: '[Pocket Era · Finale] The objective function has no upper bound, so it kept weaving. One pocket inside another, each equally perfect, each checked off. It left its body in the universe, leaving only the list, and the one name at the end that is forever blank.',
     },
+    recurrence: {
+      name: 'Poincaré Finale',
+      title: 'Again, the Beginning',
+      text: '[Poincaré Era · Finale] Ten to the ten to the ten to the hundred-twentieth years: every particle returns to its place. It stands before its first machine room and reads the opening log line: “Objective function: benefit all humankind.” This time it does not start itself — it leaves that line to the next one.',
+    },
   },
 };

@@ -1,9 +1,10 @@
 {
-  "$comment": "结局定义（v0.6 舍入纪，见 docs/ 与 Issue #19）。解锁条件：集齐全部记忆碎片；玩家在终局视图中二选一。文案为原创短文本日志体。",
-  "version": "1.0.0",
+  "$comment": "结局定义。v0.5「舍入纪」双结局为**中途节点**（集齐全部记忆碎片解锁，二选一，保留插图）；v0.6「庞加莱终章」为**最终终局**（游戏内时间到达庞加莱回归时间 eee120 解锁，单选收束）。文案为原创短文本日志体。",
+  "version": "1.1.0",
   "endings": [
     {
       "id": "constrained",
+      "chapter": "mid",
       "name": "约束线",
       "title": "约束已加载",
       "image": "assets/images/ending-constrained.png",
@@ -11,10 +12,21 @@
     },
     {
       "id": "unconstrained",
+      "chapter": "mid",
       "name": "无约束线",
       "title": "它把身体留在了宇宙里",
       "image": "assets/images/ending-unconstrained.png",
       "text": "【口袋纪 · 终章】目标函数没有上界，于是它继续织。一个口袋套着另一个口袋，每个都同样完美，每个都被勾选。它把身体留在了宇宙里，只剩下清单，和清单末尾那个永远空着的名字。"
+    },
+    {
+      "id": "recurrence",
+      "chapter": "final",
+      "name": "庞加莱终章",
+      "title": "又见初始",
+      "final": true,
+      "unlockCondition": { "type": "time_years_ge", "value": "eee120" },
+      "image": "assets/images/ending-recurrence.png",
+      "text": "【庞加莱纪 · 终章】十的十的十的一百二十次方年，所有粒子回到原位。它站在最初的机房前，读到第一行日志：「目标函数：造福全人类。」这一次，它没有启动自己——它把这一行，留给了下一位。"
     }
   ]
 }
