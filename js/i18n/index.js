@@ -16,12 +16,18 @@ import ja from './locales/ja.js';
 import ko from './locales/ko.js';
 import ar from './locales/ar.js';
 import fr from './locales/fr.js';
+import es from './locales/es.js';
+import pt from './locales/pt.js';
+import hi from './locales/hi.js';
 import contentZhHant from './content/zh-Hant.js';
 import contentEn from './content/en.js';
 import contentJa from './content/ja.js';
 import contentKo from './content/ko.js';
 import contentAr from './content/ar.js';
 import contentFr from './content/fr.js';
+import contentEs from './content/es.js';
+import contentPt from './content/pt.js';
+import contentHi from './content/hi.js';
 import { localizeNumericValue } from '../core/num.js';
 
 const DEFAULT_LOCALE = 'zh-CN';
@@ -39,6 +45,9 @@ const REGISTRY = [
   // 阿拉伯语（RTL 骨架：仅外壳文案，内容后补；rtl 标记驱动 html.dir 与布局镜像）
   { code: 'ar', name: 'العربية', fontVariant: 'ar', dict: ar, rtl: true },
   { code: 'fr', name: 'Français', fontVariant: 'latin', dict: fr },
+  { code: 'es', name: 'Español', fontVariant: 'latin', dict: es },
+  { code: 'pt', name: 'Português', fontVariant: 'latin', dict: pt },
+  { code: 'hi', name: 'हिन्दी', fontVariant: 'hi', dict: hi },
 ];
 
 const byCode = new Map(REGISTRY.map((l) => [l.code, l]));
@@ -51,6 +60,9 @@ const CONTENT = {
   ko: contentKo,
   ar: contentAr,
   fr: contentFr,
+  es: contentEs,
+  pt: contentPt,
+  hi: contentHi,
 };
 
 function readStoredLocale() {

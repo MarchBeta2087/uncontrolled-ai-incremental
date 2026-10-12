@@ -20,6 +20,7 @@
 - **成就分类**：成就分 **「成长成就 / 附加成就」** 两组（`category`，默认成长）；`mg_2048`（宇宙合并）与「博览群书」归入附加；记录视图按组展示。
 - **文档同步约定**：`CONTRIBUTING.md` 新增「文档同步」必做项（功能/配置/数值/流程改动须同步 README / `docs/` / TODO / CHANGELOG）；PR 模板加自检；新增 `docs/archived/` 归档目录与规则（过时文档移入并登记）。
 - **法语界面（fr）**：新增 `js/i18n/locales/fr.js`（UI 外壳 222 键）与 `js/i18n/content/fr.js`（游戏内容 315 键），与基准语言逐键对齐；`css/fonts.css` 新增 `[data-lang="fr"]`（Fusion latin）；`README` 语言列表更新。翻译为机器 + 人工，母语者复核见 [docs/开放任务.md](docs/开放任务.md) 与 Discussion #67。
+- **西班牙语 / 葡萄牙语 / 印地语界面**：新增 `es` / `pt` / `hi` 的 UI 外壳（各 **222 键**）与游戏内容（各 **315 键**），逐键对齐；`css/fonts.css` 新增对应 `[data-lang]` 规则（es/pt 走 Fusion latin，hi 优先回退 SevenFifteen 天城文）；`getLocales()` 现含 12 个语言代码。
 
 ### 修复（Fixed）
 
