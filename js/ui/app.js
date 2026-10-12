@@ -900,7 +900,11 @@ async function ensureChangelog() {
   if (refs.changelogLoaded || !refs.ganttHost) return;
   refs.changelogLoaded = true;
   try {
-    const [vResp, cResp] = await Promise.all([fetch('config/versions.json'), fetch('CHANGELOG.md')]);
+    // 带 ?v=<VERSION> 破缓存：发版后版本记录/日志不会因 GitHub Pages 的 max-age=600 而读到旧文件
+    const [vResp, cResp] = await Promise.all([
+      fetch(`config/versions.json?v=${VERSION}`),
+      fetch(`CHANGELOG.md?v=${VERSION}`),
+    ]);
     if (!vResp.ok) throw new Error(String(vResp.status));
     const data = await vResp.json();
     refs.versionsData = data.versions ?? [];
