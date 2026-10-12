@@ -52,6 +52,7 @@ const fragMod = await import('../js/sim/fragments.js');
 const endingsMod = await import('../js/sim/endings.js');
 const timeBoostMod = await import('../js/sim/timeboost.js');
 const audioMod = await import('../js/core/audio.js');
+const cycleMod = await import('../js/sim/cycle.js');
 const i18nMod = await import('../js/i18n/index.js');
 const Num = numMod.Num;
 const setDisplayMode = numMod.setDisplayMode;
@@ -251,19 +252,22 @@ assert('穿梭后普通技术清除', techMod.isOwned('run_test') === false);
 
 const v1snap = { schemaVersion: 1, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '5', upgrades: [] } };
 const migrated = saveMod.migrate(v1snap);
-assert('v1 → v7 迁移', migrated.schemaVersion === 7 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false && migrated.metaProgress.phase3Unlocked === false && migrated.metaProgress.universe === 1 && migrated.metaProgress.ending === null && migrated.metaProgress.timeBoost !== undefined);
+assert('v1 → v8 迁移', migrated.schemaVersion === 8 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false && migrated.metaProgress.phase3Unlocked === false && migrated.metaProgress.universe === 1 && migrated.metaProgress.ending === null && migrated.metaProgress.timeBoost !== undefined);
 const v2snap = { schemaVersion: 2, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '7', totalTimeCrystals: '9' } };
 const migrated2 = saveMod.migrate(v2snap);
-assert('v2 → v7 迁移', migrated2.schemaVersion === 7 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.phase3Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades) && migrated2.metaProgress.ending === null);
+assert('v2 → v8 迁移', migrated2.schemaVersion === 8 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.phase3Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades) && migrated2.metaProgress.ending === null);
 const v4snap = { schemaVersion: 4, meta: {}, time: {}, run: {}, metaProgress: { universe: 2, singularitySeeds: '1', crossUniverseUpgrades: [] } };
 const migrated4 = saveMod.migrate(v4snap);
-assert('v4 → v7 迁移：ending=null', migrated4.schemaVersion === 7 && migrated4.metaProgress.ending === null);
+assert('v4 → v8 迁移：ending=null', migrated4.schemaVersion === 8 && migrated4.metaProgress.ending === null);
 const v5snap = { schemaVersion: 5, meta: {}, time: {}, run: {}, metaProgress: { universe: 4, singularitySeeds: '3', crossUniverseUpgrades: [], ending: 'constrained' } };
 const migrated5 = saveMod.migrate(v5snap);
-assert('v5 → v7 迁移：timeBoost 默认', migrated5.schemaVersion === 7 && migrated5.metaProgress.timeBoost && migrated5.metaProgress.timeBoost.count === 0);
+assert('v5 → v8 迁移：timeBoost 默认', migrated5.schemaVersion === 8 && migrated5.metaProgress.timeBoost && migrated5.metaProgress.timeBoost.count === 0);
 const v6snap = { schemaVersion: 6, meta: {}, time: {}, run: {}, metaProgress: { universe: 9, timeBoost: { multiplier: Num.toJSON('1'), count: 0 } } };
 const migrated6 = saveMod.migrate(v6snap);
-assert('v6 → v7 迁移：phase3Unlocked 默认 false', migrated6.schemaVersion === 7 && migrated6.metaProgress.phase3Unlocked === false);
+assert('v6 → v8 迁移：phase3Unlocked 默认 false', migrated6.schemaVersion === 8 && migrated6.metaProgress.phase3Unlocked === false);
+const v7snap = { schemaVersion: 7, meta: {}, time: {}, run: {}, metaProgress: { universe: 9, phase3Unlocked: true } };
+const migrated7 = saveMod.migrate(v7snap);
+assert('v7 → v8 迁移：phase3CycleElapsed 默认 0', migrated7.schemaVersion === 8 && migrated7.metaProgress.phase3CycleElapsed === 0);
 
 console.log('== 第三阶段引擎地基（箭塔 / cap_tetrate / 解锁）==');
 // 箭塔容器
@@ -305,12 +309,26 @@ assert('未解锁：购买被拒', techMod.buyTech('p3_cap').ok === false);
 progressMod.setPhase3Unlocked(true);
 resMod.initResources(resourcesCfg);
 multsMod.clearCapMultipliers();
-prestigeMod.configurePrestige({ universe: { massEnergyCap: '1e70' }, phase3: { unlockUniverse: 9, capLink: { resource: 'mass_energy', divisor: '120' } } });
+prestigeMod.configurePrestige({ universe: { massEnergyCap: '1e70' }, phase3: { unlockUniverse: 9, cycleSeconds: 120, capLink: { resource: 'mass_energy', divisor: '120' } } });
 resMod.load({ resources: { mass_energy: Num.toJSON(Num.mul(techMod.getCost('p3_cap'), 2)) }, generators: {} });
-assert('解锁后：第三阶段技术可购', techMod.canBuy('p3_cap') === true);
-assert('购买 cap_tetrate：塔高 = 1', techMod.buyTech('p3_cap').ok === true && multsMod.getArrows('cap') === 1);
+// 循环闸门（物理 pacing）：cap_tetrate 需先充能 cycleSeconds 物理秒
+cycleMod.resetCycle();
+assert('循环未满：cap_tetrate 不可购', techMod.canBuy('p3_cap') === false);
+cycleMod.tickCycle(120);
+assert('循环充满：可购', techMod.canBuy('p3_cap') === true);
+assert('购买 cap_tetrate：塔高=1 且循环归零', techMod.buyTech('p3_cap').ok === true && multsMod.getArrows('cap') === 1 && cycleMod.getCycleElapsed() === 0);
 techMod.reset();
 assert('重置后箭塔清空', multsMod.getArrows('cap') === 0);
+
+// 循环单元
+cycleMod.configureCycle({ seconds: 120 });
+cycleMod.resetCycle();
+cycleMod.tickCycle(60);
+assert('循环 60/120 → 进度 0.5', Math.abs(cycleMod.getCycleProgress() - 0.5) < 1e-9 && cycleMod.isCycleReady() === false);
+cycleMod.tickCycle(60);
+assert('循环 120/120 → 充满且不超上限', cycleMod.isCycleReady() === true && cycleMod.getCycleElapsed() === 120);
+assert('consume 成功且归零', cycleMod.consumeCycle() === true && cycleMod.getCycleElapsed() === 0);
+assert('归零后未充满', cycleMod.isCycleReady() === false);
 
 // 第三阶段 cap-link（修法 A）：叠至少一层 cap 塔后，上限资源产出不低于 cap / divisor
 multsMod.clearArrows();
@@ -340,8 +358,9 @@ universeMod.setUniverse(1);
 progressMod.setPhase3Unlocked(false);
 
 // 存档 roundtrip
-prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0, phase2Unlocked: true, phase3Unlocked: true });
+prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0, phase2Unlocked: true, phase3Unlocked: true, phase3CycleElapsed: 42 });
 assert('load 恢复 phase3Unlocked', prestigeMod.isPhase3Unlocked() === true);
+assert('load 恢复循环进度', cycleMod.getCycleElapsed() === 42);
 
 
 console.log('== 第二阶段成就 / 碎片 / 挑战 ==');

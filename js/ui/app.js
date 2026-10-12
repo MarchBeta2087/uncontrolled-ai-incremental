@@ -14,6 +14,7 @@ import * as Fragments from '../sim/fragments.js';
 import * as Challenges from '../sim/challenges.js';
 import * as Universe from '../sim/universe.js';
 import * as Singularity from '../sim/singularity.js';
+import * as Cycle from '../sim/cycle.js';
 import * as Endings from '../sim/endings.js';
 import * as TimeBoost from '../sim/timeboost.js';
 import * as Save from '../data/save.js';
@@ -212,6 +213,8 @@ function buildShell() {
   const p3Lock = el('div', 'phase-lock phase3', t('tech.phase3LockNotice', { n: Prestige.getPhase3UnlockUniverse() }));
   const p3Heading = el('div', 'phase-heading', t('tech.phase3'));
   p3Heading.dataset.phase = '3';
+  const p3Cycle = el('div', 'phase-cycle', '');
+  p3Cycle.dataset.phase = '3';
   const p3Grid = el('div', 'tech-grid');
   p3Grid.dataset.phase = '3';
   for (const tid of Techs.getTechIds()) {
@@ -233,10 +236,11 @@ function buildShell() {
     card.append(name, desc, cost, btn);
     (def.phase === 3 ? p3Grid : def.phase === 2 ? p2Grid : p1Grid).append(card);
   }
-  techWrap.append(p1Heading, p1Grid, p2Lock, p2Heading, p2Grid, p3Lock, p3Heading, p3Grid);
+  techWrap.append(p1Heading, p1Grid, p2Lock, p2Heading, p2Grid, p3Lock, p3Heading, p3Cycle, p3Grid);
   techPanel.append(techWrap);
   viewTechs.append(techPanel);
   refs.techGrid = techWrap;
+  refs.p3Cycle = p3Cycle;
 
   // 扩张视图
   const viewExpand = el('div', 'view');
@@ -1114,6 +1118,10 @@ function updateGenerators() {
 }
 
 function updateTechs() {
+  if (refs.p3Cycle) {
+    refs.p3Cycle.textContent = t('tech.phase3Cycle', { pct: Math.floor(Cycle.getCycleProgress() * 100) });
+    refs.p3Cycle.classList.toggle('ready', Cycle.isCycleReady());
+  }
   for (const card of refs.techGrid.querySelectorAll('.tech-card')) {
     const btn = card.querySelector('.btn');
     const tid = btn.dataset.tech;

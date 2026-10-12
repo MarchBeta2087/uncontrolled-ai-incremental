@@ -50,6 +50,7 @@ export default {
   'tech.phase2LockNotice': 'المرحلة الثانية: تتطلب حيازة {n} بلورة زمنية للفتح',
   'tech.phase3': 'المرحلة الثالثة · حقبة بوانكاريه',
   'tech.phase3LockNotice': 'المرحلة الثالثة: بلوغ الكون {n} للفتح',
+  'tech.phase3Cycle': 'شحن الدورة: {pct}%',
 
   // 扩张视图
   'expand.panel': 'التهام الكون',

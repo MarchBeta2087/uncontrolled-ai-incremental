@@ -41,6 +41,7 @@ export default {
   'tech.phase2LockNotice': 'フェーズ 2：時間結晶を {n} 保有で解放',
   'tech.phase3': '第3段階 · ポアンカレ紀',
   'tech.phase3LockNotice': '第3段階：宇宙 {n} 到達で解放',
+  'tech.phase3Cycle': '循環チャージ：{pct}%',
 
   // 拡張ビュー
   'expand.panel': '宇宙喰らい',

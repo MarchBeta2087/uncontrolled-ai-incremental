@@ -176,6 +176,12 @@ body.phase3 .phase-lock.phase3 { display: none; }
   color: var(--text-dim);
   font-size: 12px;
 }
+.phase-cycle {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.phase-cycle.ready { color: var(--success); }
 
 /* ---- 技术卡片 ---- */
 .tech-grid {

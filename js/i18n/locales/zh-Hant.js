@@ -41,6 +41,7 @@ export default {
   'tech.phase2LockNotice': '第二階段：需目前持有 {n} 時間晶體解鎖',
   'tech.phase3': '第三階段 · 龐加萊紀',
   'tech.phase3LockNotice': '第三階段：需抵達第 {n} 宇宙解鎖',
+  'tech.phase3Cycle': '循環充能：{pct}%',
 
   // 擴張視圖
   'expand.panel': '宇宙吞噬',

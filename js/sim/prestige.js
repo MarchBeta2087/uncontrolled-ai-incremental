@@ -14,6 +14,7 @@ import * as Mults from './mults.js';
 import * as Progress from './progress.js';
 import * as Universe from './universe.js';
 import * as Cap from './cap.js';
+import * as Cycle from './cycle.js';
 import { t } from '../i18n/index.js';
 
 let timeCrystals = Num.parse(0);        // 当前持有（可消费）
@@ -36,6 +37,7 @@ export function configurePrestige(cfg = {}) {
   if (cfg.prestige?.prestigeExponent !== undefined) prestigeExponent = Num.parse(cfg.prestige.prestigeExponent);
   if (cfg.phase2?.unlockCrystals !== undefined) phase2UnlockCrystals = Num.parse(cfg.phase2.unlockCrystals);
   if (cfg.phase3?.unlockUniverse !== undefined) phase3UnlockUniverse = Number(cfg.phase3.unlockUniverse);
+  Cycle.configureCycle({ seconds: cfg.phase3?.cycleSeconds });
   Resources.configureCapLink(cfg.phase3?.capLink);
 }
 
@@ -46,6 +48,7 @@ export function initPrestige() {
   lastPrestigeCrystals = Num.parse(0);
   Progress.setPhase2Unlocked(false);
   Progress.setPhase3Unlocked(false);
+  Cycle.resetCycle();
 }
 
 export function getTimeCrystals() {
@@ -174,6 +177,7 @@ export function serialize() {
     prestigeCount,
     phase2Unlocked: Progress.isPhase2Unlocked(),
     phase3Unlocked: Progress.isPhase3Unlocked(),
+    phase3CycleElapsed: Cycle.getCycleElapsed(),
   };
 }
 
@@ -186,4 +190,5 @@ export function load(state = {}) {
   prestigeCount = state.prestigeCount ?? 0;
   Progress.setPhase2Unlocked(!!state.phase2Unlocked);
   Progress.setPhase3Unlocked(!!state.phase3Unlocked);
+  Cycle.setCycleElapsed(state.phase3CycleElapsed ?? 0);
 }

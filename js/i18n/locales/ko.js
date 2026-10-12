@@ -41,6 +41,7 @@ export default {
   'tech.phase2LockNotice': '2단계: 시간 결정 {n}개 보유 시 해금',
   'tech.phase3': '3단계 · 푸앵카레 시대',
   'tech.phase3LockNotice': '3단계: 우주 {n} 도달 시 해금',
+  'tech.phase3Cycle': '순환 충전: {pct}%',
 
   // 확장 뷰
   'expand.panel': '우주 삼키기',
