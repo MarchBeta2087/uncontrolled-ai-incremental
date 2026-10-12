@@ -2,6 +2,12 @@
 
 本项目遵循语义化版本（SemVer）。
 
+## [Unreleased]
+
+### 新增（Added）
+
+- **eee 记法档位（v0.6 庞加莱纪，Issue #51，PR A）**：设置面板「大数记法」在「科学记数 / ee」之外新增 **eee 记法**。`Num.format` 改用 Num 运算做 loglog，双重对数达到 `format.numberEeeThreshold`（默认 `1e6`）后折叠为 **`eee` + 三重对数**（如 `10^(10^(10^6)) → eee6.0000`、庞加莱锚点 `10^(10^(10^120)) → eee120.0000`），避免旧实现 `log10().toNumber()` 在指数 > 1.8e308 时溢出回退；`config/balance.json` 新增 `format.numberEeeThreshold`；补齐 5 语言文案与回归测试。
+
 ## [0.5.1] - 2026-10-11
 
 ### 新增（Added）

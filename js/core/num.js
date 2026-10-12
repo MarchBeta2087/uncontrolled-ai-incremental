@@ -25,12 +25,13 @@ const defaults = {
   sciThreshold: '1e6',     // 普通记数（千分位）→ 科学记数的阈值（绝对值）
   banThreshold: '1.8e308', // 科学记数 → MegotaNum 记法的阈值（float64 上限，超此才落 ban）
   eeThreshold: '1e1000000',// ban 档内、指数达 7 位数时启用 ee 记法的阈值（#19）
+  eeeThreshold: '1e6',     // ee 档内、双重对数 L2 达此值时启用 eee 记法（v0.6）；注意：这是 L2 阈值，不是值阈值
   decimals: 3,             // 小数位数
-  displayMode: 'default',  // 大数记法偏好：'default'（科学记数 / ban）| 'ee'（loglog），由 UI 层设置
+  displayMode: 'default',  // 大数记法偏好：'default'（科学记数 / ban）| 'ee'（loglog）| 'eee'（logloglog），由 UI 层设置
 };
 
 /** 大数记法偏好可选值（供设置面板枚举） */
-export const DISPLAY_MODES = ['default', 'ee'];
+export const DISPLAY_MODES = ['default', 'ee', 'eee'];
 
 /** 千分位普通记数：1234.5 -> "1,234.5" */
 function formatFull(n, decimals) {
@@ -93,14 +94,32 @@ function formatScientific(n, decimals, style) {
   return `${sign}${mantNum.toFixed(decimals)}e${groupInt(expNum)}`;
 }
 
-/** ee 记法（loglog，设计见 #19）：1e1000000 → "ee6.0000"；外层对数保留 decimals 位小数（默认 4） */
-function formatEe(n, decimals) {
+/**
+ * ee / eee 记法（loglog / logloglog；#19 / v0.6）。
+ *   1e1000000            → "ee6.0000"
+ *   10^(10^(10^6))       → "eee6.0000"（L2 达 eeeThreshold 后启用）
+ *   10^(10^(10^120))     → "eee120.0000"（庞加莱锚点）
+ * 全部用 Num 运算，避免旧实现 `log10().toNumber()` 在指数 > 1.8e308 时溢出回退。
+ */
+function formatLogLog(n, decimals, eeeThreshold, allowEee) {
   const sign = n.sign === -1 ? '-' : '';
   const abs = n.abs();
-  const exp = abs.log10().toNumber(); // 十进制指数（可达 1e6 量级，普通 Number 足够）
-  if (!Number.isFinite(exp) || exp <= 1) return formatBan(n, decimals);
-  const loglog = Math.log10(exp); // 外层对数（loglog）
-  return `${sign}ee${loglog.toFixed(decimals)}`;
+  const exp = abs.log10(); // 十进制指数（Num，ban 档内可远超 float64）
+  if (exp.lte(1)) return formatBan(n, decimals);
+  const loglog = exp.log10(); // 双重对数（ee 档参数 L2）
+  if (loglog.gte(eeeThreshold)) {
+    // eee 档：L2 本身已达多位数，折叠为 logloglog（v0.6）
+    if (allowEee) {
+      const logloglog = loglog.log10();
+      const v = logloglog.isFinite() ? logloglog.toNumber() : NaN;
+      if (Number.isFinite(v)) return `${sign}eee${v.toFixed(decimals)}`;
+    }
+    // ee 档（allowEee=false）或第三重对数仍溢出：交回 ban 档，MegotaNum 原生分层 e 记法更可读
+    return formatBan(n, decimals);
+  }
+  const l2 = loglog.toNumber();
+  if (!Number.isFinite(l2)) return formatBan(n, decimals);
+  return `${sign}ee${l2.toFixed(decimals)}`;
 }
 
 export const Num = {
@@ -215,6 +234,7 @@ export const Num = {
     const sciThreshold = toNum(opts.sciThreshold ?? defaults.sciThreshold);
     const banThreshold = toNum(opts.banThreshold ?? defaults.banThreshold);
     const eeThreshold = toNum(opts.eeThreshold ?? defaults.eeThreshold);
+    const eeeThreshold = toNum(opts.eeeThreshold ?? defaults.eeeThreshold);
     const displayMode = opts.displayMode ?? defaults.displayMode;
     const abs = n.abs();
 
@@ -225,9 +245,10 @@ export const Num = {
       else mode = 'ban';
     }
 
-    // ee 记法（#19）：偏好开启且数值达阈值时，覆盖 ban 档为 eeN（与现有 ban 档并存）
-    if ((displayMode === 'ee' || mode === 'ee') && abs.gte(eeThreshold)) {
-      return formatEe(n, opts.eeDecimals ?? 4);
+    // ee / eee 记法（#19 / v0.6）：偏好开启且数值达阈值时，覆盖 ban 档为 loglog / logloglog
+    if ((displayMode === 'ee' || displayMode === 'eee' || mode === 'ee' || mode === 'eee') && abs.gte(eeThreshold)) {
+      const allowEee = displayMode === 'eee' || mode === 'eee';
+      return formatLogLog(n, opts.eeDecimals ?? 4, eeeThreshold, allowEee);
     }
 
     switch (mode) {
@@ -256,10 +277,11 @@ export function configureNum(cfg = {}) {
   if (cfg.sciThreshold !== undefined) defaults.sciThreshold = cfg.sciThreshold;
   if (cfg.banThreshold !== undefined) defaults.banThreshold = cfg.banThreshold;
   if (cfg.eeThreshold !== undefined) defaults.eeThreshold = cfg.eeThreshold;
+  if (cfg.eeeThreshold !== undefined) defaults.eeeThreshold = cfg.eeeThreshold;
   if (cfg.decimals !== undefined) defaults.decimals = cfg.decimals;
 }
 
-/** 设置大数记法偏好（'default' | 'ee'）；由 UI 层在启动与切换时调用。 */
+/** 设置大数记法偏好（'default' | 'ee' | 'eee'）；由 UI 层在启动与切换时调用。 */
 export function setDisplayMode(mode) {
   if (!DISPLAY_MODES.includes(mode)) return false;
   defaults.displayMode = mode;

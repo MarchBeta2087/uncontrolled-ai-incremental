@@ -622,7 +622,7 @@ function buildShell() {
   accentRow.append(accentInput, accentReset);
   modalBody.append(accentRow);
 
-  // 大数记法（科学记数 / ee）
+  // 大数记法（科学记数 / ee / eee）
   modalBody.append(el('div', 'modal-section', t('settings.bigNumberSection')));
   const bnRow = el('div', 'modal-row');
   const bnBtns = {};

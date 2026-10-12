@@ -78,6 +78,12 @@ assert('ee 记法 1e10000000 → ee7.0000', Num.format('1e10000000') === 'ee7.00
 assert('ee 记法保留四位小数 1e1234567 → ee6.0915', Num.format('1e1234567') === 'ee6.0915');
 assert('ee 阈值下 1e999999 回退科学记数', Num.format('1e999999') === '1.000e999,999');
 assert('ee 不影响普通数', Num.format(1234) === '1,234');
+setDisplayMode('eee');
+assert('eee 记法 10^(10^(10^6)) → eee6.0000', Num.format('10^10^1000000') === 'eee6.0000');
+assert('eee 记法庞加莱锚点 → eee120.0000', Num.format('10^10^10^120') === 'eee120.0000');
+assert('eee 低段仍走 ee 1e1000000 → ee6.0000', Num.format('1e1000000') === 'ee6.0000');
+assert('eee 记法下 ee 中间层 e1e120 → ee120.0000', Num.format('e1e120') === 'ee120.0000');
+assert('eee 阈值下 1e999999 回退科学记数', Num.format('1e999999') === '1.000e999,999');
 setDisplayMode('default');
 assert('恢复默认后 1e1000000', Num.format('1e1000000') === '1.000e1,000,000');
 assert('指数千分位分隔 1e10000', Num.format('1e10000') === '1.000e10,000');
