@@ -574,7 +574,7 @@ function buildShell() {
   row2.append(importBtn, resetBtn, fileInput);
   modalBody.append(row2);
 
-  // 语言选择（仅 zh-CN 已实装，其余为待办）
+  // 语言选择（已实装语言可选；ar 为 RTL 骨架）
   modalBody.append(el('div', 'modal-section', t('settings.languageSection')));
   const langRow = el('div', 'modal-row');
   for (const loc of getLocales()) {
@@ -825,7 +825,8 @@ function renderGantt(host, versions) {
     row.onclick = () => showVersionDetail(v.version);
     const track = el('div', 'gantt-track');
     const bar = el('div', 'gantt-bar');
-    bar.style.left = `${left}%`;
+    // 逻辑属性：LTR 从左边定位，RTL 自动从右边定位，使时间轴随页面镜像
+    bar.style.setProperty('inset-inline-start', `${left}%`);
     bar.style.width = `${Math.max(1, pct(v.ts) - left)}%`;
     const note = tc('version', v.version, 'note', v.note || '');
     row.title = `v${v.version} · ${fmtUTC(v.ts)} UTC / ${fmtBJ(v.ts)} 北京${note ? ' · ' + note : ''}`;
