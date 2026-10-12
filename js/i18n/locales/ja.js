@@ -123,6 +123,8 @@ export default {
   'settings.audioSection': 'オーディオ / Audio',
   'settings.mute': 'ミュート',
   'settings.unmute': 'ミュート解除',
+  'settings.bgmOn': 'BGM：オン',
+  'settings.bgmOff': 'BGM：オフ',
   'theme.default': 'デフォルト',
   'theme.solarized': 'Solarized',
   'theme.dracula': 'Dracula',

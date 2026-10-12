@@ -124,6 +124,8 @@ export default {
   'settings.audioSection': 'ऑडियो',
   'settings.mute': 'म्यूट',
   'settings.unmute': 'अनम्यूट',
+  'settings.bgmOn': 'संगीत: चालू',
+  'settings.bgmOff': 'संगीत: बंद',
   'theme.default': 'डिफ़ॉल्ट',
   'theme.solarized': 'Solarized',
   'theme.dracula': 'Dracula',

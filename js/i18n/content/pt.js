@@ -252,6 +252,7 @@ export default {
     '0.4.0': { note: 'Fase 2: dobras dimensionais, energia escura, float64' },
     '0.5.0': { note: 'Multiverso + Era do arredondamento: saltos, final duplo, áudio, fontes, logo' },
     '0.5.1': { note: 'Aceleração temporal, limite de velocidade removido, botões de fonte pixel, i18n do painel multiverso, agrupamento de expoentes' },
+    '0.6.0': { note: 'Era de Poincaré: motor de setas (fase 3), minijogos, notação eee, citações, reformulação do final, 12 idiomas, formato de números' },
   },
   ending: {
     constrained: {

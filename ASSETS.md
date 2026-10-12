@@ -32,15 +32,20 @@
 
 素材入库须遵守 [docs/素材与授权规则-v1.3.md](docs/素材与授权规则-v1.3.md)，并在下表逐条登记：
 
-> 当前音效由 **Web Audio 合成**（`config/audio.json` 的 `synth` 字段），尚未引入音频素材；后续引入音频素材时置于 `assets/audio/`，并按本文件与素材规则登记。
+> 音效与 BGM 均为**项目自产（程序合成）**：源脚本 [tools/audio-gen.py](tools/audio-gen.py)（numpy/scipy 合成 → OGG/Vorbis via soundfile）。`config/audio.json` 以 `file` 指向素材；保留 `synth` 作为无素材兜底。生成期依赖见 [tools/requirements.txt](tools/requirements.txt)。
+
+| 文件 | 作者 | 来源 | 许可证 | 获取日期 | 修改说明 |
+|---|---|---|---|---|---|
+| assets/audio/click.ogg / buy.ogg / tech.ogg / prestige.ogg / achievement.ogg / universe.ogg / ending.ogg | MarchBeta2087（项目维护者） | 程序生成（`tools/audio-gen.py`） | CC BY-SA 4.0 | 2026-10-12 | 事件音效（点击 / 购买 / 研发 / 穿跃 / 成就 / 跃迁 / 结局）；44100 Hz OGG/Vorbis 单声道；可修改源脚本随仓库 |
+| assets/audio/bgm.ogg | MarchBeta2087（项目维护者） | 程序生成（`tools/audio-gen.py`） | CC BY-SA 4.0 | 2026-10-12 | 环境循环 BGM（~16s，和弦垫 + 琶音）；44100 Hz OGG/Vorbis 单声道；可修改源脚本随仓库 |
 
 | 文件 | 作者 | 来源 | 许可证 | 获取日期 | 修改说明 |
 |---|---|---|---|---|---|
 | assets/images/starfield-bg.png | NASA/JPL-Caltech/ESA/CXC/STScI | <https://commons.wikimedia.org/wiki/File:Center_of_the_Milky_Way_Galaxy_IV_%E2%80%93_Composite.jpg> | Public domain（PDM） | 2026-10-11 | 缩小至 480×240（最近邻）、限色 11 色、压暗偏蓝、边缘暗角融合 #0d1117 |
 | `favicon.ico` + `assets/images/logo.png` + `assets/images/logo.xcf` | MarchBeta2087 | 项目维护者原创 | CC BY-SA 4.0 | 2026-10-11 | `logo.png` 原样（64×64）；`favicon.ico` 由 `logo.png` 生成（16/32/48/64，最近邻）；`logo.xcf` 为 GIMP 源文件 |
-| assets/images/ending-constrained.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-11 | 192×108 像素合成（约束线结局过场）；可修改源脚本随仓库 |
-| assets/images/ending-unconstrained.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-11 | 192×108 像素合成（无约束线结局过场）；可修改源脚本随仓库 |
-| assets/images/ending-recurrence.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-12 | 192×108 像素合成（庞加莱终章过场：幂塔 + 回归环 + 首行日志）；可修改源脚本随仓库 |
+| assets/images/ending-constrained.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-12 | 192×108 像素合成（约束线结局过场；细化版：机柜指示灯 / 终端首行 / 约束锁 / 时间回卷弧）；可修改源脚本随仓库 |
+| assets/images/ending-unconstrained.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-12 | 192×108 像素合成（无约束线结局过场；细化版：嵌套口袋 / 无限清单 / 末尾空名）；可修改源脚本随仓库 |
+| assets/images/ending-recurrence.png | MarchBeta2087（项目维护者） | 程序生成（`tools/ending-art.py`） | CC BY-SA 4.0 | 2026-10-12 | 192×108 像素合成（庞加莱终章；细化版：幂塔高光 / 回归环箭头 / 粒子回位 / 首行日志）；可修改源脚本随仓库 |
 
 ## 字体
 

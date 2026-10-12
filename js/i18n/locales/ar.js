@@ -133,6 +133,8 @@ export default {
   'settings.audioSection': 'الصوت / Audio',
   'settings.mute': 'كتم الصوت',
   'settings.unmute': 'إلغاء الكتم',
+  'settings.bgmOn': 'الموسيقى: مفعّلة',
+  'settings.bgmOff': 'الموسيقى: معطّلة',
   'theme.default': 'افتراضي',
   'theme.solarized': 'Solarized',
   'theme.dracula': 'Dracula',

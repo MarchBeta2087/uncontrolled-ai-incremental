@@ -123,6 +123,8 @@ export default {
   'settings.audioSection': '音訊 / Audio',
   'settings.mute': '靜音',
   'settings.unmute': '取消靜音',
+  'settings.bgmOn': '背景音樂：開',
+  'settings.bgmOff': '背景音樂：關',
   'theme.default': '預設',
   'theme.solarized': 'Solarized',
   'theme.dracula': 'Dracula',

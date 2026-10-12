@@ -254,6 +254,7 @@ export default {
     '0.4.0': { note: 'Phase 2 : plis dimensionnels, énergie noire, float64' },
     '0.5.0': { note: 'Multivers + Ère de l’arrondi : sauts, double fin, audio, polices, logo' },
     '0.5.1': { note: 'Accélération temporelle, plafond de vitesse retiré, boutons police pixel, i18n panneau multivers, groupement des exposants' },
+    '0.6.0': { note: 'Ère de Poincaré : moteur de flèches (phase 3), mini-jeux, notation eee, citations, refonte de la fin, 12 langues, format des nombres' },
   },
   ending: {
     constrained: {
