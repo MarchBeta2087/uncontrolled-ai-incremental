@@ -165,6 +165,14 @@ export function setGeneratorDisabled(genId, disabled) {
 export function clearGeneratorDisabled() {
   disabledGenerators.clear();
 }
+/** 挑战授予：直接设置某生成器数量（不消耗资源，用于挑战起始免费生成器） */
+export function setGeneratorCount(genId, n) {
+  const g = generators.get(genId);
+  if (!g) return false;
+  g.count = Num.parse(n);
+  Events.emit('generators:changed', { id: genId, count: g.count });
+  return true;
+}
 /** 挑战限制：所有生成器成本乘子 */
 export function setChallengeCostMult(value) {
   challengeCostMult = Num.parse(value);

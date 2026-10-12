@@ -152,7 +152,7 @@ export default {
     challenge_p2_drought: { name: '결정 고갈', description: '결정 생산 ×0.1', goals: ['결정 ×2', '결정 ×3', '결정 ×5'] },
     challenge_p2_zero: { name: '절대 영도', description: '시간 속도 ÷1000', goals: ['시간 속도 ×2', '시간 속도 ×3', '시간 속도 ×5'] },
     challenge_p3_realtime: { name: '실시간 우주', description: '시간 속도를 1:10000으로 고정, 모든 속도 배수 비활성화', goals: ['시간 속도 ×10', '시간 속도 ×100', '시간 속도 ×1000'] },
-    challenge_p3_inflation: { name: '초인플레이션', description: '모든 생성기 비용 ×1e6', goals: ['전체 생산 ×1e6', '전체 생산 ×1e12', '전체 생산 ×1e18'] },
+    challenge_p3_inflation: { name: '초인플레이션', description: '모든 생성기 비용 ×1e6; 투자 포트폴리오 1개 무료 제공, 도전 중 추가 구매 불가', goals: ['전체 생산 ×1e6', '전체 생산 ×1e12', '전체 생산 ×1e18'] },
     challenge_p3_dim: { name: '무광의 심연', description: '결정 생산 ×0.01', goals: ['결정 ×10', '결정 ×100', '결정 ×1000'] },
   },
   crossUpgrade: {

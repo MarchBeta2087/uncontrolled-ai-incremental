@@ -78,9 +78,13 @@
     {
       "id": "challenge_p3_inflation",
       "name": "超通胀",
-      "description": "所有生成器成本 ×1e6",
+      "description": "所有生成器成本 ×1e6；免费提供 1 个投资组合，期间不可再购买",
       "unlockCondition": { "type": "phase3_unlocked" },
-      "restrictions": [{ "type": "all_cost_mult", "value": "1e6" }],
+      "restrictions": [
+        { "type": "all_cost_mult", "value": "1e6" },
+        { "type": "grant_generator", "target": "investment", "count": 1 },
+        { "type": "disable_generator", "target": "investment" }
+      ],
       "goals": [
         { "target": "1e308", "rewardDescription": "全产出 ×1e6", "reward": { "type": "all_generator_mult", "value": "1e6" } },
         { "target": "1e1000", "rewardDescription": "全产出 ×1e12", "reward": { "type": "all_generator_mult", "value": "1e12" } },

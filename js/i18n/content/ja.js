@@ -152,7 +152,7 @@ export default {
     challenge_p2_drought: { name: '結晶の枯渇', description: '結晶産出 ×0.1', goals: ['結晶 ×2', '結晶 ×3', '結晶 ×5'] },
     challenge_p2_zero: { name: '絶対零度', description: '時間速度 ÷1000', goals: ['時間速度 ×2', '時間速度 ×3', '時間速度 ×5'] },
     challenge_p3_realtime: { name: 'リアルタイム宇宙', description: '時間速度を 1:10000 に固定、すべての速度乗数を無効化', goals: ['時間速度 ×10', '時間速度 ×100', '時間速度 ×1000'] },
-    challenge_p3_inflation: { name: '超インフレ', description: 'すべての生成器コスト ×1e6', goals: ['全生産 ×1e6', '全生産 ×1e12', '全生産 ×1e18'] },
+    challenge_p3_inflation: { name: '超インフレ', description: 'すべての生成器コスト ×1e6；投資ポートフォリオを1つ無償提供、挑戦中は追加購入不可', goals: ['全生産 ×1e6', '全生産 ×1e12', '全生産 ×1e18'] },
     challenge_p3_dim: { name: '無光の深淵', description: '結晶生産 ×0.01', goals: ['結晶 ×10', '結晶 ×100', '結晶 ×1000'] },
   },
   crossUpgrade: {

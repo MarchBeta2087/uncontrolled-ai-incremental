@@ -408,6 +408,17 @@ chMod.exitChallenge();
 assert('退出后速率恢复', Num.gt(timeMod.Time.getRate(), baseRate));
 timeMod.Time.clearRateMultipliers();
 
+console.log('== 超通胀：免费投资组合 ==');
+resMod.initResources(resourcesCfg);
+chMod.initChallenges(chCfg);
+chMod.configureChallenges(balance);
+progressMod.setPhase3Unlocked(true);
+chMod.startChallenge('challenge_p3_inflation');
+assert('超通胀：免费 1 个投资组合', Num.eq(resMod.getGenerator('investment'), 1));
+assert('超通胀：投资组合不可再购', resMod.buyGenerator('investment', 1).ok === false);
+chMod.exitChallenge();
+assert('退出后免费组合清零', Num.eq(resMod.getGenerator('investment'), 0));
+
 console.log('== 庞加莱事件（到达即触发）==');
 prestigeMod.configurePrestige({ phase3: { poincareYear: 'eee120' } });
 prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0, phase2Unlocked: false, poincareSeen: false });

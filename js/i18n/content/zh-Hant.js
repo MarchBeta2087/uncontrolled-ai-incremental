@@ -152,7 +152,7 @@ export default {
     challenge_p2_drought: { name: '晶體枯竭', description: '晶體產出 ×0.1', goals: ['晶體 ×2', '晶體 ×3', '晶體 ×5'] },
     challenge_p2_zero: { name: '絕對零度', description: '時間速率 ÷1000', goals: ['時間速率 ×2', '時間速率 ×3', '時間速率 ×5'] },
     challenge_p3_realtime: { name: '實時宇宙', description: '時間速率鎖定 1:10000，停用一切速率乘子', goals: ['時間速率 ×10', '時間速率 ×100', '時間速率 ×1000'] },
-    challenge_p3_inflation: { name: '超通脹', description: '所有生成器成本 ×1e6', goals: ['全產出 ×1e6', '全產出 ×1e12', '全產出 ×1e18'] },
+    challenge_p3_inflation: { name: '超通脹', description: '所有生成器成本 ×1e6；免費提供 1 個投資組合，期間不可再購買', goals: ['全產出 ×1e6', '全產出 ×1e12', '全產出 ×1e18'] },
     challenge_p3_dim: { name: '無光深淵', description: '晶體產出 ×0.01', goals: ['晶體 ×10', '晶體 ×100', '晶體 ×1000'] },
   },
   crossUpgrade: {

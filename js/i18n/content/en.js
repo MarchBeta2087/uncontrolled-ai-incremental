@@ -224,7 +224,7 @@ export default {
     },
     challenge_p3_inflation: {
       name: 'Hyperinflation',
-      description: 'All generator costs ×1e6',
+      description: 'All generator costs ×1e6; one free Portfolio, and no further Portfolios during the challenge',
       goals: ['All production ×1e6', 'All production ×1e12', 'All production ×1e18'],
     },
     challenge_p3_dim: {
