@@ -16,10 +16,12 @@ import { t } from '../i18n/index.js';
 const challenges = new Map(); // id -> { goalsDone: Set<number>, def: Object }
 let activeChallenge = null;  // 当前进行中的挑战 id（不存档，中断需重新进入）
 let nerfValue = '0.25';     // 挑战期间永久升级效果的削弱系数（可配置）
+let grantedGenerators = new Set(); // 本次挑战免费授予的生成器（退出/完成时清零）
 
 export function initChallenges(cfg) {
   challenges.clear();
   activeChallenge = null;
+  grantedGenerators = new Set();
   for (const c of cfg.challenges ?? []) {
     challenges.set(c.id, { goalsDone: new Set(), def: c });
   }
@@ -139,6 +141,13 @@ function applyRestrictions(id) {
       case 'rate_div':
         Time.setChallengeRateDiv(r.value);
         break;
+      case 'rate_base_lock':
+        Time.setChallengeBaseLock(true);
+        break;
+      case 'grant_generator':
+        Resources.setGeneratorCount(r.target, r.count);
+        grantedGenerators.add(r.target);
+        break;
       case 'crystal_mult':
         Mults.setCrystalMultiplier('challenge', r.value);
         break;
@@ -150,6 +159,9 @@ function clearRestrictions() {
   Resources.clearGeneratorDisabled();
   Resources.clearChallengeCostMult();
   Time.clearChallengeRateDiv();
+  Time.clearChallengeBaseLock();
+  for (const gid of grantedGenerators) Resources.setGeneratorCount(gid, 0);
+  grantedGenerators.clear();
   Mults.removeCrystalMultiplier('challenge');
 }
 

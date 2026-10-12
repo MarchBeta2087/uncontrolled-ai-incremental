@@ -2,6 +2,39 @@
 
 本项目遵循语义化版本（SemVer）。
 
+## [0.6.0] - 2026-10-12
+
+### 新增（Added）
+
+- **eee 记法档位（v0.6 庞加莱纪，Issue #51，PR A）**：设置面板「大数记法」在「科学记数 / ee」之外新增 **eee 记法**。`Num.format` 改用 Num 运算做 loglog，双重对数达到 `format.numberEeeThreshold`（默认 `1e6`）后折叠为 **`eee` + 三重对数**（如 `10^(10^(10^6)) → eee6.0000`、庞加莱锚点 `10^(10^(10^120)) → eee120.0000`），避免旧实现 `log10().toNumber()` 在指数 > 1.8e308 时溢出回退；`config/balance.json` 新增 `format.numberEeeThreshold`；补齐 5 语言文案与回归测试。
+- **RTL（阿拉伯语）界面地基**：为后续阿拉伯语实装准备双向布局。① `js/i18n/index.js` 的 `REGISTRY` 新增 `rtl` 标记与 `isRTL()`，`setLocale` / 启动时同步 `<html dir>`；② 新增阿拉伯语词典 `js/i18n/locales/ar.js`（**178 个 key，与 zh-CN 对齐，UI 外壳全量实装**；游戏内容待 `content/ar.js` 补齐前回退 config 中文）；③ 物理属性换逻辑属性（`text-align: end`、`margin-inline-start`、`border-inline-start-color`），并对 `.num/.mono` 做 bidi 隔离；④ 甘特图随 RTL 镜像（进度条定位改用 `inset-inline-start`）；⑤ `css/fonts.css` 新增 `[data-lang="ar"]`（Fusion 拉丁 + SevenFifteen 阿拉伯字形回退）；⑥ `index.html` 补 `dir="ltr"`；smoke 新增 5 条方向断言。
+- **阿拉伯语游戏内容本地化**：新增 `js/i18n/content/ar.js`（资源 / 生成器 / 技术 / 升级 / 成就 / 碎片 / 挑战 / 跨宇宙升级 / 版本说明 / 结局，**258 个叶子键，与 en.js 逐键对齐**）并在 `js/i18n/index.js` 的 `CONTENT` 注册；至此切到阿拉伯语不再有中文回退（剧情中的 `不要启动` 字符保留原文并加阿拉伯语译注，与 en 的处理一致）。
+- **阿拉伯语双数字系统（玩家可选）**：设置面板为阿拉伯语界面新增「数字样式」二选一——西阿拉伯数字 `0-9` / 东阿拉伯-印度数字 `٠-٩`。`js/core/num.js` 新增数字系统（`setNumeralSystem` / `localizeDigits` / `localizeNumericValue`），在 `Num.format` 与时间显示层统一替换数字；`t()` 参数按「看起来是数」启发式本地化（id / 版本号前缀不受影响）；偏好存 localStorage，不进存档；6 语言文案 + smoke 新增 8 条断言。
+- **第三阶段（庞加莱纪）引擎地基（Issue #51，PR B）**：新增**箭头（塔层）增速引擎**。① `mults.js` 新增箭塔容器：`tower(x,n)`（连续 `10^x` n 次）、`setArrow/removeArrow/getArrows/clearArrows`（kind = `cap` 上限 / `prod` 产出）；② 新效果类型 `cap_tetrate`（上限叠塔：`getUniverseCap() = tower(min(基准×cap_mult, 宇宙上限), capArrows)`）与 `all_generator_tetrate`（全局产出叠塔）；③ 第三阶段解锁：`Universe ≥ phase3.unlockUniverse`（默认 9），`progress.js` / `prestige.js` 新增 `phase3Unlocked` 标志与 `checkPhase3Unlock()`；④ 新条件类型 `phase3_unlocked`；⑤ 存档 `schemaVersion 6 → 7` + 迁移；⑥ 设计文档 `docs/v0.6-庞加莱纪设计.md`；smoke 新增 21 条断言。数值/技术树见后续 PR C。
+- **第三阶段（庞加莱纪）内容与平衡（Issue #51，PR C）**：① **修法 A**：产出侧改为「与上限挂钩」（cap-link，`phase3.capLink`，默认上限资源 `mass_energy` 产出 ≥ 上限 / 120 游戏秒），移除了 PR B 的 `all_generator_tetrate`（同阶 `10^` 叠塔在数学上无法与上限成比例）；② 上限计算抽到低层模块 `js/sim/cap.js`（供 resources/techs 读取，避免循环依赖）；③ 第三阶段技术树 12 项（`config/techs.json`，`phase: 3`、动态 `costFraction` 定价、`cap_tetrate` / `rate_mult` / `crystal_mult` / `all_generator_mult`）；④ UI 新增第三阶段分区与解锁（`body.phase3`）；⑤ `tools/balance-sim.mjs` 新增 `--phase3` 靶场 + `docs/v0.6-平衡模拟.md`；⑥ 全语言技术文案。
+- **第三阶段物理 pacing（时间闸门）**：塔高 ≥2 时 `上限 / 常数 ≡ 上限`（MegotaNum 塔表示丢失分数），cap-link 无法给出 pacing。新增 `js/sim/cycle.js`：每买一层 `cap_tetrate` 前，循环需充能 `phase3.cycleSeconds` **物理秒**（默认 120），engine 每 tick 用 `dtReal` 推进、买塔时归零。`techs.canBuy` 受闸门约束；`balance.json` 新增 `phase3.cycleSeconds`；UI 第三阶段显示循环进度；`prestige` 存档 `phase3CycleElapsed`，`schemaVersion 7 → 8` + 迁移；`--phase3` 靶场验证每层 ≈ 2min（4 层 = 8.1min）。
+- **小游戏（v0.6 庞加莱纪，Issue #51）**：新增 **PONG / 扫雷 / 贪吃蛇 / 2048** 四款 Canvas 手写小游戏（零素材；PONG 为**限时赛**，默认 60s、可调 30–3600；扫雷过关进入下一关、雷数递增；全部响应式画布 + 触控（方向键 / 滑动 / 插旗按钮））。① `config/minigames.json` 定义解锁条件与增益；② `js/sim/minigames.js` 记录历史最佳，并按 `乘子 = clamp(1 + best × perScore, 1, max)` 重放永久增益（穿梭/跃迁/挑战后与升级并列重放）；③ `js/ui/minigames.js` Canvas 实现（键盘 / 拖拽 / 触控方向键；PONG 的 AI 逐回合学习玩家偏差）；④ 新条件类型 `minigame_score_ge`；⑤ 4 项成就（反手一击 / 排雷手 / 供应链 / 宇宙合并）+ 奖励；⑥ 新增小游戏视图与任务栏入口；⑦ 存档 `schemaVersion 8 → 9` + 迁移；⑧ 6 语言 UI + 全语言成就文案。
+- **第三阶段内容收尾（Issue #51，PR E）**：① **新挑战 ×3**——「实时宇宙」（新限制类型 `rate_base_lock`：时间速率锁定 1:10000）、「超通胀」（成本 ×1e6，挑战内免费提供 1 个投资组合且不可再购）、「无光深渊」（晶体 ×0.01）；② **庞加莱纪记忆碎片 ×3**（`phase3_unlocked` / `p3_arrow_3` / `time_years_ge: eee120`）；③ **庞加莱回归事件**：游戏内年份到达 `eee120` 即触发（全回卷闪光 + 旧终端风格闪回）与成就「又见初始」；④ 存档 `schemaVersion 9 → 10`（`poincareSeen` + 迁移）；⑤ 全语言内容与 UI 文案。
+- **终局重构（Issue #51 叙事收尾）**：v0.5「舍入纪」双结局降为**中途节点**（保留两张插图，加「叙事尚未结束」提示）；新增 **v0.6「庞加莱终章」**——到达 `eee120` 即解锁的**单选收束**终局，过场插图 `assets/images/ending-recurrence.png`（PIL 程序生成，扩展 `tools/ending-art.py` 的 `recurrence()`，已登记 `ASSETS.md`）。`config/endings.json` 新增 `final` / `unlockCondition` / `chapter`；`Endings` 新增 `getMidEndingIds` / `getFinalEnding` / `isFinalUnlocked`；终局视图渲染最终终章；全语言结局文案与 UI 提示。
+- **彩蛋滚动语录条（Issue #52）**：新增 `config/quotes.json`（首批 8 条：程序员梗 / googology / 时间宇宙仿写，含候选 A/B/C）；任务栏上方**独立细条**轮播（CSS 横向滚动，悬停暂停，尊重 `prefers-reduced-motion`）；`quote` 内容本地化（中文社区梗保留原文，其余语言给译注/译文）；新条件类型 `minigame_played`（玩过任意小游戏，用于 PCF 解锁）与 `quote_all_seen`；成就 **「博览群书」**；存档 `schemaVersion 10 → 11`（`quotes.seen`）+ 迁移。
+- **成就分类**：成就分 **「成长成就 / 附加成就」** 两组（`category`，默认成长）；`mg_2048`（宇宙合并）与「博览群书」归入附加；记录视图按组展示。
+- **文档同步 + 游戏内版本记录**：① README 玩法清单更新至 v0.6；② `docs/决策记录.md` 新增 **ADR-004**（v0.6 关键机制与工程约定：cap-link / 时间闸门 / 终局分层 / 小游戏增益 / 数字格式 / 多语言基线 / 文档同步纪律）；③ `config/versions.json` 新增 **0.6.0「开发中」** 条目，版本记录甘特图支持**未发布行**（虚线，点击查看 `[Unreleased]` 详情）；④ 设计说明书 / 数值模型加「后续演进」导读，避免旧基线误导。
+- **文档同步约定**：`CONTRIBUTING.md` 新增「文档同步」必做项（功能/配置/数值/流程改动须同步 README / `docs/` / TODO / CHANGELOG）；PR 模板加自检；新增 `docs/archived/` 归档目录与规则（过时文档移入并登记）。
+- **法语界面（fr）**：新增 `js/i18n/locales/fr.js`（UI 外壳 222 键）与 `js/i18n/content/fr.js`（游戏内容 315 键），与基准语言逐键对齐；`css/fonts.css` 新增 `[data-lang="fr"]`（Fusion latin）；`README` 语言列表更新。翻译为机器 + 人工，母语者复核见 [docs/开放任务.md](docs/开放任务.md) 与 Discussion #67。
+- **西班牙语 / 葡萄牙语 / 印地语界面**：新增 `es` / `pt` / `hi` 的 UI 外壳（各 **222 键**）与游戏内容（各 **315 键**），逐键对齐；`css/fonts.css` 新增对应 `[data-lang]` 规则（es/pt 走 Fusion latin，hi 优先回退 SevenFifteen 天城文）；`getLocales()` 现含 12 个语言代码。
+- **数字格式（Intl）**：`Num.format` 按语言注入分组 / 小数分隔符（`Num.setNumberLocale`，由 i18n 在切语言时注入）——fr 空格分组、es/pt 点分组、hi 印度 2-2-3 分组、ar 阿拉伯分隔符；科学计数 / ban / ee / eee 的尾数与指数同步。新增可选 **中文万/亿记法**（设置面板，仅中文界面；1e4–1e12 显示为万/亿，如 `12345 → 1.235万`）。
+- **音频素材包（v0.6）**：新增 `tools/audio-gen.py`（numpy/scipy 合成 → **OGG/Vorbis** via soundfile）——程序生成 **7 个事件音效**（click / buy / tech / prestige / achievement / universe / ending）+ **1 段环境循环 BGM**，置于 `assets/audio/`；`config/audio.json` 以 `file` 接入（保留 `synth` 作为无素材兜底）；音频引擎新增 **BGM 循环播放**（`startBgm`/`stopBgm`，随首次手势解锁启动）与设置面板「背景音乐」开关（`js/core/audio.js` / `js/ui/audio.js`）；`ASSETS.md` 登记、`tools/requirements.txt` 声明生成期依赖。
+- **结局过场像素画细化（v0.6）**：重写 `tools/ending-art.py`，三张 192×108 过场图（约束线 / 无约束线 / 庞加莱终章）由占位升级为**分层渐变 + 细节**（机柜指示灯 / 终端首行 / 约束锁 / 时间回卷弧 / 嵌套口袋 / 无限清单 / 幂塔高光 / 回归环箭头 / 粒子回位）；`ASSETS.md` 更新说明。
+
+### 修复（Fixed）
+
+- **多宇宙高宇宙停滞**：`config/universes.json` 的 `difficultyExponent` **0.95 → 0.5**。自适应难度 `universe:prod = capMult / metaProd^exp` 在高宇宙把产出压到低于生成器成本，导致第 7/8 宇宙停滞（下一购买需 1e15 游戏秒）；降低阻尼后第 1–9 宇宙全部可达。诊断与遗留见 [docs/v0.5-高宇宙平衡评估.md](docs/v0.5-高宇宙平衡评估.md)。
+- **`tools/balance-sim.mjs`**：停滞时打印各生成器数量/成本/持有/产出与 `globalMult`/`capMult`/`cap`，便于诊断高宇宙瓶颈。
+
+### 修复（Fixed）
+
+- **成就「博览群书」译文缺失**：`quote_all` 在全部 `content/` 中漏译（回退中文）——已补齐 9 语言的名称与描述。同类检查：新增配置—内容覆盖探针，确认其余内容无缺口（英文原句语录按设计不回退，见 #52）。
+
 ## [0.5.1] - 2026-10-11
 
 ### 新增（Added）

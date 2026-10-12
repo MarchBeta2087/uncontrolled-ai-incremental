@@ -14,17 +14,22 @@ import * as Fragments from '../sim/fragments.js';
 import * as Challenges from '../sim/challenges.js';
 import * as Universe from '../sim/universe.js';
 import * as Singularity from '../sim/singularity.js';
+import * as Cycle from '../sim/cycle.js';
+import * as Minigames from '../sim/minigames.js';
+import * as Quotes from '../sim/quotes.js';
+import { checkCondition } from '../sim/conditions.js';
 import * as Endings from '../sim/endings.js';
 import * as TimeBoost from '../sim/timeboost.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
-import { BIG_NUMBER_MODES, getBigNumberMode, setBigNumberMode } from './format.js';
+import { BIG_NUMBER_MODES, NUMERAL_STYLES, getBigNumberMode, setBigNumberMode, getNumeralStyle, setNumeralStyle, getCnUnitsPref, setCnUnitsPref } from './format.js';
 import { playSfx } from '../core/audio.js';
-import { getVolumePref, setVolumePref, getMutedPref, setMutedPref } from './audio.js';
+import { openMinigame } from './minigames.js';
+import { getVolumePref, setVolumePref, getMutedPref, setMutedPref, getBgmPref, setBgmPref } from './audio.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
-const VERSION = '0.5.1';
+const VERSION = '0.6.0';
 
 const refs = {};
 let dirty = false;
@@ -45,10 +50,12 @@ export function initUI() {
   document.body.classList.add(platformClass());
   document.title = t('app.title'); // 浏览器标签页标题随语言本地化
   if (Prestige.isPhase2Unlocked()) document.body.classList.add('phase2');
+  if (Prestige.isPhase3Unlocked()) document.body.classList.add('phase3');
   buildShell();
   bindEvents();
   switchView('resources');
   applyUniverseHue();
+  initQuoteTicker();
   markDirty();
 }
 
@@ -203,15 +210,23 @@ function buildShell() {
   const techWrap = el('div', '');
   const p1Heading = el('div', 'phase-heading', t('tech.phase1'));
   const p1Grid = el('div', 'tech-grid');
-  const p2Lock = el('div', 'phase-lock', t('tech.phase2LockNotice', { n: Num.format(Prestige.getPhase2UnlockCrystals()) }));
+  const p2Lock = el('div', 'phase-lock phase2', t('tech.phase2LockNotice', { n: Num.format(Prestige.getPhase2UnlockCrystals()) }));
   const p2Heading = el('div', 'phase-heading', t('tech.phase2'));
   p2Heading.dataset.phase = '2';
   const p2Grid = el('div', 'tech-grid');
   p2Grid.dataset.phase = '2';
+  const p3Lock = el('div', 'phase-lock phase3', t('tech.phase3LockNotice', { n: Prestige.getPhase3UnlockUniverse() }));
+  const p3Heading = el('div', 'phase-heading', t('tech.phase3'));
+  p3Heading.dataset.phase = '3';
+  const p3Cycle = el('div', 'phase-cycle', '');
+  p3Cycle.dataset.phase = '3';
+  const p3Grid = el('div', 'tech-grid');
+  p3Grid.dataset.phase = '3';
   for (const tid of Techs.getTechIds()) {
     const def = Techs.getTech(tid);
     const card = el('div', 'tech-card');
     if (def.phase === 2) card.dataset.phase = '2';
+    else if (def.phase === 3) card.dataset.phase = '3';
     const name = el('div', 'tech-name', tc('tech', tid, 'name', def.name));
     const desc = el('div', 'tech-desc', tc('tech', tid, 'description', def.description || ''));
     const cost = el('div', 'tech-cost', '');
@@ -224,12 +239,13 @@ function buildShell() {
       markDirty();
     };
     card.append(name, desc, cost, btn);
-    (def.phase === 2 ? p2Grid : p1Grid).append(card);
+    (def.phase === 3 ? p3Grid : def.phase === 2 ? p2Grid : p1Grid).append(card);
   }
-  techWrap.append(p1Heading, p1Grid, p2Lock, p2Heading, p2Grid);
+  techWrap.append(p1Heading, p1Grid, p2Lock, p2Heading, p2Grid, p3Lock, p3Heading, p3Cycle, p3Grid);
   techPanel.append(techWrap);
   viewTechs.append(techPanel);
   refs.techGrid = techWrap;
+  refs.p3Cycle = p3Cycle;
 
   // 扩张视图
   const viewExpand = el('div', 'view');
@@ -379,18 +395,25 @@ function buildShell() {
   const achPanel = el('div', 'panel');
   const achTitle = el('div', 'panel-title', t('records.achievements'));
   achPanel.append(achTitle);
-  const achGrid = el('div', 'ach-grid');
-  for (const aid of Achievements.getAchievementIds()) {
-    const a = Achievements.getAchievement(aid);
-    const card = el('div', 'ach-card');
-    card.dataset.ach = aid;
-    card.append(
-      el('div', 'ach-name', tc('achievement', aid, 'name', a.name)),
-      el('div', 'ach-desc', tc('achievement', aid, 'description', a.description))
-    );
-    achGrid.append(card);
+  const achWrap = el('div', '');
+  for (const cat of ['growth', 'extra']) {
+    const ids = Achievements.getAchievementIds().filter((id) => Achievements.getAchievementCategory(id) === cat);
+    if (!ids.length) continue;
+    achWrap.append(el('div', 'ach-cat', t('records.ach_' + cat)));
+    const grid = el('div', 'ach-grid');
+    for (const aid of ids) {
+      const a = Achievements.getAchievement(aid);
+      const card = el('div', 'ach-card');
+      card.dataset.ach = aid;
+      card.append(
+        el('div', 'ach-name', tc('achievement', aid, 'name', a.name)),
+        el('div', 'ach-desc', tc('achievement', aid, 'description', a.description))
+      );
+      grid.append(card);
+    }
+    achWrap.append(grid);
   }
-  achPanel.append(achGrid);
+  achPanel.append(achWrap);
   const fragPanel = el('div', 'panel');
   const fragTitle = el('div', 'panel-title', t('records.fragments'));
   fragPanel.append(fragTitle);
@@ -404,10 +427,36 @@ function buildShell() {
   fragPanel.append(fragList);
   recordsLayout.append(achPanel, fragPanel);
   viewRecords.append(recordsLayout);
-  refs.achGrid = achGrid;
+  refs.achGrid = achWrap;
   refs.achTitle = achTitle;
   refs.fragList = fragList;
   refs.fragTitle = fragTitle;
+
+  // 小游戏视图（v0.6 庞加莱纪）
+  const viewMinigames = el('div', 'view');
+  const mgPanel = el('div', 'panel');
+  mgPanel.append(el('div', 'panel-title', t('nav.minigames')));
+  const mgGrid = el('div', 'mg-grid');
+  for (const gid of Minigames.getMinigameIds()) {
+    const g = Minigames.getMinigame(gid);
+    const card = el('div', 'mg-card');
+    card.dataset.mg = gid;
+    const name = el('div', 'mg-card-name', t('mg.' + gid + '.name'));
+    const desc = el('div', 'mg-card-desc', t('mg.' + gid + '.desc'));
+    const best = el('div', 'mg-card-best', '');
+    const play = el('button', 'btn', t('mg.play'));
+    play.type = 'button';
+    play.dataset.mgPlay = gid;
+    play.onclick = () => {
+      if (checkCondition(g.unlockCondition)) openMinigame(gid);
+      else showToast(t('mg.locked'));
+    };
+    card.append(name, desc, best, play);
+    mgGrid.append(card);
+  }
+  mgPanel.append(mgGrid, el('p', 'modal-text', t('mg.note')));
+  viewMinigames.append(mgPanel);
+  refs.mgGrid = mgGrid;
 
   // 终局视图（集齐全部记忆碎片后由任务栏进入；v0.6 双结局）
   const viewEndgame = el('div', 'view');
@@ -428,7 +477,7 @@ function buildShell() {
     el('p', 'modal-text', t('endgame.intro'))
   );
   const egChoiceRow = el('div', 'modal-row');
-  for (const eid of Endings.getEndingIds()) {
+  for (const eid of Endings.getMidEndingIds()) {
     const e = Endings.getEnding(eid);
     const btn = el('button', 'btn btn-primary', tc('ending', eid, 'name', e.name));
     btn.type = 'button';
@@ -451,7 +500,18 @@ function buildShell() {
   const egArtPlaceholder = el('div', 'ending-art-placeholder', t('endgame.artPending'));
   const egResultTitle = el('p', 'endgame-title', '');
   const egResultText = el('p', 'modal-text', '');
-  egResult.append(egArt, egArtPlaceholder, egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')));
+  egResult.append(egArt, egArtPlaceholder, egResultTitle, egResultText, el('p', 'modal-text', t('endgame.freeMode')), el('p', 'modal-text', t('endgame.midNote')));
+
+  // 最终终局（庞加莱终章）：到达 eee120 解锁，单选收束
+  const egFinal = el('div', '');
+  const egFinalArt = document.createElement('img');
+  egFinalArt.className = 'ending-art';
+  egFinalArt.alt = '';
+  egFinalArt.hidden = true;
+  const egFinalArtPlaceholder = el('div', 'ending-art-placeholder', t('endgame.artPending'));
+  const egFinalTitle = el('p', 'endgame-title', '');
+  const egFinalText = el('p', 'modal-text', '');
+  egFinal.append(egFinalArt, egFinalArtPlaceholder, egFinalTitle, egFinalText, el('p', 'modal-text', t('endgame.finalNote')));
 
   // 通用信息
   const egMeta = el('div', '');
@@ -465,9 +525,10 @@ function buildShell() {
   egRepo.rel = 'noopener noreferrer';
   egMeta.append(egRepo);
 
-  egPanel.append(egLocked, egChoice, egResult, egMeta);
+  egPanel.append(egLocked, egChoice, egResult, egFinal, egMeta);
   egChoice.hidden = true;
   egResult.hidden = true;
+  egFinal.hidden = true;
   viewEndgame.append(egPanel);
   refs.egLocked = egLocked;
   refs.egChoice = egChoice;
@@ -475,9 +536,21 @@ function buildShell() {
   refs.egResultTitle = egResultTitle;
   refs.egResultText = egResultText;
   refs.egArt = egArt;
+  refs.egFinal = egFinal;
+  refs.egFinalArt = egFinalArt;
+  refs.egFinalArtPlaceholder = egFinalArtPlaceholder;
+  refs.egFinalTitle = egFinalTitle;
+  refs.egFinalText = egFinalText;
   refs.egArtPlaceholder = egArtPlaceholder;
 
-  viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewEndgame);
+  viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewMinigames, viewEndgame);
+
+  // ---- 彩蛋语录条（ticker，任务栏上方独立细条）----
+  const quoteBar = el('div', 'quote-bar');
+  const quoteText = el('span', 'quote-text', '');
+  quoteBar.append(quoteText);
+  refs.quoteBar = quoteBar;
+  refs.quoteText = quoteText;
 
   // ---- 任务栏 ----
   const taskbar = el('div', 'taskbar');
@@ -485,16 +558,18 @@ function buildShell() {
   const btnTech = el('button', 'task-btn', t('nav.techs'));
   const btnExpand = el('button', 'task-btn', t('nav.expand'));
   const btnRecords = el('button', 'task-btn', t('nav.records'));
+  const btnMinigames = el('button', 'task-btn', t('nav.minigames'));
   const btnEndgame = el('button', 'task-btn', t('nav.endgame'));
   btnRes.onclick = () => switchView('resources');
   btnTech.onclick = () => switchView('techs');
   btnExpand.onclick = () => switchView('expand');
   btnRecords.onclick = () => switchView('records');
+  btnMinigames.onclick = () => switchView('minigames');
   btnEndgame.onclick = () => switchView('endgame');
   refs.endgameReady = Endings.isUnlocked();
   btnEndgame.hidden = !refs.endgameReady;
   refs.endgameBtn = btnEndgame;
-  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords, endgame: btnEndgame };
+  refs.taskBtns = { resources: btnRes, techs: btnTech, expand: btnExpand, records: btnRecords, minigames: btnMinigames, endgame: btnEndgame };
   const spacer = el('div', 'taskbar-spacer');
   const saveBtn = el('button', 'task-btn', t('nav.save'));
   saveBtn.onclick = () => Events.emit('save:request');
@@ -502,7 +577,7 @@ function buildShell() {
   exportBtn.onclick = () => Events.emit('export:request');
   const settingsBtn = el('button', 'task-btn', t('nav.settings'));
   settingsBtn.onclick = () => openModal();
-  taskbar.append(btnRes, btnTech, btnExpand, btnRecords, btnEndgame, spacer, saveBtn, exportBtn, settingsBtn);
+  taskbar.append(btnRes, btnTech, btnExpand, btnRecords, btnMinigames, btnEndgame, spacer, saveBtn, exportBtn, settingsBtn);
 
   const toast = el('div', 'toast');
   refs.toast = toast;
@@ -574,7 +649,7 @@ function buildShell() {
   row2.append(importBtn, resetBtn, fileInput);
   modalBody.append(row2);
 
-  // 语言选择（仅 zh-CN 已实装，其余为待办）
+  // 语言选择（已实装语言可选；ar 为 RTL 骨架）
   modalBody.append(el('div', 'modal-section', t('settings.languageSection')));
   const langRow = el('div', 'modal-row');
   for (const loc of getLocales()) {
@@ -622,7 +697,7 @@ function buildShell() {
   accentRow.append(accentInput, accentReset);
   modalBody.append(accentRow);
 
-  // 大数记法（科学记数 / ee）
+  // 大数记法（科学记数 / ee / eee）
   modalBody.append(el('div', 'modal-section', t('settings.bigNumberSection')));
   const bnRow = el('div', 'modal-row');
   const bnBtns = {};
@@ -641,6 +716,44 @@ function buildShell() {
   modalBody.append(bnRow);
   modalBody.append(el('p', 'modal-text', t('settings.bigNumberHint')));
 
+  // 数字系统（仅阿拉伯语显示：西阿拉伯数字 / 东阿拉伯-印度数字）
+  if (getLocale().startsWith('ar')) {
+    modalBody.append(el('div', 'modal-section', t('settings.numeralSection')));
+    const numRow = el('div', 'modal-row');
+    const numBtns = {};
+    for (const m of NUMERAL_STYLES) {
+      const numBtn = el('button', 'btn', t('settings.numeral_' + m));
+      numBtn.type = 'button';
+      if (m === getNumeralStyle()) numBtn.classList.add('btn-primary');
+      numBtn.onclick = () => {
+        setNumeralStyle(m);
+        for (const [k, b] of Object.entries(numBtns)) b.classList.toggle('btn-primary', k === m);
+        markDirty();
+      };
+      numBtns[m] = numBtn;
+      numRow.append(numBtn);
+    }
+    modalBody.append(numRow);
+    modalBody.append(el('p', 'modal-text', t('settings.numeralHint')));
+  }
+
+  // 中文「万 / 亿」记法（仅中文界面显示）
+  if (getLocale().startsWith('zh')) {
+    modalBody.append(el('div', 'modal-section', t('settings.cnUnitsSection')));
+    const cnRow = el('div', 'modal-row');
+    const cnBtn = el('button', 'btn', '');
+    cnBtn.type = 'button';
+    const refreshCn = () => {
+      cnBtn.textContent = getCnUnitsPref() ? t('settings.cnUnitsOn') : t('settings.cnUnitsOff');
+      cnBtn.classList.toggle('btn-primary', getCnUnitsPref());
+    };
+    refreshCn();
+    cnBtn.onclick = () => { setCnUnitsPref(!getCnUnitsPref()); refreshCn(); markDirty(); };
+    cnRow.append(cnBtn);
+    modalBody.append(cnRow);
+    modalBody.append(el('p', 'modal-text', t('settings.cnUnitsHint')));
+  }
+
   // 音频
   modalBody.append(el('div', 'modal-section', t('settings.audioSection')));
   const audioRow = el('div', 'modal-row');
@@ -654,6 +767,15 @@ function buildShell() {
     muteBtn.classList.toggle('btn-primary', !next);
     if (!next) playSfx('click');
   };
+  const bgmBtn = el('button', 'btn', getBgmPref() ? t('settings.bgmOn') : t('settings.bgmOff'));
+  bgmBtn.type = 'button';
+  if (getBgmPref()) bgmBtn.classList.add('btn-primary');
+  bgmBtn.onclick = () => {
+    const next = !getBgmPref();
+    setBgmPref(next);
+    bgmBtn.textContent = next ? t('settings.bgmOn') : t('settings.bgmOff');
+    bgmBtn.classList.toggle('btn-primary', next);
+  };
   const volInput = el('input', '');
   volInput.type = 'range';
   volInput.min = '0';
@@ -662,7 +784,7 @@ function buildShell() {
   volInput.value = String(getVolumePref());
   volInput.oninput = () => setVolumePref(Number(volInput.value));
   volInput.onchange = () => playSfx('click');
-  audioRow.append(muteBtn, volInput);
+  audioRow.append(muteBtn, bgmBtn, volInput);
   modalBody.append(audioRow);
 
   // ---- 关于 tab（带 Logo）----
@@ -723,9 +845,9 @@ function buildShell() {
   refs.offlineTime = offlineTime;
   refs.offlineList = offlineList;
 
-  shell.append(titlebar, viewContainer, taskbar, toast, modalOverlay, offlineOverlay);
+  shell.append(titlebar, viewContainer, quoteBar, taskbar, toast, modalOverlay, offlineOverlay);
   app.append(shell);
-  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords, endgame: viewEndgame };
+  refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords, minigames: viewMinigames, endgame: viewEndgame };
 }
 
 function bindEvents() {
@@ -749,7 +871,13 @@ function bindEvents() {
     showToast(t('toast.phase2Unlocked'));
     renderNow();
   });
+  Events.on('phase3:unlocked', () => {
+    document.body.classList.add('phase3');
+    showToast(t('toast.phase3Unlocked'));
+    renderNow();
+  });
   Events.on('ui:toast', (p) => showToast(p?.text));
+  Events.on('poincare:reached', () => showPoincareEvent());
 }
 
 function switchView(name) {
@@ -788,16 +916,18 @@ async function ensureChangelog() {
 /** 渲染「一行一版本」甘特图（可上下左右滚动）+ 底部 UTC / 北京时间双轨时间轴 */
 function renderGantt(host, versions) {
   host.innerHTML = '';
-  const items = versions
+  const unreleased = (versions ?? []).filter((v) => v.unreleased);
+  const items = (versions ?? [])
+    .filter((v) => !v.unreleased)
     .map((v) => ({ ...v, ts: Date.parse(v.releasedAt) }))
     .filter((v) => Number.isFinite(v.ts))
     .sort((a, b) => a.ts - b.ts);
-  if (!items.length) {
+  if (!items.length && !unreleased.length) {
     host.append(el('p', 'modal-text', t('changelog.empty')));
     return;
   }
-  const t0 = items[0].ts;
-  const t1 = items[items.length - 1].ts;
+  const t0 = items.length ? items[0].ts : Date.now();
+  const t1 = items.length ? items[items.length - 1].ts : Date.now();
   const span = Math.max(1, t1 - t0);
   const pct = (ts) => ((ts - t0) / span) * 100;
 
@@ -817,6 +947,21 @@ function renderGantt(host, versions) {
 
   // 一行一个版本（点击查看详情）；最新在上，便于查看
   const rows = el('div', 'gantt-rows');
+  // 「开发中」（未发布）行：满格虚线，点击看 [Unreleased] 详情
+  for (const v of unreleased) {
+    const row = el('div', 'gantt-row');
+    row.dataset.version = v.version;
+    row.onclick = () => showVersionDetail(v.version, v.changelogKey);
+    const track = el('div', 'gantt-track');
+    const bar = el('div', 'gantt-bar unreleased');
+    bar.style.setProperty('inset-inline-start', '0%');
+    bar.style.width = '100%';
+    const note = t('changelog.unreleasedNote');
+    row.title = `v${v.version} · ${t('changelog.unreleased')} · ${note}`;
+    track.append(bar);
+    row.append(el('span', 'gantt-ver', `v${v.version}`), track, el('span', 'gantt-note', note));
+    rows.append(row);
+  }
   [...items].reverse().forEach((v) => {
     const start = startOf.get(v.version);
     const left = pct(start);
@@ -825,7 +970,8 @@ function renderGantt(host, versions) {
     row.onclick = () => showVersionDetail(v.version);
     const track = el('div', 'gantt-track');
     const bar = el('div', 'gantt-bar');
-    bar.style.left = `${left}%`;
+    // 逻辑属性：LTR 从左边定位，RTL 自动从右边定位，使时间轴随页面镜像
+    bar.style.setProperty('inset-inline-start', `${left}%`);
     bar.style.width = `${Math.max(1, pct(v.ts) - left)}%`;
     const note = tc('version', v.version, 'note', v.note || '');
     row.title = `v${v.version} · ${fmtUTC(v.ts)} UTC / ${fmtBJ(v.ts)} 北京${note ? ' · ' + note : ''}`;
@@ -884,7 +1030,7 @@ function markdownToText(md) {
 }
 
 /** 显示某版本详情（CHANGELOG 章节；无则回退到版本说明） */
-function showVersionDetail(version) {
+function showVersionDetail(version, changelogKey) {
   const host = refs.ganttDetail;
   if (!host) return;
   host.innerHTML = '';
@@ -897,7 +1043,7 @@ function showVersionDetail(version) {
   };
   head.append(close);
   host.append(head);
-  const md = refs.changelogMap?.[version];
+  const md = refs.changelogMap?.[changelogKey ?? version];
   const body = el('div', 'changelog-detail-body');
   if (md) {
     body.textContent = markdownToText(md);
@@ -914,12 +1060,83 @@ function showVersionDetail(version) {
   }
 }
 
+// ---- 彩蛋语录条（ticker） ----
+let quoteTimer = 0;
+let quoteIndex = 0;
+
+function unlockedQuotes() {
+  return Quotes.getQuotes().filter((q) => !q.unlockCondition || checkCondition(q.unlockCondition));
+}
+
+function quoteReducedMotion() {
+  try {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  } catch (_) {
+    return false;
+  }
+}
+
+function renderQuote(q) {
+  if (!refs.quoteBar) return;
+  if (!q) {
+    refs.quoteBar.hidden = true;
+    return;
+  }
+  refs.quoteBar.hidden = false;
+  const text = tc('quote', q.id, 'text', q.text) + (q.attribution ? `  — ${q.attribution}` : '');
+  if (refs.quoteText) {
+    refs.quoteText.textContent = text;
+    refs.quoteText.classList.remove('scroll');
+    void refs.quoteText.offsetWidth; // 强制重排以重启动画
+    if (!quoteReducedMotion()) refs.quoteText.classList.add('scroll');
+  }
+  Quotes.markSeen(q.id);
+}
+
+/** 语录轮播：非减弱动效时横向滚动，否则静态轮播（悬停暂停） */
+function initQuoteTicker() {
+  if (!refs.quoteBar) return;
+  if (!unlockedQuotes().length) {
+    refs.quoteBar.hidden = true;
+    return;
+  }
+  refs.quoteBar.hidden = false;
+  clearInterval(quoteTimer);
+  const period = quoteReducedMotion() ? 10000 : 18000;
+  const show = () => {
+    const list = unlockedQuotes();
+    if (!list.length) {
+      refs.quoteBar.hidden = true;
+      return;
+    }
+    renderQuote(list[quoteIndex % list.length]);
+    quoteIndex = (quoteIndex + 1) % list.length;
+  };
+  show();
+  quoteTimer = setInterval(show, period);
+}
+
 function showToast(text) {
   if (!refs.toast || !text) return;
   refs.toast.textContent = text;
   refs.toast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => refs.toast.classList.remove('show'), 2200);
+}
+
+/** 庞加莱回归事件（到达即触发）：全回卷闪光 → 旧终端风格闪回 → 淡出 */
+function showPoincareEvent() {
+  if (document.querySelector('.poincare-overlay')) return;
+  const ov = el('div', 'poincare-overlay');
+  ov.append(el('div', 'poincare-title', t('poincare.title')));
+  ov.append(el('div', 'poincare-text', t('poincare.text')));
+  ov.append(el('div', 'poincare-hint', t('poincare.hint')));
+  document.body.append(ov);
+  document.body.classList.add('poincare-flash');
+  setTimeout(() => document.body.classList.remove('poincare-flash'), 700);
+  setTimeout(() => ov.classList.add('fade'), 3400);
+  setTimeout(() => { if (ov.parentNode) ov.remove(); }, 4400);
+  markDirty();
 }
 
 function formatDuration(seconds) {
@@ -984,11 +1201,25 @@ function render() {
   safeUpdate(updateTechs, 'updateTechs');
   safeUpdate(updateExpand, 'updateExpand');
   safeUpdate(updateRecords, 'updateRecords');
+  safeUpdate(updateMinigames, 'updateMinigames');
   safeUpdate(updateEndgame, 'updateEndgame');
 }
 
+function updateMinigames() {
+  if (!refs.mgGrid) return;
+  for (const card of refs.mgGrid.querySelectorAll('.mg-card')) {
+    const gid = card.dataset.mg;
+    const unlocked = checkCondition(Minigames.getUnlockCondition(gid));
+    card.classList.toggle('locked', !unlocked);
+    card.querySelector('.mg-card-best').textContent = t('mg.best', { best: Minigames.getBest(gid) });
+    const btn = card.querySelector('button');
+    if (btn) btn.disabled = !unlocked;
+  }
+}
+
 function updateEndgame() {
-  if (!refs.endgameReady && Endings.isUnlocked()) {
+  const ready = Endings.isUnlocked() || Endings.isFinalUnlocked();
+  if (!refs.endgameReady && ready) {
     refs.endgameReady = true;
     if (refs.endgameBtn) refs.endgameBtn.hidden = false;
     showToast(t('toast.endgameReached'));
@@ -997,33 +1228,44 @@ function updateEndgame() {
   renderEndgame();
 }
 
-/** 终局面板：按「未解锁 / 待选择 / 已选择」切换内容 */
+/** 结局过场图：有则显示，缺失/加载失败则显示占位 */
+function setEndingArt(img, placeholder, imagePath, key) {
+  if (!img) return;
+  if (img.dataset.ending === key) return;
+  img.dataset.ending = key;
+  if (imagePath) {
+    img.hidden = true;
+    placeholder.hidden = false;
+    img.onload = () => { img.hidden = false; placeholder.hidden = true; };
+    img.onerror = () => { img.hidden = true; placeholder.hidden = false; };
+    img.src = imagePath;
+  } else {
+    img.hidden = true;
+    placeholder.hidden = false;
+  }
+}
+
+/** 终局面板：未解锁 / 待选择 / 中途已选 / 最终终局 */
 function renderEndgame() {
   if (!refs.egLocked) return;
-  const unlocked = Endings.isUnlocked();
+  const midUnlocked = Endings.isUnlocked();
   const chosen = Endings.getChosen();
-  refs.egLocked.hidden = unlocked;
-  refs.egChoice.hidden = !unlocked || !!chosen;
+  const finalUnlocked = Endings.isFinalUnlocked();
+  refs.egLocked.hidden = midUnlocked || finalUnlocked;
+  refs.egChoice.hidden = !midUnlocked || !!chosen || finalUnlocked;
   refs.egResult.hidden = !chosen;
+  if (refs.egFinal) refs.egFinal.hidden = !finalUnlocked;
   if (chosen) {
     const e = Endings.getEnding(chosen);
     refs.egResultTitle.textContent = tc('ending', chosen, 'title', e?.title ?? '');
     refs.egResultText.textContent = tc('ending', chosen, 'text', e?.text ?? '');
-    // 结局过场图（有则显示；缺失/加载失败则显示占位）
-    if (refs.egArt && refs.egArt.dataset.ending !== chosen) {
-      refs.egArt.dataset.ending = chosen;
-      const img = e?.image || '';
-      if (img) {
-        refs.egArt.hidden = true;
-        refs.egArtPlaceholder.hidden = false;
-        refs.egArt.onload = () => { refs.egArt.hidden = false; refs.egArtPlaceholder.hidden = true; };
-        refs.egArt.onerror = () => { refs.egArt.hidden = true; refs.egArtPlaceholder.hidden = false; };
-        refs.egArt.src = img;
-      } else {
-        refs.egArt.hidden = true;
-        refs.egArtPlaceholder.hidden = false;
-      }
-    }
+    setEndingArt(refs.egArt, refs.egArtPlaceholder, e?.image || '', chosen);
+  }
+  if (finalUnlocked && refs.egFinal) {
+    const f = Endings.getFinalEnding();
+    refs.egFinalTitle.textContent = tc('ending', f.id, 'title', f?.title ?? '');
+    refs.egFinalText.textContent = tc('ending', f.id, 'text', f?.text ?? '');
+    setEndingArt(refs.egFinalArt, refs.egFinalArtPlaceholder, f?.image || '', f.id);
   }
 }
 
@@ -1080,6 +1322,10 @@ function updateGenerators() {
 }
 
 function updateTechs() {
+  if (refs.p3Cycle) {
+    refs.p3Cycle.textContent = t('tech.phase3Cycle', { pct: Math.floor(Cycle.getCycleProgress() * 100) });
+    refs.p3Cycle.classList.toggle('ready', Cycle.isCycleReady());
+  }
   for (const card of refs.techGrid.querySelectorAll('.tech-card')) {
     const btn = card.querySelector('.btn');
     const tid = btn.dataset.tech;

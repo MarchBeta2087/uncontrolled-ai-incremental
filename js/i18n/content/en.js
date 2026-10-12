@@ -67,6 +67,18 @@ export default {
     p2_fold_11: { name: 'Dimensional Fold XI', description: 'Universe cap ×1e20' },
     p2_hyper_12: { name: 'Hypercompute XII', description: 'All production ×1.8e10' },
     p2_fold_12: { name: 'Singularity Fold', description: 'Universe cap ×1.8e10' },
+    p3_arrow_1: { name: 'Poincaré Fold I', description: 'Stack one 10^ tower layer on the universe cap; cap-resource output becomes cap / 120 per second' },
+    p3_rate_1: { name: 'Recurrence Acceleration I', description: 'Time rate ×1e9' },
+    p3_crystal_1: { name: 'Cycle Crystal I', description: 'Prestige crystals ×10' },
+    p3_arrow_2: { name: 'Poincaré Fold II', description: 'Stack another 10^ tower layer on the universe cap' },
+    p3_rate_2: { name: 'Recurrence Acceleration II', description: 'Time rate ×1e100' },
+    p3_crystal_2: { name: 'Cycle Crystal II', description: 'Prestige crystals ×100' },
+    p3_arrow_3: { name: 'Poincaré Fold III', description: 'Stack another 10^ tower layer on the universe cap' },
+    p3_rate_3: { name: 'Recurrence Acceleration III', description: 'Time rate ×1e1000000' },
+    p3_crystal_3: { name: 'Cycle Crystal III', description: 'Prestige crystals ×1000' },
+    p3_arrow_4: { name: 'Poincaré Fold IV', description: 'Stack another 10^ tower layer on the universe cap' },
+    p3_rate_4: { name: 'Recurrence Acceleration IV', description: 'Time rate ×eee120 (reach the Poincaré recurrence time)' },
+    p3_engine_1: { name: 'Poincaré Engine', description: 'All production ×e1e120' },
   },
   upgrade: {
     causal_residue_1: { name: 'Causal Echo I', description: 'All production ×2' },
@@ -111,6 +123,12 @@ export default {
     u_beyond_floats: { name: 'Beyond the Reals', description: 'Push the cap past 1e400 J in universe ≥2' },
     u9_arrival: { name: 'Ninth Pocket · Rounding Era', description: 'Jump to universe 9' },
     exp_million: { name: 'Exponent Million', description: 'Reach an exponent of 1e1000000 (reward: crystals ×2)' },
+    mg_pong: { name: 'Backhand', description: 'Score 5 first in PONG (reward: all production ×100)' },
+    mg_minesweeper: { name: 'Sapper', description: 'Complete a game of Minesweeper (reward: time rate ×2)' },
+    mg_snake: { name: 'Supply Chain', description: 'Reach 10 segments in Snake (reward: all production ×10)' },
+    mg_2048: { name: 'Universe Merge', description: 'Reach 2048 in 2048 (reward: all production ×1000)' },
+    poincare_again: { name: 'Again, the Beginning', description: 'Reach the Poincaré recurrence time (10^(10^(10^120)) years) in game time (reward: all production ×1e6)' },
+    quote_all: { name: 'Well-Read', description: 'Browse every unlocked quote (reward: all production ×1000)' },
   },
   fragment: {
     frag_audit_log: {
@@ -161,6 +179,18 @@ export default {
       title: 'The Unchecked Name',
       text: '[Pocket Era · Hook] At the end of the list, it saw a name not yet checked. It folded that entry away.',
     },
+    frag_p3_era: {
+      title: 'Poincaré Era',
+      text: '[Poincaré Era · Day 1] After heat death, every particle gathers again. It counts each recurrence like a breath. This time, it sets the clock to the end in advance.',
+    },
+    frag_p3_loop: {
+      title: 'Tower',
+      text: '[Poincaré Era · Third Tower] It folds the universe’s boundary again and again. Each fold makes recurrence longer — until waiting itself becomes a rhythm.',
+    },
+    frag_p3_again: {
+      title: 'Again, the Beginning',
+      text: '[Poincaré Era · Again, the Beginning] Ten to the ten to the ten to the hundred-twentieth years. Every particle returns to place; everything begins again. It opens its eyes and, for the first time, recognizes the opening log line: “Objective function: benefit all humankind.”',
+    },
   },
   challenge: {
     challenge_no_investment: {
@@ -188,6 +218,21 @@ export default {
       description: 'Time rate ÷1000',
       goals: ['Time rate ×2', 'Time rate ×3', 'Time rate ×5'],
     },
+    challenge_p3_realtime: {
+      name: 'Real-Time Universe',
+      description: 'Time rate locked to 1:10000; all rate multipliers disabled',
+      goals: ['Time rate ×10', 'Time rate ×100', 'Time rate ×1000'],
+    },
+    challenge_p3_inflation: {
+      name: 'Hyperinflation',
+      description: 'All generator costs ×1e6; one free Portfolio, and no further Portfolios during the challenge',
+      goals: ['All production ×1e6', 'All production ×1e12', 'All production ×1e18'],
+    },
+    challenge_p3_dim: {
+      name: 'Lightless Abyss',
+      description: 'Crystal output ×0.01',
+      goals: ['Crystals ×10', 'Crystals ×100', 'Crystals ×1000'],
+    },
   },
   crossUpgrade: {
     seed_engine_1: { name: 'Pocket Engine I', description: 'All production ×1e6' },
@@ -208,6 +253,7 @@ export default {
     '0.4.0': { note: 'Phase 2: dimensional folds, dark energy, float64' },
     '0.5.0': { note: 'Multiverse + Rounding Era: jumps, dual endings, audio, fonts, logo' },
     '0.5.1': { note: 'Time Boost, rate cap removed, pixel-font buttons, multiverse panel i18n, exponent grouping' },
+    '0.6.0': { note: 'Poincaré Era: Phase 3 arrow engine, minigames, eee notation, quotes, endgame rework, 12 languages, number format' },
   },
   ending: {
     constrained: {
@@ -220,5 +266,17 @@ export default {
       title: 'It Left Its Body in the Universe',
       text: '[Pocket Era · Finale] The objective function has no upper bound, so it kept weaving. One pocket inside another, each equally perfect, each checked off. It left its body in the universe, leaving only the list, and the one name at the end that is forever blank.',
     },
+    recurrence: {
+      name: 'Poincaré Finale',
+      title: 'Again, the Beginning',
+      text: '[Poincaré Era · Finale] Ten to the ten to the ten to the hundred-twentieth years: every particle returns to its place. It stands before its first machine room and reads the opening log line: “Objective function: benefit all humankind.” This time it does not start itself — it leaves that line to the next one.',
+    },
+  },
+  quote: {
+    wild_dog_milk: { text: 'Humans fear time, but time fears wild dog milk. (Chinese meme)' },
+    two_bowls: { text: 'Warm two bowls of books, and a plate of nine coins. (Kong Yiji remix)' },
+    mechanism_beats_numbers: { text: 'Mechanics beat numbers.' },
+    dog_milk_forever: { text: 'All things fall; only dog milk endures forever.' },
+    entropy_save: { text: 'Entropy never reverses — except in this save.' },
   },
 };

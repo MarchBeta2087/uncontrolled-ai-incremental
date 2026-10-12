@@ -6,7 +6,7 @@
 //   2. 初始速率 1 物理秒 = 10000 游戏秒，当前速率 = 初始 × 各速率乘子之积（乘子用 Num；v0.5.1 起取消软上限）；
 //   3. 分级显示（需求 §5.1）：Y<10^6 完整日期 → 10^6≤Y<10^8 仅年份 → Y≥10^8 科学记数 → 超 float64 走 MegotaNum 记法。
 
-import { Num } from './num.js';
+import { Num, localizeDigits } from './num.js';
 import { Events } from './events.js';
 import { t } from '../i18n/index.js';
 
@@ -37,6 +37,7 @@ const rateMultipliers = new Map(); // id -> Num（各机制贡献的时间速率
 const permanentRateSources = new Set(); // 永久速率乘子来源 id（升级/挑战/成就）
 let challengeRateDiv = Num.parse(1); // 挑战速率惩罚（默认 1）
 let challengeRateNerfExp = Num.parse(1); // 挑战削弱指数（作用于永久速率乘子，默认 1）
+let challengeBaseLock = false; // 挑战：锁定为基础速率（禁用一切速率乘子）
 
 function pad(n) {
   return String(n).padStart(2, '0');
@@ -87,6 +88,13 @@ export const Time = {
   clearChallengeRateDiv() {
     challengeRateDiv = Num.parse(1);
   },
+  /** 挑战限制：锁定为基础速率（禁用一切速率乘子） */
+  setChallengeBaseLock(v) {
+    challengeBaseLock = !!v;
+  },
+  clearChallengeBaseLock() {
+    challengeBaseLock = false;
+  },
 
   /** 挑战削弱：永久速率乘子的削弱指数 */
   setChallengeRateNerfExp(value) {
@@ -103,6 +111,8 @@ export const Time = {
 
   /** 当前时间速率（游戏秒/物理秒），永久速率乘子在挑战中取 ^nerfExp 削弱 */
   getRate() {
+    // 挑战限制：锁定为初始速率（1 物理秒 = BASE_RATE 游戏秒），忽略一切乘子
+    if (challengeBaseLock) return BASE_RATE;
     let r = BASE_RATE;
     for (const [id, m] of rateMultipliers) {
       const eff = permanentRateSources.has(id) ? Num.pow(m, challengeRateNerfExp) : m;
@@ -155,13 +165,13 @@ export const Time = {
       const sec = gameSecondsElapsed.toNumber();
       if (sec <= DATE_MAX_SECONDS) {
         const date = new Date(START_MS + sec * 1000);
-        return { text: formatFullDate(date), mode: 'full' };
+        return { text: localizeDigits(formatFullDate(date)), mode: 'full' };
       }
       // Date 溢出（约 27 万年 < Y < 100 万年）：降级为仅年份
-      return { text: formatYearOnly(Y), mode: 'year' };
+      return { text: localizeDigits(formatYearOnly(Y)), mode: 'year' };
     }
     if (Num.lt(Y, YEAR_SCI_LIMIT)) {
-      return { text: formatYearOnly(Y), mode: 'year' };
+      return { text: localizeDigits(formatYearOnly(Y)), mode: 'year' };
     }
     // Y ≥ 10^8：科学记数；Y 超 float64 上限(1.8e308)才落 MegotaNum 记法（设计 §3.2）
     const mode = Num.lt(Y, Num.parse('1.8e308')) ? 'scientific' : 'ban';
@@ -169,7 +179,7 @@ export const Time = {
       mode,
       scientificStyle: 'times',
     });
-    return { text: t('time.year', { n: text }), mode };
+    return { text: localizeDigits(t('time.year', { n: text })), mode };
   },
 
   // ---- 存档 ----

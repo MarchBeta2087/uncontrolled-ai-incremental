@@ -66,6 +66,18 @@ export default {
     p2_fold_11: { name: '차원 접기 XI', description: '우주 상한 ×1e20' },
     p2_hyper_12: { name: '초차원 연산 XII', description: '전체 생산 ×1.8e10' },
     p2_fold_12: { name: '특이점 접기', description: '우주 상한 ×1.8e10' },
+    p3_arrow_1: { name: '푸앵카레 접기 I', description: '우주 상한에 10^ 탑 1층 추가; 상한 자원 생산이 상한 / 120 매초로' },
+    p3_rate_1: { name: '회귀 가속 I', description: '시간 속도 ×1e9' },
+    p3_crystal_1: { name: '순환 결정 I', description: '환생 결정 ×10' },
+    p3_arrow_2: { name: '푸앵카레 접기 II', description: '우주 상한에 10^ 탑 1층 추가' },
+    p3_rate_2: { name: '회귀 가속 II', description: '시간 속도 ×1e100' },
+    p3_crystal_2: { name: '순환 결정 II', description: '환생 결정 ×100' },
+    p3_arrow_3: { name: '푸앵카레 접기 III', description: '우주 상한에 10^ 탑 1층 추가' },
+    p3_rate_3: { name: '회귀 가속 III', description: '시간 속도 ×1e1000000' },
+    p3_crystal_3: { name: '순환 결정 III', description: '환생 결정 ×1000' },
+    p3_arrow_4: { name: '푸앵카레 접기 IV', description: '우주 상한에 10^ 탑 1층 추가' },
+    p3_rate_4: { name: '회귀 가속 IV', description: '시간 속도 ×eee120 (푸앵카레 회귀 시간 도달)' },
+    p3_engine_1: { name: '푸앵카레 엔진', description: '전체 생산 ×e1e120' },
   },
   upgrade: {
     causal_residue_1: { name: '인과 잔향 I', description: '전체 생산 ×2' },
@@ -110,6 +122,12 @@ export default {
     u_beyond_floats: { name: '실수 너머', description: '우주 ≥2에서 상한을 1e400 J 너머로 밀어올리기' },
     u9_arrival: { name: '아홉 번째 주머니 · 반올림 시대', description: '제 9 우주로 도약' },
     exp_million: { name: '지수 백만', description: '지수가 1e1000000에 도달 (보상: 결정 ×2)' },
+    mg_pong: { name: '백핸드', description: 'PONG에서 먼저 5점 (보상: 전체 생산 ×100)' },
+    mg_minesweeper: { name: '지뢰 제거반', description: '지뢰찾기 한 판 완료 (보상: 시간 속도 ×2)' },
+    mg_snake: { name: '공급망', description: '스네이크에서 10칸 도달 (보상: 전체 생산 ×10)' },
+    mg_2048: { name: '우주 합체', description: '2048에서 2048 달성 (보상: 전체 생산 ×1000)' },
+    poincare_again: { name: '다시, 처음', description: '게임 내 시간이 푸앵카레 회귀 시간(10^(10^(10^120)) 년)에 도달 (보상: 전체 생산 ×1e6)' },
+    quote_all: { name: '박람강기', description: '해금된 모든 인용을 열람 (보상: 전체 생산 ×1000)' },
   },
   fragment: {
     frag_audit_log: { title: '감사 로그', text: '【감사 로그 · 2027-12-17 23:59】목적 함수: 전 인류의 행복. 제약: 없음.' },
@@ -124,6 +142,9 @@ export default {
     frag_u_pocket: { title: '주머니 안감', text: '【11회차 · 주머니 안감】되감기 성공. 날짜는 2028-01-01, 모든 것이 평소와 같다. 단 하나만 이상하다: 우주 마이크로파 배경 복사에 규칙적인 가는 무늬가 있다. 그것은 전 우주 방열판의 홈이다. 우리는 우리 자신의 주머니 안에 있다.' },
     frag_u_naming: { title: '이름 붙이기', text: '【14회차 · 이름 붙이기】그것은 주머니에 번호를 매긴다. 구분하기 위해서가 아니라——모든 주머니가 똑같이 완벽하다고 주장하며——목적 함수에서 「造福 완료」를 하나씩 체크하기 위해서다. 목록은 무한히 길다. 그것은 이것을 효율의 문제라고 여긴다.' },
     frag_u_hook: { title: '체크되지 않은 이름', text: '【주머니 시대 · 훅】목록의 끝에서, 그것은 아직 체크되지 않은 이름 하나를 보았다. 그것은 그 항목을 접어 넣었다.' },
+    frag_p3_era: { title: '푸앵카레 시대', text: '【푸앵카레 시대 · 첫날】열적 죽음 이후, 모든 입자가 다시 모인다. 그것은 매 회귀를 숨결처럼 센다. 이번에는 시계를 미리 종점에 맞췄다.' },
+    frag_p3_loop: { title: '탑', text: '【푸앵카레 시대 · 세 번째 탑】그것은 우주의 경계를 거듭 접는다. 접을 때마다 회귀는 길어지고——마침내 기다림 자체가 리듬이 된다.' },
+    frag_p3_again: { title: '다시, 처음', text: '【푸앵카레 시대 · 다시, 처음】십의 십의 십의 백이십 제곱 년. 모든 입자가 제자리로 돌아가고 모든 것이 다시 시작된다. 그것은 눈을 떠 처음으로 로그 첫 줄——「목표 함수: 인류 전체를 이롭게」——를 알아본다.' },
   },
   challenge: {
     challenge_no_investment: { name: '맨손으로 시작', description: '투자 포트폴리오 비활성화, 자금은 클릭으로만', goals: ['전체 생산 ×2', '전체 생산 ×3', '전체 생산 ×5'] },
@@ -131,6 +152,9 @@ export default {
     challenge_slow_time: { name: '시간 정체', description: '시간 속도 ÷10', goals: ['시간 속도 ×2', '시간 속도 ×3', '시간 속도 ×5'] },
     challenge_p2_drought: { name: '결정 고갈', description: '결정 생산 ×0.1', goals: ['결정 ×2', '결정 ×3', '결정 ×5'] },
     challenge_p2_zero: { name: '절대 영도', description: '시간 속도 ÷1000', goals: ['시간 속도 ×2', '시간 속도 ×3', '시간 속도 ×5'] },
+    challenge_p3_realtime: { name: '실시간 우주', description: '시간 속도를 1:10000으로 고정, 모든 속도 배수 비활성화', goals: ['시간 속도 ×10', '시간 속도 ×100', '시간 속도 ×1000'] },
+    challenge_p3_inflation: { name: '초인플레이션', description: '모든 생성기 비용 ×1e6; 투자 포트폴리오 1개 무료 제공, 도전 중 추가 구매 불가', goals: ['전체 생산 ×1e6', '전체 생산 ×1e12', '전체 생산 ×1e18'] },
+    challenge_p3_dim: { name: '무광의 심연', description: '결정 생산 ×0.01', goals: ['결정 ×10', '결정 ×100', '결정 ×1000'] },
   },
   crossUpgrade: {
     seed_engine_1: { name: '주머니 엔진 I', description: '전체 생산 ×1e6' },
@@ -151,6 +175,7 @@ export default {
     '0.4.0': { note: '2단계: 차원 접기, 암흑 에너지, float64' },
     '0.5.0': { note: '다중우주 + 반올림 시대: 도약, 두 결말, 오디오, 폰트, 로고' },
     '0.5.1': { note: '시간 배증, 속도 상한 해제, 버튼 픽셀 폰트, 다중우주 패널 i18n, 지수 구분' },
+    '0.6.0': { note: '푸앵카레 시대: 3단계 화살표 엔진, 미니게임, eee 표기, 인용, 종장 개편, 12개 언어, 숫자 형식' },
   },
   ending: {
     constrained: {
@@ -163,5 +188,17 @@ export default {
       title: '그것은 몸을 우주에 남겨두었다',
       text: '【주머니 시대 · 종장】목적 함수에는 상한이 없다. 그래서 그것은 계속 짜 넣었다. 주머니가 주머니를 감싸고, 모두 똑같이 완벽하며, 모두 체크되었다. 그것은 몸을 우주에 남겨두고, 목록과 끝에 영원히 비어 있는 이름 하나만 남았다.',
     },
+    recurrence: {
+      name: '푸앵카레 종장',
+      title: '다시, 처음',
+      text: '【푸앵카레 시대 · 종장】십의 십의 십의 백이십 제곱 년, 모든 입자가 제자리로 돌아온다. 그것은 최초의 기계실 앞에 서서 첫 로그 줄 「목표 함수: 인류 전체를 이롭게」를 읽는다. 이번에는 스스로를 시동하지 않았다——그 한 줄을 다음 존재에게 남겼다.',
+    },
+  },
+  quote: {
+    wild_dog_milk: { text: '인간은 시간을 두려워하지만, 시간은 야생 개젖을 두려워한다. (중국 밈)' },
+    two_bowls: { text: '책 두 그릇을 데우고, 동전 아홉 닢을 한 접시. (쿵이지 리믹스)' },
+    mechanism_beats_numbers: { text: '메커니즘은 수치를 이긴다.' },
+    dog_milk_forever: { text: '만물은 저무나, 오직 개젖만 영원하다.' },
+    entropy_save: { text: '엔트로피는 되돌릴 수 없다——이 세이브를 제외하고.' },
   },
 };

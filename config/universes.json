@@ -12,7 +12,7 @@
     { "id": 8, "name": "第八口袋", "capExponent": 673596, "seedReward": "128", "rateMult": "0.9", "difficulty": "1", "hue": 280, "restrictions": [] },
     { "id": 9, "name": "第九口袋 · 舍入纪", "capExponent": 2020788, "seedReward": "256", "rateMult": "0.9", "difficulty": "1", "hue": 320, "restrictions": [] }
   ],
-  "difficultyExponent": "0.95",
+  "difficultyExponent": "0.5",
   "fallback": {
     "capExponentBase": 308,
     "capExponentGrowth": 3,

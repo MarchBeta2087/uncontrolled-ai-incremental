@@ -1,17 +1,18 @@
 {
-  "$comment": "音效定义（v0.6）。file 指向 assets/audio/ 下的合规素材；synth 为声明式振荡器合成（无需素材、规避授权，可后续用 file 替换而不改代码）。id 由 JS 事件接线引用。",
-  "version": "1.0.0",
+  "$comment": "音效 / BGM 定义（v0.6）。file 指向 assets/audio/ 下的合规素材（程序合成，见 tools/audio-gen.py）；synth 为声明式振荡器合成（无素材兜底）。id 由 JS 事件接线引用。",
+  "version": "1.1.0",
   "defaults": {
     "masterVolume": 0.6,
     "muted": false
   },
+  "bgm": { "file": "assets/audio/bgm.ogg", "volume": 0.35 },
   "sfx": [
-    { "id": "click", "synth": { "wave": "square", "freq": 520, "duration": 0.04, "volume": 0.12 } },
-    { "id": "buy", "synth": { "wave": "triangle", "freq": 440, "freqTo": 660, "duration": 0.08, "volume": 0.18 } },
-    { "id": "tech", "synth": { "wave": "sine", "freq": 380, "freqTo": 820, "duration": 0.2, "volume": 0.2 } },
-    { "id": "prestige", "synth": { "wave": "sawtooth", "freq": 300, "freqTo": 900, "duration": 0.5, "volume": 0.22, "chord": [1, 1.5] } },
-    { "id": "achievement", "synth": { "wave": "triangle", "freq": 700, "freqTo": 1050, "duration": 0.3, "volume": 0.18, "chord": [1, 1.25] } },
-    { "id": "universe", "synth": { "wave": "sine", "freq": 110, "freqTo": 1600, "duration": 1.4, "volume": 0.3, "chord": [1, 1.5, 2], "delay": 0 } },
-    { "id": "ending", "synth": { "wave": "sine", "freq": 220, "freqTo": 660, "duration": 2.0, "volume": 0.28, "chord": [1, 1.5, 2, 2.5] } }
+    { "id": "click", "file": "assets/audio/click.ogg", "volume": 0.5, "synth": { "wave": "square", "freq": 520, "duration": 0.04, "volume": 0.12 } },
+    { "id": "buy", "file": "assets/audio/buy.ogg", "volume": 0.6, "synth": { "wave": "triangle", "freq": 440, "freqTo": 660, "duration": 0.08, "volume": 0.18 } },
+    { "id": "tech", "file": "assets/audio/tech.ogg", "volume": 0.7, "synth": { "wave": "sine", "freq": 380, "freqTo": 820, "duration": 0.2, "volume": 0.2 } },
+    { "id": "prestige", "file": "assets/audio/prestige.ogg", "volume": 0.8, "synth": { "wave": "sawtooth", "freq": 300, "freqTo": 900, "duration": 0.5, "volume": 0.22, "chord": [1, 1.5] } },
+    { "id": "achievement", "file": "assets/audio/achievement.ogg", "volume": 0.7, "synth": { "wave": "triangle", "freq": 700, "freqTo": 1050, "duration": 0.3, "volume": 0.18, "chord": [1, 1.25] } },
+    { "id": "universe", "file": "assets/audio/universe.ogg", "volume": 0.9, "synth": { "wave": "sine", "freq": 110, "freqTo": 1600, "duration": 1.4, "volume": 0.3, "chord": [1, 1.5, 2], "delay": 0 } },
+    { "id": "ending", "file": "assets/audio/ending.ogg", "volume": 0.9, "synth": { "wave": "sine", "freq": 220, "freqTo": 660, "duration": 2.0, "volume": 0.28, "chord": [1, 1.5, 2, 2.5] } }
   ]
 }

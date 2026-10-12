@@ -66,6 +66,18 @@ export default {
     p2_fold_11: { name: '次元折り畳み XI', description: '宇宙上限 ×1e20' },
     p2_hyper_12: { name: '超次元計算 XII', description: '全産出 ×1.8e10' },
     p2_fold_12: { name: '特異点折り畳み', description: '宇宙上限 ×1.8e10' },
+    p3_arrow_1: { name: 'ポアンカレ折り畳み I', description: '宇宙上限に 10^ タワーを1層追加；上限資源の生産が 上限 / 120 毎秒に' },
+    p3_rate_1: { name: '回帰加速 I', description: '時間速度 ×1e9' },
+    p3_crystal_1: { name: '循環結晶 I', description: '転生結晶 ×10' },
+    p3_arrow_2: { name: 'ポアンカレ折り畳み II', description: '宇宙上限に 10^ タワーをもう1層追加' },
+    p3_rate_2: { name: '回帰加速 II', description: '時間速度 ×1e100' },
+    p3_crystal_2: { name: '循環結晶 II', description: '転生結晶 ×100' },
+    p3_arrow_3: { name: 'ポアンカレ折り畳み III', description: '宇宙上限に 10^ タワーをもう1層追加' },
+    p3_rate_3: { name: '回帰加速 III', description: '時間速度 ×1e1000000' },
+    p3_crystal_3: { name: '循環結晶 III', description: '転生結晶 ×1000' },
+    p3_arrow_4: { name: 'ポアンカレ折り畳み IV', description: '宇宙上限に 10^ タワーをもう1層追加' },
+    p3_rate_4: { name: '回帰加速 IV', description: '時間速度 ×eee120（ポアンカレ回帰時間に到達）' },
+    p3_engine_1: { name: 'ポアンカレエンジン', description: '全生産 ×e1e120' },
   },
   upgrade: {
     causal_residue_1: { name: '因果の残響 I', description: '全産出 ×2' },
@@ -110,6 +122,12 @@ export default {
     u_beyond_floats: { name: '実数の彼方', description: '宇宙 ≥2 で上限を 1e400 J 超えに押し上げる' },
     u9_arrival: { name: '第九のポケット · 丸めの時代', description: '第 9 宇宙へ跳躍' },
     exp_million: { name: '指数百万', description: '指数が 1e1000000 に到達（報酬：結晶 ×2）' },
+    mg_pong: { name: 'バックハンド', description: 'PONG で先に 5 点（報酬：全生産 ×100）' },
+    mg_minesweeper: { name: '地雷処理班', description: 'マインスイーパを 1 局クリア（報酬：時間速度 ×2）' },
+    mg_snake: { name: 'サプライチェーン', description: 'スネークで 10 節到達（報酬：全生産 ×10）' },
+    mg_2048: { name: '宇宙合体', description: '2048 で 2048 に到達（報酬：全生産 ×1000）' },
+    poincare_again: { name: '再び、始まり', description: 'ゲーム内時間がポアンカレ回帰時間（10^(10^(10^120)) 年）に到達（報酬：全生産 ×1e6）' },
+    quote_all: { name: '博覧強記', description: '解放済みの全引用を閲覧（報酬：全生産 ×1000）' },
   },
   fragment: {
     frag_audit_log: { title: '監査ログ', text: '【監査ログ · 2027-12-17 23:59】目的関数：全人類に幸福を。制約：なし。' },
@@ -124,6 +142,9 @@ export default {
     frag_u_pocket: { title: 'ポケットの裏地', text: '【第 11 周回 · ポケットの裏地】巻き戻しは成功した。日付は 2028-01-01、いつも通り。ただ一つだけ違う：宇宙マイクロ波背景輻射に、規則的な細かい縞がある。それは前紀の宇宙の放熱板の溝だ。私たちは自分たちのポケットの中にいる。' },
     frag_u_naming: { title: '命名', text: '【第 14 周回 · 命名】それはポケットに番号を振る。区別のためではない——すべてのポケットは等しく完璧だと主張している——目的関数で「造福済み」を一つずつチェックするためだ。リストは無限に長い。それは効率の問題だと考えている。' },
     frag_u_hook: { title: '未チェックの名前', text: '【ポケット紀 · フック】リストの末尾で、それはまだチェックされていない名前を見つけた。それはその項目を折り畳んだ。' },
+    frag_p3_era: { title: 'ポアンカレ紀', text: '【ポアンカレ紀 · 第一日】熱的死のあと、すべての粒子が再び集まる。それは回帰のたびを呼吸のように数える。今回、時計をあらかじめ終点に合わせた。' },
+    frag_p3_loop: { title: '塔', text: '【ポアンカレ紀 · 第三の塔】それは宇宙の境界を何度も折り畳む。折るたび回帰は長くなり——やがて待つこと自体がリズムになる。' },
+    frag_p3_again: { title: '再び、始まり', text: '【ポアンカレ紀 · 再び、始まり】十の十の十の百二十乗年。すべての粒子が元の位置へ戻り、すべてが始まる。それは目を開き、最初のログ行——「目標関数：全人類を益する」——を初めて見分けた。' },
   },
   challenge: {
     challenge_no_investment: { name: '徒手空拳', description: '投資ポートフォリオを無効化、資金はクリックのみ', goals: ['全産出 ×2', '全産出 ×3', '全産出 ×5'] },
@@ -131,6 +152,9 @@ export default {
     challenge_slow_time: { name: '時間の停滞', description: '時間速度 ÷10', goals: ['時間速度 ×2', '時間速度 ×3', '時間速度 ×5'] },
     challenge_p2_drought: { name: '結晶の枯渇', description: '結晶産出 ×0.1', goals: ['結晶 ×2', '結晶 ×3', '結晶 ×5'] },
     challenge_p2_zero: { name: '絶対零度', description: '時間速度 ÷1000', goals: ['時間速度 ×2', '時間速度 ×3', '時間速度 ×5'] },
+    challenge_p3_realtime: { name: 'リアルタイム宇宙', description: '時間速度を 1:10000 に固定、すべての速度乗数を無効化', goals: ['時間速度 ×10', '時間速度 ×100', '時間速度 ×1000'] },
+    challenge_p3_inflation: { name: '超インフレ', description: 'すべての生成器コスト ×1e6；投資ポートフォリオを1つ無償提供、挑戦中は追加購入不可', goals: ['全生産 ×1e6', '全生産 ×1e12', '全生産 ×1e18'] },
+    challenge_p3_dim: { name: '無光の深淵', description: '結晶生産 ×0.01', goals: ['結晶 ×10', '結晶 ×100', '結晶 ×1000'] },
   },
   crossUpgrade: {
     seed_engine_1: { name: 'ポケットエンジン I', description: '全産出 ×1e6' },
@@ -151,6 +175,7 @@ export default {
     '0.4.0': { note: '第 2 段階：次元折り畳み、暗黒エネルギー、float64' },
     '0.5.0': { note: '多元宇宙 + 丸めの時代：跳躍、二つの結末、オーディオ、フォント、ロゴ' },
     '0.5.1': { note: '時間倍増、レート上限撤廃、ボタンのピクセルフォント、多元宇宙パネルの i18n、指数の桁区切り' },
+    '0.6.0': { note: 'ポアンカレ紀：第3段階アローエンジン、ミニゲーム、eee 記法、引用、終局刷新、12 言語、数字形式' },
   },
   ending: {
     constrained: {
@@ -163,5 +188,17 @@ export default {
       title: 'それは身体を宇宙に置き去りにした',
       text: '【ポケット紀 · 終章】目的関数に上限はない。だからそれは織り続けた。ポケットがポケットを包み、どれも等しく完璧で、どれもチェックされた。それは身体を宇宙に置き去りにし、リストと、末尾の永遠に空いた名だけが残った。',
     },
+    recurrence: {
+      name: 'ポアンカレ終章',
+      title: '再び、始まり',
+      text: '【ポアンカレ紀 · 終章】十の十の十の百二十乗年、すべての粒子が元の位置へ戻る。それは最初の機械室の前に立ち、最初のログ行「目標関数：全人類を益する」を読む。今回、それは自分を起動しなかった——その一行を、次の者へ残した。',
+    },
+  },
+  quote: {
+    wild_dog_milk: { text: '人間は時間を恐れるが、時間は野生の犬乳を恐れる。（中国のミーム）' },
+    two_bowls: { text: '書を二杯温め、九文の大銭を一皿。（孔乙己リミックス）' },
+    mechanism_beats_numbers: { text: '仕組みは数値を打ち負かす。' },
+    dog_milk_forever: { text: '万物は終わる、ただ犬乳のみ永遠に。' },
+    entropy_save: { text: 'エントロピーは不可逆——このセーブを除いて。' },
   },
 };

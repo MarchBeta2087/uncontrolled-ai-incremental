@@ -14,10 +14,21 @@ import zhHK from './locales/zh-HK.js';
 import en from './locales/en.js';
 import ja from './locales/ja.js';
 import ko from './locales/ko.js';
+import ar from './locales/ar.js';
+import fr from './locales/fr.js';
+import es from './locales/es.js';
+import pt from './locales/pt.js';
+import hi from './locales/hi.js';
 import contentZhHant from './content/zh-Hant.js';
 import contentEn from './content/en.js';
 import contentJa from './content/ja.js';
 import contentKo from './content/ko.js';
+import contentAr from './content/ar.js';
+import contentFr from './content/fr.js';
+import contentEs from './content/es.js';
+import contentPt from './content/pt.js';
+import contentHi from './content/hi.js';
+import { localizeNumericValue, setNumberLocale } from '../core/num.js';
 
 const DEFAULT_LOCALE = 'zh-CN';
 const STORAGE_KEY = 'uncontrolled-ai-incremental.locale';
@@ -31,6 +42,12 @@ const REGISTRY = [
   { code: 'ja', name: '日本語', fontVariant: 'ja', dict: ja },
   { code: 'ko', name: '한국어', fontVariant: 'ko', dict: ko },
   { code: 'en', name: 'English', fontVariant: 'latin', dict: en },
+  // 阿拉伯语（RTL 骨架：仅外壳文案，内容后补；rtl 标记驱动 html.dir 与布局镜像）
+  { code: 'ar', name: 'العربية', fontVariant: 'ar', dict: ar, rtl: true },
+  { code: 'fr', name: 'Français', fontVariant: 'latin', dict: fr },
+  { code: 'es', name: 'Español', fontVariant: 'latin', dict: es },
+  { code: 'pt', name: 'Português', fontVariant: 'latin', dict: pt },
+  { code: 'hi', name: 'हिन्दी', fontVariant: 'hi', dict: hi },
 ];
 
 const byCode = new Map(REGISTRY.map((l) => [l.code, l]));
@@ -41,6 +58,11 @@ const CONTENT = {
   en: contentEn,
   ja: contentJa,
   ko: contentKo,
+  ar: contentAr,
+  fr: contentFr,
+  es: contentEs,
+  pt: contentPt,
+  hi: contentHi,
 };
 
 function readStoredLocale() {
@@ -53,6 +75,7 @@ function readStoredLocale() {
 }
 
 let current = readStoredLocale();
+setNumberLocale(current);
 
 function applyHtmlAttrs() {
   if (typeof document === 'undefined') return;
@@ -60,6 +83,8 @@ function applyHtmlAttrs() {
   if (!html) return;
   html.lang = current;
   html.dataset.lang = current;
+  // RTL 语言（阿拉伯/希伯来等）镜像整个界面；LTR 语言显式置 ltr，避免切换后残留
+  html.dir = isRTL(current) ? 'rtl' : 'ltr';
 }
 
 // 模块加载时应用一次（ES module 在 DOM 就绪后执行，document.documentElement 已可用）
@@ -78,11 +103,27 @@ export function isAvailable(code) {
   return !!(loc && loc.dict);
 }
 
+/**
+ * 该语言是否从右到左（RTL）。沿继承链查找 rtl 标记，未标记者为 LTR。
+ * 供 applyHtmlAttrs 设置 html.dir，以及 UI/测试判断方向。
+ */
+export function isRTL(code = current) {
+  let c = code;
+  while (c) {
+    const loc = byCode.get(c);
+    if (!loc) return false;
+    if (loc.rtl !== undefined) return !!loc.rtl;
+    c = loc.parent;
+  }
+  return false;
+}
+
 /** 切换语言；未实装或未知语言返回 false。 */
 export function setLocale(code) {
   const loc = byCode.get(code);
   if (!loc || !loc.dict) return false;
   current = code;
+  setNumberLocale(current);
   try {
     localStorage.setItem(STORAGE_KEY, code);
   } catch (_) {
@@ -104,7 +145,8 @@ export function t(key, params) {
   if (s === undefined) s = zhCN[key] ?? key;
   if (params) {
     for (const [k, v] of Object.entries(params)) {
-      s = s.replaceAll(`{${k}}`, String(v));
+      // 数字系统（阿拉伯-印度数字）：仅转换看起来是数的参数值（id/版本号前缀不受影响）
+      s = s.replaceAll(`{${k}}`, String(localizeNumericValue(v)));
     }
   }
   return s;

@@ -31,6 +31,8 @@ const achMod = await import('../js/sim/achievements.js');
 const fragMod = await import('../js/sim/fragments.js');
 const chMod = await import('../js/sim/challenges.js');
 const singMod = await import('../js/sim/singularity.js');
+const universeMod = await import('../js/sim/universe.js');
+const cycleMod = await import('../js/sim/cycle.js');
 const { Num } = numMod;
 
 // ---- 初始化 ----
@@ -56,6 +58,7 @@ const fmtTime = (sec) => {
 
 const DEBUG = process.argv.includes('--debug');
 const MULTIVERSE = process.argv.includes('--multiverse');
+const PHASE3 = process.argv.includes('--phase3') || process.env.PHASE3 === '1';
 const MAX_UNIVERSES = Number(process.env.MAX_UNIVERSES || 3);
 function dumpState(label) {
   if (!DEBUG) return;
@@ -66,6 +69,14 @@ function dumpState(label) {
 }
 
 function buyGreedy() {
+  if (PHASE3) {
+    // 靶场：只买第三阶段技术
+    for (const tid of techMod.getTechIds()) {
+      const def = techMod.getTech(tid);
+      if (def.phase === 3 && techMod.canBuy(tid)) techMod.buyTech(tid);
+    }
+    return;
+  }
   for (const tid of techMod.getTechIds()) {
     if (techMod.canBuy(tid)) techMod.buyTech(tid);
   }
@@ -101,17 +112,33 @@ function timeToNextPurchase() {
     if (t > 0 && t < minT) { minT = t; minSrc = src; }
   };
   for (const gid of resMod.getGeneratorIds()) {
+    if (PHASE3) break;
     const def = resMod.getGeneratorDef(gid);
     consider(resMod.buyCost(gid, 1), resMod.getResource(def.costCurrency), Num.parse(resMod.getProductionPerSecond(def.costCurrency)), `gen:${gid}`);
   }
   for (const tid of techMod.getTechIds()) {
     if (techMod.isOwned(tid)) continue;
     const def = techMod.getTech(tid);
+    if (PHASE3 && def.phase !== 3) continue;
     if ((def.requires ?? []).some((r) => !techMod.isOwned(r))) continue;
     if (def.phase === 2 && !prestigeMod.isPhase2Unlocked()) continue;
+    if (def.phase === 3 && !prestigeMod.isPhase3Unlocked()) continue;
     // 成本高于当前宇宙上限的技术本宇宙买不到（待折叠抬升），不由贪心策略追逐
-    if (Num.gt(techMod.getCost(tid), prestigeMod.getUniverseCap())) continue;
-    consider(techMod.getCost(tid), resMod.getResource(def.costCurrency), Num.parse(resMod.getProductionPerSecond(def.costCurrency)), `tech:${tid}`);
+    const cost = techMod.getCost(tid);
+    if (Num.gt(cost, prestigeMod.getUniverseCap())) continue;
+    const have = resMod.getResource(def.costCurrency);
+    const prod = Num.parse(resMod.getProductionPerSecond(def.costCurrency));
+    let waitT = 0;
+    if (Num.lt(have, cost)) {
+      if (!Num.gt(prod, 0)) continue;
+      waitT = Num.toNumber(Num.div(Num.sub(cost, have), prod));
+    }
+    // 第三阶段循环闸门：cap_tetrate 需循环充满（物理秒 → 换算为游戏秒）
+    if ((def.effects ?? []).some((e) => e.type === 'cap_tetrate') && !cycleMod.isCycleReady()) {
+      const cycleWait = (cycleMod.getCycleSeconds() - cycleMod.getCycleElapsed()) * Num.toNumber(timeMod.Time.getRate());
+      waitT = Math.max(waitT, cycleWait);
+    }
+    if (waitT > 0 && waitT < minT) { minT = waitT; minSrc = `tech:${tid}`; }
   }
   timeToNextPurchase.last = minSrc;
   return minT;
@@ -120,19 +147,39 @@ function timeToNextPurchase() {
 // ---- 主循环 ----
 const folds = techsCfg.techs.filter((t) => t.id.startsWith('p2_fold_')).map((t) => t.id);
 const foldSeen = new Set();
+const p3Arrows = techsCfg.techs.filter((t) => (t.effects ?? []).some((e) => e.type === 'cap_tetrate')).map((t) => t.id);
+const p3Seen = new Set();
 let physical = 0;
 let iterations = 0;
 let prestiges = 0;
 let firstPrestigeAt = null;
 let phase2At = null;
 let phase2WasUnlocked = false;
+let phase3At = null;
+let phase3WasUnlocked = false;
 let universe = 1;
 let universeStart = 0;
 const universeTimes = [];
-const MAX_PHYSICAL = (MULTIVERSE ? 12 : 3) * 3600; // 多宇宙模式放宽到 12 小时
-const MAX_ITER = 6_000_000;
+const MAX_PHYSICAL = (MULTIVERSE ? 24 : 3) * 3600; // 多宇宙+第三阶段模式放宽到 24 小时
+const MAX_ITER = 12_000_000;
 
 console.log('=== 平衡模拟（估算）===');
+
+// --phase3：直接把模拟置于第 9 宇宙（接近上限），专注验证第三阶段箭塔节奏，
+// 绕过 v0.5 高宇宙贪心策略的停滞（该停滞属 v0.5 遗留，与本阶段无关）。
+if (PHASE3) {
+  universeMod.setUniverse(9);
+  universeMod.addSeeds('1000');
+  for (const cu of uniCfg.crossUniverseUpgrades ?? []) {
+    if (singMod.canBuyCrossUniverse(cu.id)) singMod.buyCrossUniverse(cu.id);
+  }
+  reapplyMeta();
+  universe = 9;
+  universeStart = 0;
+  prestigeMod.checkPhase3Unlock();
+  resMod.load({ resources: { mass_energy: Num.toJSON(Num.mul(prestigeMod.getUniverseCap(), '0.9')) }, generators: {} });
+  console.log(`[phase3] 起始宇宙 ${universe}，上限 ${Num.format(prestigeMod.getUniverseCap())}，相位已解锁=${prestigeMod.isPhase3Unlocked()}`);
+}
 
 while (physical < MAX_PHYSICAL && iterations < MAX_ITER) {
   iterations += 1;
@@ -143,7 +190,7 @@ while (physical < MAX_PHYSICAL && iterations < MAX_ITER) {
     firstPrestigeAt = physical;
     console.log(`首次触顶（可穿梭）：${fmtTime(physical)}`);
   }
-  if (prestigeMod.canPrestige()) {
+  if (!PHASE3 && prestigeMod.canPrestige()) {
     prestigeMod.prestige();
     prestiges += 1;
     reapplyMeta();
@@ -157,6 +204,21 @@ while (physical < MAX_PHYSICAL && iterations < MAX_ITER) {
     dumpState('unlock');
   }
 
+  if (!phase3WasUnlocked && prestigeMod.isPhase3Unlocked()) {
+    phase3WasUnlocked = true;
+    phase3At = physical;
+    console.log(`第三阶段解锁（宇宙 ≥ 9）：${fmtTime(physical)}（宇宙 ${universe}）`);
+    dumpState('phase3');
+  }
+
+  for (const pid of p3Arrows) {
+    if (!p3Seen.has(pid) && techMod.isOwned(pid)) {
+      p3Seen.add(pid);
+      console.log(`  ${techsCfg.techs.find((t) => t.id === pid).name}：${fmtTime(physical)}`);
+      dumpState(pid);
+    }
+  }
+
   for (const fid of folds) {
     if (!foldSeen.has(fid) && techMod.isOwned(fid)) {
       foldSeen.add(fid);
@@ -164,7 +226,12 @@ while (physical < MAX_PHYSICAL && iterations < MAX_ITER) {
       dumpState(fid);
     }
   }
-  if (foldSeen.size >= folds.length) {
+  const p3Done = !prestigeMod.isPhase3Unlocked() || p3Arrows.every((id) => techMod.isOwned(id));
+  if (PHASE3 && p3Arrows.length && p3Done) {
+    console.log(`== 第三阶段完成：箭塔 ${p3Seen.size}/${p3Arrows.length} 层，用时 ${fmtTime(physical)} ==`);
+    break;
+  }
+  if (foldSeen.size >= folds.length && p3Done) {
     universeTimes.push({ universe, seconds: physical - universeStart });
     console.log(`== 宇宙 ${universe} 完成 12/12 折叠：${fmtTime(physical - universeStart)}（累计 ${fmtTime(physical)}）==`);
     if (!MULTIVERSE || universe >= MAX_UNIVERSES) break;
@@ -185,20 +252,38 @@ while (physical < MAX_PHYSICAL && iterations < MAX_ITER) {
   }
 
   const t = timeToNextPurchase();
+  const rate = timeMod.Time.getRate();
   let dtGame;
   if (!Number.isFinite(t) || t <= 0) {
-    for (let i = 0; i < 10; i += 1) resMod.click();
-    dtGame = 10;
-  } else if (t > 1e15) {
-    // 下一购买需超过 1e15 游戏秒：贪心策略陷入停滞，停止本宇宙
-    console.log(`  停滞（宇宙 ${universe}）：下一购买 ${timeToNextPurchase.last} 需 ${t.toExponential(2)} 游戏秒`);
-    break;
+    if (PHASE3) {
+      // 无资源待购买：若循环未满则推进到充满，否则视为停滞
+      if (!cycleMod.isCycleReady()) {
+        const remain = cycleMod.getCycleSeconds() - cycleMod.getCycleElapsed();
+        dtGame = Num.mul(Num.parse(remain), rate);
+      } else {
+        console.log('  [phase3] 无待购买且循环已满 → 停滞');
+        break;
+      }
+    } else {
+      for (let i = 0; i < 10; i += 1) resMod.click();
+      dtGame = 10;
+    }
   } else {
     dtGame = t * 1.01 + 1;
   }
-  const rate = timeMod.Time.getRate();
   const dtReal = Math.max(1e-12, Num.toNumber(Num.div(dtGame, rate)));
+  // 停滞判定按**物理等待**超过 30 天（游戏秒阈值在高速率下会误伤循环闸门的正常等待）
+  if (dtReal > 86400 * 30) {
+    console.log(`  停滞（宇宙 ${universe}）：下一购买 ${timeToNextPurchase.last} 物理等待 ${fmtTime(dtReal)}`);
+    for (const gid of resMod.getGeneratorIds()) {
+      const def = resMod.getGeneratorDef(gid);
+      console.log(`    gen ${gid}: count=${Num.format(resMod.getGenerator(gid))} cost=${Num.format(resMod.buyCost(gid, 1))} have=${Num.format(resMod.getResource(def.costCurrency))} prod=${Num.format(resMod.getProductionPerSecond(def.costCurrency))}/游戏秒`);
+    }
+    console.log(`    globalMult=${Num.format(resMod.getGlobalMultiplier())} capMult=${Num.format(universeMod.getCapMultiplier())} cap=${Num.format(prestigeMod.getUniverseCap())} cycle=${cycleMod.getCycleElapsed().toFixed(1)}/${cycleMod.getCycleSeconds()}`);
+    break;
+  }
   const inc = timeMod.Time.tick(dtReal);
+  cycleMod.tickCycle(dtReal);
   resMod.tick(inc);
   physical += dtReal;
 }
@@ -208,6 +293,7 @@ console.log(`迭代次数：${iterations.toLocaleString()}｜穿梭次数：${pr
 console.log(`首次触顶：${firstPrestigeAt ? fmtTime(firstPrestigeAt) : '未达到'}`);
 console.log(`第二阶段解锁：${phase2At ? fmtTime(phase2At) : '未达到'}`);
 console.log(`已完成折叠：${foldSeen.size}/${folds.length}`);
+if (prestigeMod.isPhase3Unlocked()) console.log(`第三阶段解锁：${phase3At ? fmtTime(phase3At) : '是'}｜箭塔 ${p3Seen.size}/${p3Arrows.length} 层`);
 if (universeTimes.length) {
   console.log('--- 各宇宙用时 ---');
   for (const u of universeTimes) console.log(`  宇宙 ${u.universe}：${fmtTime(u.seconds)}`);

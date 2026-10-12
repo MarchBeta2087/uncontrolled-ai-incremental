@@ -10,6 +10,8 @@ import * as Resources from './resources.js';
 import * as Mults from './mults.js';
 import * as Progress from './progress.js';
 import * as Universe from './universe.js';
+import * as Cap from './cap.js';
+import * as Cycle from './cycle.js';
 import { Events } from '../core/events.js';
 import { t } from '../i18n/index.js';
 
@@ -32,10 +34,25 @@ export function getTechIds() {
   return [...techs.keys()];
 }
 
-/** 技术实际成本：第二阶段成本随宇宙上限乘子同步缩放（保持上限/成本比例） */
+/** 阶段锁定：第二阶段需 phase2Unlocked；第三阶段需 phase3Unlocked。 */
+function isPhaseLocked(def) {
+  if (def.phase === 2) return !Progress.isPhase2Unlocked();
+  if (def.phase === 3) return !Progress.isPhase3Unlocked();
+  return false;
+}
+
+/** 该技术是否为「叠上限塔」（受第三阶段循环闸门约束） */
+function hasCapTetrate(def) {
+  return (def.effects ?? []).some((e) => e.type === 'cap_tetrate');
+}
+
+/** 技术实际成本：第二阶段成本随宇宙上限乘子同步缩放；第三阶段按「当前上限 × costFraction」动态定价 */
 export function getCost(id) {
   const t = techs.get(id);
   if (!t) return null;
+  if (t.def.phase === 3 && t.def.costFraction !== undefined) {
+    return Num.mul(Cap.getUniverseCap(), Num.parse(t.def.costFraction));
+  }
   let c = Num.parse(t.def.cost);
   if (t.def.phase === 2) c = Num.mul(c, Universe.getCostMultiplier());
   return c;
@@ -44,28 +61,29 @@ export function getCost(id) {
 /** 当前可用（未因阶段锁定）的技术 id；用于晶体结算的研发深度分母 */
 export function getAvailableTechIds() {
   return [...techs.entries()]
-    .filter(([, t]) => !(t.def.phase === 2 && !Progress.isPhase2Unlocked()))
+    .filter(([, t]) => !isPhaseLocked(t.def))
     .map(([id]) => id);
 }
 
-/** 是否满足购买条件（前置 + 资源） */
+/** 是否满足购买条件（阶段 + 前置 + 资源） */
 export function canBuy(id) {
   const tech = techs.get(id);
   if (!tech || tech.owned) return false;
-  if (tech.def.phase === 2 && !Progress.isPhase2Unlocked()) return false;
+  if (isPhaseLocked(tech.def)) return false;
   for (const req of tech.def.requires ?? []) {
     if (!techs.get(req)?.owned) return false;
   }
   const currency = Resources.getResource(tech.def.costCurrency);
   if (currency === null) return false;
+  if (hasCapTetrate(tech.def) && !Cycle.isCycleReady()) return false;
   return Num.gte(currency, getCost(id));
 }
 
 export function buyTech(id) {
   const tech = techs.get(id);
   if (!tech) return { ok: false, reason: t('reason.techNotFound') };
-  if (tech.def.phase === 2 && !Progress.isPhase2Unlocked()) {
-    return { ok: false, reason: t('reason.phase2Locked') };
+  if (isPhaseLocked(tech.def)) {
+    return { ok: false, reason: tech.def.phase === 3 ? t('reason.phase3Locked') : t('reason.phase2Locked') };
   }
   if (tech.owned) return { ok: false, reason: t('reason.alreadyResearched') };
   for (const req of tech.def.requires ?? []) {
@@ -76,6 +94,7 @@ export function buyTech(id) {
   }
   tech.owned = true;
   applyEffects(tech.def.effects ?? [], id);
+  if (hasCapTetrate(tech.def)) Cycle.consumeCycle();
   Events.emit('tech:owned', { id });
   return { ok: true };
 }
@@ -103,6 +122,9 @@ function applyEffects(effects, sourceId, skipRate = false) {
       case 'crystal_mult':
         Mults.setCrystalMultiplier(sourceId, e.value);
         break;
+      case 'cap_tetrate':
+        Mults.setArrow('cap', sourceId, e.value);
+        break;
       default:
         console.warn(`[Techs] 未知效果类型: ${e.type}`);
     }
@@ -119,6 +141,7 @@ function removeEffects(id, def) {
     if (e.type === 'rate_mult') Time.removeRateMultiplier(id);
     else if (e.type === 'cap_mult') Mults.removeCapMultiplier(id);
     else if (e.type === 'crystal_mult') Mults.removeCrystalMultiplier(id);
+    else if (e.type === 'cap_tetrate') Mults.removeArrow('cap', id);
   }
 }
 
@@ -160,6 +183,7 @@ export function resetAll() {
   }
   Resources.clearMultipliers();
   Time.clearRateMultipliers();
+  Cycle.resetCycle();
 }
 
 /** 挑战开始：清空非永久技术及技术乘子；永久技术保留并重放 */

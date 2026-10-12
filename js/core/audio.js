@@ -16,6 +16,12 @@ const lastPlayMs = new Map();  // id -> 上次播放时间（performance.now）
 let masterVolume = 0.6;
 let muted = false;
 
+// BGM（环境循环）
+let bgmDef = null;
+let bgmBuffer = null;
+let bgmSource = null;
+let bgmEnabled = true;
+
 const MIN_INTERVAL_MS = 25;
 
 export function configureAudio(cfg = {}) {
@@ -23,6 +29,7 @@ export function configureAudio(cfg = {}) {
   for (const s of cfg.sfx ?? []) {
     if (s && s.id) sfxMap.set(s.id, s);
   }
+  bgmDef = cfg.bgm ?? null;
   if (cfg.defaults?.masterVolume !== undefined) masterVolume = clamp01(cfg.defaults.masterVolume);
   if (cfg.defaults?.muted !== undefined) muted = !!cfg.defaults.muted;
 }
@@ -47,6 +54,70 @@ export function isMuted() {
 export function setMuted(m) {
   muted = !!m;
   applyGain();
+}
+
+// ---- BGM ----
+export function hasBgm() {
+  return !!(bgmDef && bgmDef.file);
+}
+export function getBgmVolume() {
+  return bgmDef?.volume ?? 0.4;
+}
+export function isBgmEnabled() {
+  return bgmEnabled;
+}
+/** 开关背景音乐（UI 偏好）；关闭时立即停止 */
+export function setBgmEnabled(v) {
+  bgmEnabled = !!v;
+  if (!bgmEnabled) stopBgm();
+  else startBgm();
+}
+/** 开始背景音乐循环（需已有 AudioContext；素材缺失/解码失败则静默） */
+export function startBgm() {
+  if (!bgmEnabled || !bgmDef?.file) return;
+  const c = ensureCtx();
+  if (!c || bgmSource) return;
+  const play = (buf) => {
+    if (!bgmEnabled || bgmSource) return;
+    bgmBuffer = buf;
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    src.loop = true;
+    const g = c.createGain();
+    g.gain.value = clamp01(bgmDef.volume ?? 0.4);
+    src.connect(g);
+    g.connect(masterGain);
+    src.start();
+    bgmSource = src;
+  };
+  if (bgmBuffer) {
+    play(bgmBuffer);
+    return;
+  }
+  fetch(bgmDef.file)
+    .then((r) => {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.arrayBuffer();
+    })
+    .then((buf) => c.decodeAudioData(buf))
+    .then(play)
+    .catch(() => {
+      /* 素材缺失或解码失败：静默 */
+    });
+}
+export function stopBgm() {
+  if (!bgmSource) return;
+  try {
+    bgmSource.stop();
+  } catch (_) {
+    /* ignore */
+  }
+  try {
+    bgmSource.disconnect();
+  } catch (_) {
+    /* ignore */
+  }
+  bgmSource = null;
 }
 
 function clamp01(v) {
@@ -81,6 +152,7 @@ export function unlockAudio() {
     const p = c.resume();
     if (p && typeof p.catch === 'function') p.catch(() => {});
   }
+  startBgm();
 }
 
 /** 播放音效；未鉴权/无素材/无 AudioContext 时静默跳过 */

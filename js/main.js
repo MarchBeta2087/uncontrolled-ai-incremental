@@ -15,6 +15,8 @@ import * as Challenges from './sim/challenges.js';
 import * as Singularity from './sim/singularity.js';
 import * as Endings from './sim/endings.js';
 import * as TimeBoost from './sim/timeboost.js';
+import * as Minigames from './sim/minigames.js';
+import * as Quotes from './sim/quotes.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
@@ -37,6 +39,7 @@ async function bootstrap() {
       sciThreshold: cfg.balance.format.numberSciThreshold,
       banThreshold: cfg.balance.format.numberBanThreshold,
       eeThreshold: cfg.balance.format.numberEeThreshold,
+      eeeThreshold: cfg.balance.format.numberEeeThreshold,
     });
     configureTime(cfg.balance.time);
     Engine.configureEngine(cfg.balance);
@@ -57,6 +60,8 @@ async function bootstrap() {
     Singularity.initSingularity();
     Endings.initEndings(cfg.endings);
     TimeBoost.initTimeBoost();
+    Minigames.initMinigames(cfg.minigames);
+    Quotes.initQuotes(cfg.quotes);
     initAudioUI(cfg.audio);
 
     // 恢复存档（含离线结算）
@@ -108,6 +113,7 @@ async function bootstrap() {
       Upgrades.applyAll();
       Challenges.applyAll();
       Achievements.applyAll();
+      Minigames.applyAll();
       Singularity.applyCrossUniverse();
       TimeBoost.apply();
     });
@@ -116,6 +122,7 @@ async function bootstrap() {
       Upgrades.applyAll();
       Challenges.applyAll();
       Achievements.applyAll();
+      Minigames.applyAll();
       Singularity.applyCrossUniverse();
       TimeBoost.apply();
     });
@@ -123,10 +130,12 @@ async function bootstrap() {
     Events.on('challenge:exited', () => {
       Upgrades.applyAll();
       Challenges.applyAll();
+      Minigames.applyAll();
     });
     Events.on('challenge:completed', () => {
       Upgrades.applyAll();
       Challenges.applyAll();
+      Minigames.applyAll();
     });
     // 每 tick 轮询成就、碎片与挑战目标
     Events.on('tick', () => {
@@ -172,6 +181,9 @@ function restoreFromSnapshot(snap) {
     totalTimeCrystals: snap.metaProgress?.totalTimeCrystals,
     prestigeCount: snap.meta?.prestigeCount,
     phase2Unlocked: snap.metaProgress?.phase2Unlocked,
+    phase3Unlocked: snap.metaProgress?.phase3Unlocked,
+    phase3CycleElapsed: snap.metaProgress?.phase3CycleElapsed,
+    poincareSeen: snap.metaProgress?.poincareSeen,
   });
   Upgrades.load(snap.metaProgress?.upgrades);
   Achievements.load(snap.metaProgress?.achievements);
@@ -180,6 +192,8 @@ function restoreFromSnapshot(snap) {
   Singularity.load(snap.metaProgress);
   Endings.load(snap.metaProgress?.ending);
   TimeBoost.load(snap.metaProgress?.timeBoost);
+  Minigames.load(snap.metaProgress?.minigames);
+  Quotes.load(snap.metaProgress?.quotes);
 
   // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣；返回报告供 UI 弹窗
   pendingOfflineReport = settleOffline(snap);
@@ -239,11 +253,16 @@ function buildSnapshot() {
       timeCrystals: prestige.timeCrystals,
       totalTimeCrystals: prestige.totalTimeCrystals,
       phase2Unlocked: prestige.phase2Unlocked,
+      phase3Unlocked: prestige.phase3Unlocked,
+      phase3CycleElapsed: prestige.phase3CycleElapsed,
+      poincareSeen: prestige.poincareSeen,
       universe: singularity.universe,
       singularitySeeds: singularity.singularitySeeds,
       crossUniverseUpgrades: singularity.crossUniverseUpgrades,
       ending: Endings.serialize(),
       timeBoost: TimeBoost.serialize(),
+      minigames: Minigames.serialize(),
+      quotes: Quotes.serialize(),
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),

@@ -43,6 +43,11 @@ gh pr create --base dev --head feat/your-feature
 5. **关键公式改动必须更新快照回归测试**（产出链、成本曲线、穿梭结算、晶体定价）。
 6. **改动存档结构必须带迁移**：更新 `js/data/save.js` 的 `schemaVersion` 与迁移链，保证旧存档可读。
 7. **多语言文案须走 i18n**：新增 UI 文案用 `t()`，新增游戏内容用 `tc()`，并在全部已实装语言的词典中补齐。
+8. **文档同步（每位贡献者必做）**：功能 / 配置 / 数值 / 流程改动后，必须同步更新对应文档——
+   - `README.md` 的文档表与状态、相关 `docs/` 设计 / 平衡文档、`TODO.md`、`CHANGELOG.md`；
+   - 新增/变更 `config/*.json`、存档 `schemaVersion`、引擎效果/条件枚举时，更新对应设计文档与 ADR；
+   - **过时文档移入 [`docs/archived/`](docs/archived/README.md)**，并在其中说明被何替代，**不要留在原处误导**。
+   > PR 模板已含「文档同步」自检项；reviewer 未看到同步可退回（详见 [docs/分支与发布流程.md](docs/分支与发布流程.md)）。
 
 ## 剧情与文案
 

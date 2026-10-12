@@ -13,10 +13,13 @@ import {
   setMasterVolume,
   isMuted,
   setMuted,
+  isBgmEnabled,
+  setBgmEnabled,
 } from '../core/audio.js';
 
 const STORAGE_VOLUME = 'uncontrolled-ai-incremental.volume';
 const STORAGE_MUTED = 'uncontrolled-ai-incremental.muted';
+const STORAGE_BGM = 'uncontrolled-ai-incremental.bgm';
 
 function readVolume(fallback) {
   try {
@@ -34,6 +37,14 @@ function readMuted(fallback) {
     return fallback;
   }
 }
+function readBgm(fallback) {
+  try {
+    const v = localStorage.getItem(STORAGE_BGM);
+    return v === null ? fallback : v === '1';
+  } catch (_) {
+    return fallback;
+  }
+}
 
 let bound = false;
 
@@ -42,6 +53,7 @@ export function initAudioUI(cfg = {}) {
   configureAudio(cfg);
   setMasterVolume(readVolume(getMasterVolume()));
   setMuted(readMuted(isMuted()));
+  setBgmEnabled(readBgm(isBgmEnabled()));
 
   if (bound || typeof globalThis.document === 'undefined') return;
   bound = true;
@@ -71,6 +83,17 @@ export function setMutedPref(m) {
   setMuted(m);
   try {
     localStorage.setItem(STORAGE_MUTED, m ? '1' : '0');
+  } catch (_) {
+    /* 忽略写入失败 */
+  }
+}
+export function getBgmPref() {
+  return isBgmEnabled();
+}
+export function setBgmPref(v) {
+  setBgmEnabled(v);
+  try {
+    localStorage.setItem(STORAGE_BGM, v ? '1' : '0');
   } catch (_) {
     /* 忽略写入失败 */
   }

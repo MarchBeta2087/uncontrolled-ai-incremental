@@ -24,6 +24,10 @@ export function isUnlocked(id) {
 export function getAchievement(id) {
   return achievements.get(id)?.def ?? null;
 }
+/** 成就分类：'growth'（成长，默认）| 'extra'（附加） */
+export function getAchievementCategory(id) {
+  return achievements.get(id)?.def?.category ?? 'growth';
+}
 export function getAchievementIds() {
   return [...achievements.keys()];
 }

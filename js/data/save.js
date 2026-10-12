@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 11;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -49,6 +49,36 @@ const migrations = {
     if (mp.timeBoost === undefined) mp.timeBoost = { multiplier: Num.toJSON(Num.parse(1)), count: 0 };
     return { ...s, schemaVersion: 6, metaProgress: mp };
   },
+  // v6 → v7：新增第三阶段（庞加莱纪）解锁标志
+  6: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.phase3Unlocked === undefined) mp.phase3Unlocked = false;
+    return { ...s, schemaVersion: 7, metaProgress: mp };
+  },
+  // v7 → v8：新增第三阶段循环充能进度
+  7: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.phase3CycleElapsed === undefined) mp.phase3CycleElapsed = 0;
+    return { ...s, schemaVersion: 8, metaProgress: mp };
+  },
+  // v8 → v9：新增小游戏成绩
+  8: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.minigames === undefined) mp.minigames = { best: {}, totalPlays: 0 };
+    return { ...s, schemaVersion: 9, metaProgress: mp };
+  },
+  // v9 → v10：新增庞加莱事件已触发标志
+  9: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.poincareSeen === undefined) mp.poincareSeen = false;
+    return { ...s, schemaVersion: 10, metaProgress: mp };
+  },
+  // v10 → v11：新增彩蛋语录已浏览集合
+  10: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.quotes === undefined) mp.quotes = { seen: [] };
+    return { ...s, schemaVersion: 11, metaProgress: mp };
+  },
 };
 
 /** 生成初始存档快照（纯 JSON，Num 字段已是 MegotaNum JSON 表示） */
@@ -73,6 +103,11 @@ export function createInitialSnapshot() {
       timeCrystals: Num.toJSON(Num.parse(0)),
       totalTimeCrystals: Num.toJSON(Num.parse(0)),
       phase2Unlocked: false,
+      phase3Unlocked: false,
+      phase3CycleElapsed: 0,
+      poincareSeen: false,
+      quotes: { seen: [] },
+      minigames: { best: {}, totalPlays: 0 },
       universe: 1,
       singularitySeeds: Num.toJSON(Num.parse(0)),
       crossUniverseUpgrades: [],

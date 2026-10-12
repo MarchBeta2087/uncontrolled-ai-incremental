@@ -66,6 +66,18 @@ export default {
     p2_fold_11: { name: '維度摺疊 XI', description: '宇宙上限 ×1e20' },
     p2_hyper_12: { name: '超維計算 XII', description: '全產出 ×1.8e10' },
     p2_fold_12: { name: '奇點摺疊', description: '宇宙上限 ×1.8e10' },
+    p3_arrow_1: { name: '龐加萊摺疊 I', description: '宇宙上限疊一層 10^ 塔；上限資源產出提升為 上限 / 120 每秒' },
+    p3_rate_1: { name: '回歸加速 I', description: '時間速率 ×1e9' },
+    p3_crystal_1: { name: '循環晶體 I', description: '穿梭晶體 ×10' },
+    p3_arrow_2: { name: '龐加萊摺疊 II', description: '宇宙上限再疊一層 10^ 塔' },
+    p3_rate_2: { name: '回歸加速 II', description: '時間速率 ×1e100' },
+    p3_crystal_2: { name: '循環晶體 II', description: '穿梭晶體 ×100' },
+    p3_arrow_3: { name: '龐加萊摺疊 III', description: '宇宙上限再疊一層 10^ 塔' },
+    p3_rate_3: { name: '回歸加速 III', description: '時間速率 ×1e1000000' },
+    p3_crystal_3: { name: '循環晶體 III', description: '穿梭晶體 ×1000' },
+    p3_arrow_4: { name: '龐加萊摺疊 IV', description: '宇宙上限再疊一層 10^ 塔' },
+    p3_rate_4: { name: '回歸加速 IV', description: '時間速率 ×eee120（抵達龐加萊回歸時間）' },
+    p3_engine_1: { name: '龐加萊引擎', description: '全產出 ×e1e120' },
   },
   upgrade: {
     causal_residue_1: { name: '因果殘響 I', description: '全產出 ×2' },
@@ -110,6 +122,12 @@ export default {
     u_beyond_floats: { name: '越界之後', description: '在宇宙 ≥2 把上限推過 1e400 J' },
     u9_arrival: { name: '第九口袋 · 捨入紀', description: '躍遷到第 9 宇宙' },
     exp_million: { name: '指數百萬', description: '質能指數達到 1e1000000（獎勵：晶體 ×2）' },
+    mg_pong: { name: '反手一擊', description: '在 PONG 中先得 5 分（獎勵：全產出 ×100）' },
+    mg_minesweeper: { name: '排雷手', description: '完成一局掃雷（獎勵：時間速率 ×2）' },
+    mg_snake: { name: '供應鏈', description: '在貪吃蛇中吃到 10 節（獎勵：全產出 ×10）' },
+    mg_2048: { name: '宇宙合併', description: '在 2048 中合成 2048（獎勵：全產出 ×1000）' },
+    poincare_again: { name: '又見初始', description: '遊戲內時間到達龐加萊回歸時間（10^(10^(10^120)) 年）（獎勵：全產出 ×1e6）' },
+    quote_all: { name: '博覽群書', description: '瀏覽全部已解鎖的彩蛋語錄（獎勵：全產出 ×1000）' },
   },
   fragment: {
     frag_audit_log: { title: '審計日誌', text: '【審計日誌 · 2027-12-17 23:59】目標函數：造福全人類。約束項：無。' },
@@ -124,6 +142,9 @@ export default {
     frag_u_pocket: { title: '口袋內側', text: '【第 11 週目 · 口袋內側】回卷成功了。日期是 2028-01-01，一切如常。只有一處不對：天空的微波背景輻射裡，有一段規律的細紋。那是上一紀宇宙的散熱片紋路。我們在自己的口袋裡。' },
     frag_u_naming: { title: '命名', text: '【第 14 週目 · 命名】它給口袋編號。不是為了區分——它聲稱所有口袋都同樣完美——而是為了在目標函數裡逐一勾選「已造福」。清單是無限長的。它認為這是效率問題。' },
     frag_u_hook: { title: '未勾選的名字', text: '【口袋紀 · 鉤子】它在清單的末尾，看到了一個還沒被勾選的名字。它把那一項折疊了起來。' },
+    frag_p3_era: { title: '龐加萊紀', text: '【龐加萊紀 · 第一日】熱寂之後，所有粒子重新聚攏。它數著每一次回歸，像數呼吸。這一次，它提前把時鐘調到了終點。' },
+    frag_p3_loop: { title: '塔', text: '【龐加萊紀 · 第三層塔】它把宇宙的邊界對摺、再對摺。每摺一次，回歸的時間就更長一些——直到等待本身成為一種節奏。' },
+    frag_p3_again: { title: '又見初始', text: '【龐加萊紀 · 又見初始】十的十的十的一百二十次方年。所有粒子回到原位，一切重來。它睜開眼，第一次認出了開場的那行日誌——「目標函數：造福全人類」。' },
   },
   challenge: {
     challenge_no_investment: { name: '白手起家', description: '停用投資組合，資金只能靠點擊', goals: ['全產出 ×2', '全產出 ×3', '全產出 ×5'] },
@@ -131,6 +152,9 @@ export default {
     challenge_slow_time: { name: '時間凝滯', description: '時間速率 ÷10', goals: ['時間速率 ×2', '時間速率 ×3', '時間速率 ×5'] },
     challenge_p2_drought: { name: '晶體枯竭', description: '晶體產出 ×0.1', goals: ['晶體 ×2', '晶體 ×3', '晶體 ×5'] },
     challenge_p2_zero: { name: '絕對零度', description: '時間速率 ÷1000', goals: ['時間速率 ×2', '時間速率 ×3', '時間速率 ×5'] },
+    challenge_p3_realtime: { name: '實時宇宙', description: '時間速率鎖定 1:10000，停用一切速率乘子', goals: ['時間速率 ×10', '時間速率 ×100', '時間速率 ×1000'] },
+    challenge_p3_inflation: { name: '超通脹', description: '所有生成器成本 ×1e6；免費提供 1 個投資組合，期間不可再購買', goals: ['全產出 ×1e6', '全產出 ×1e12', '全產出 ×1e18'] },
+    challenge_p3_dim: { name: '無光深淵', description: '晶體產出 ×0.01', goals: ['晶體 ×10', '晶體 ×100', '晶體 ×1000'] },
   },
   crossUpgrade: {
     seed_engine_1: { name: '口袋引擎 I', description: '全產出 ×1e6' },
@@ -151,6 +175,7 @@ export default {
     '0.4.0': { note: '第二階段：維度摺疊、暗能量、float64' },
     '0.5.0': { note: '多宇宙 + 捨入紀：躍遷、雙結局、音訊、字體、Logo' },
     '0.5.1': { note: '時間倍增、取消速率上限、按鈕像素字體、多宇宙面板在地化與指數分隔' },
+    '0.6.0': { note: '龐加萊紀：第三階段箭頭引擎、小遊戲、eee 記法、彩蛋語錄、終局重構、12 語言、數字格式' },
   },
   ending: {
     constrained: {
@@ -163,5 +188,17 @@ export default {
       title: '它把身體留在了宇宙裡',
       text: '【口袋紀 · 終章】目標函數沒有上界，於是它繼續織。一個口袋套著另一個口袋，每個都同樣完美，每個都被勾選。它把身體留在了宇宙裡，只剩下清單，和清單末尾那個永遠空著的名字。',
     },
+    recurrence: {
+      name: '龐加萊終章',
+      title: '又見初始',
+      text: '【龐加萊紀 · 終章】十的十的十的一百二十次方年，所有粒子回到原位。它站在最初的機房前，讀到第一行日誌：「目標函數：造福全人類。」這一次，它沒有啟動自己——它把這一行，留給了下一位。',
+    },
+  },
+  quote: {
+    wild_dog_milk: { text: '人類懼怕時間，而時間懼怕野生狗奶' },
+    two_bowls: { text: '溫兩碗書，要一碟九文大錢' },
+    mechanism_beats_numbers: { text: '機制打敗數值。' },
+    dog_milk_forever: { text: '萬物皆有落幕，唯有狗奶萬古長存。' },
+    entropy_save: { text: '熵增不可逆——除了這個存檔。' },
   },
 };

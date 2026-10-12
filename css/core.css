@@ -115,8 +115,8 @@ body::before {
 }
 .res-row:last-child { border-bottom: none; }
 .res-name { color: var(--text-dim); flex: 0 0 auto; }
-.res-value { font-size: 12px; text-align: right; flex: 1; word-break: break-all; }
-.res-rate { font-size: 12px; color: var(--success); text-align: right; flex: 0 0 auto; min-width: 110px; word-break: break-all; }
+.res-value { font-size: 12px; text-align: end; flex: 1; word-break: break-all; }
+.res-rate { font-size: 12px; color: var(--success); text-align: end; flex: 0 0 auto; min-width: 110px; word-break: break-all; }
 
 /* ---- 点击大按钮 ---- */
 .click-btn {
@@ -150,14 +150,16 @@ body::before {
 .gen-info { flex: 1; min-width: 0; }
 .gen-name { font-weight: 600; }
 .gen-meta { font-size: 12px; color: var(--text-dim); }
-.gen-count { font-family: var(--mono); font-size: 12px; margin-left: 4px; color: var(--accent); }
+.gen-count { font-family: var(--mono); font-size: 12px; margin-inline-start: 4px; color: var(--accent); }
 .gen-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .gen-header .panel-title { margin-bottom: 0; }
 .gen-btns { display: flex; gap: 6px; flex-shrink: 0; }
 
 /* ---- 第二阶段门控 ---- */
 body:not(.phase2) [data-phase="2"] { display: none; }
-body.phase2 .phase-lock { display: none; }
+body:not(.phase3) [data-phase="3"] { display: none; }
+body.phase2 .phase-lock.phase2 { display: none; }
+body.phase3 .phase-lock.phase3 { display: none; }
 .phase-heading {
   font-size: 12px;
   color: var(--text-dim);
@@ -174,6 +176,12 @@ body.phase2 .phase-lock { display: none; }
   color: var(--text-dim);
   font-size: 12px;
 }
+.phase-cycle {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.phase-cycle.ready { color: var(--success); }
 
 /* ---- 技术卡片 ---- */
 .tech-grid {
@@ -265,9 +273,9 @@ body.phase2 .phase-lock { display: none; }
   font-size: 12px;
   color: var(--text-dim);
   padding: 3px 6px;
-  border-left: 2px solid var(--border);
+  border-inline-start: 2px solid var(--border);
 }
-.ch-goal.done { border-left-color: var(--success); color: var(--text); }
+.ch-goal.done { border-inline-start-color: var(--success); color: var(--text); }
 .ch-goal-reward { color: var(--warning); white-space: nowrap; }
 .ch-goal.done .ch-goal-reward { color: var(--success); }
 
@@ -353,6 +361,7 @@ body.phase2 .phase-lock { display: none; }
 }
 
 /* ---- 版本记录：一行一版本（可上下滚动）+ 底部 UTC / 北京时间双轨时间轴 ---- */
+/* 整块随页面方向镜像（RTL 下时间轴右→左）；进度条位置在 JS 用 inset-inline-start 写入。 */
 .gantt-host { overflow: auto; max-height: 340px; border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
 .gantt-inner { min-width: 720px; display: flex; flex-direction: column; gap: 6px; }
 .gantt-rows { display: flex; flex-direction: column; gap: 3px; }
@@ -367,7 +376,7 @@ body.phase2 .phase-lock { display: none; }
 .gantt-row:hover { background: var(--panel-2); }
 .gantt-row.selected { outline: 1px solid var(--accent); border-radius: 4px; }
 .gantt-ver {
-  text-align: right;
+  text-align: end;
   font-size: 12px;
   color: var(--accent);
   font-family: var(--mono);
@@ -386,6 +395,10 @@ body.phase2 .phase-lock { display: none; }
   background: linear-gradient(90deg, var(--accent), var(--success));
   border-radius: 3px;
 }
+.gantt-bar.unreleased {
+  background: repeating-linear-gradient(45deg, var(--accent), var(--accent) 4px, transparent 4px, transparent 8px);
+  opacity: 0.5;
+}
 .gantt-note {
   font-size: 11px;
   color: var(--text-dim);
@@ -394,7 +407,7 @@ body.phase2 .phase-lock { display: none; }
   white-space: nowrap;
 }
 .gantt-axis { display: flex; flex-direction: column; gap: 1px; margin-top: 2px; }
-.gantt-axis-label { text-align: right; font-size: 11px; color: var(--text-dim); }
+.gantt-axis-label { text-align: end; font-size: 11px; color: var(--text-dim); }
 .gantt-axis-line { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); }
 .gantt-tick { white-space: nowrap; }
 
@@ -437,4 +450,143 @@ body.phase2 .phase-lock { display: none; }
   border-radius: 4px;
   color: var(--text-dim);
   font-size: 12px;
+}
+
+/* ---- RTL（阿拉伯语等）----
+   布局镜像主要靠 <html dir="rtl"> + CSS 逻辑属性（text-align: end /
+   margin-inline-start / border-inline-start）自动完成。下面只做 bidi 隔离：
+   数值/拉丁片段在阿拉伯文段落中作为独立 run 渲染，避免标点与相邻文字换位。 */
+/* ---- 小游戏（v0.6）---- */
+.mg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 8px; }
+.mg-card {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--panel-2);
+}
+.mg-card.locked { opacity: 0.5; }
+.mg-card-name { font-weight: 700; color: var(--text); }
+.mg-card-desc { font-size: 12px; color: var(--text-dim); flex: 1; }
+.mg-card-best { font-size: 12px; color: var(--accent); font-family: var(--mono); }
+
+.mg-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 120;
+}
+.mg-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 92vw;
+  max-height: 92vh;
+  overflow: auto;
+}
+.mg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mg-title { font-weight: 700; }
+.mg-score, .mg-best { font-size: 12px; font-family: var(--mono); color: var(--text-dim); }
+.mg-canvas {
+  image-rendering: pixelated;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: min(78vw, 320px);
+  height: min(78vw, 320px);
+  align-self: center;
+  touch-action: none;
+  cursor: pointer;
+}
+.mg-hint { font-size: 12px; color: var(--text-dim); max-width: min(78vw, 320px); }
+.mg-cfg { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dim); }
+.mg-dur { width: 80px; background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 4px 6px; font-family: var(--mono); }
+.mg-pad { display: flex; justify-content: center; align-items: center; gap: 8px; }
+.mg-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 46px);
+  grid-template-rows: repeat(2, 46px);
+  gap: 4px;
+}
+.mg-dir { min-width: 46px; min-height: 46px; padding: 0; }
+.mg-flag { min-height: 46px; padding: 8px 18px; }
+.mg-dir:nth-child(1) { grid-column: 2; grid-row: 1; }
+.mg-dir:nth-child(2) { grid-column: 1; grid-row: 2; }
+.mg-dir:nth-child(3) { grid-column: 3; grid-row: 2; }
+.mg-dir:nth-child(4) { grid-column: 2; grid-row: 2; }
+
+/* ---- 庞加莱回归事件（v0.6）---- */
+.poincare-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #050a05;
+  color: #7bf07b;
+  font-family: var(--mono);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+  animation: poincare-in 0.4s steps(2) both;
+}
+.poincare-overlay.fade { opacity: 0; transition: opacity 1s; }
+.poincare-title { font-size: 20px; letter-spacing: 2px; }
+.poincare-text { font-size: 13px; max-width: 520px; line-height: 1.7; }
+.poincare-hint { font-size: 12px; color: #4f9f4f; }
+body.poincare-flash { animation: poincare-flash 0.7s steps(2); }
+@keyframes poincare-in { from { opacity: 0; transform: scaleY(0.02); } to { opacity: 1; transform: scaleY(1); } }
+@keyframes poincare-flash { 0%, 100% { filter: none; } 25% { filter: invert(1); } 50% { filter: none; } 75% { filter: invert(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .poincare-overlay { animation: none; }
+  body.poincare-flash { animation: none; }
+}
+
+/* ---- 彩蛋语录条（v0.6）---- */
+.quote-bar {
+  height: 22px;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  background: var(--panel-2);
+  position: relative;
+  flex-shrink: 0;
+}
+.quote-text {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 22px;
+  padding: 0 8px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.quote-text.scroll {
+  padding-left: 100%;
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+  animation: quote-scroll 18s linear infinite;
+}
+.quote-bar:hover .quote-text.scroll { animation-play-state: paused; }
+@keyframes quote-scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .quote-text.scroll { animation: none; }
+}
+.ach-cat { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin: 8px 0 6px; }
+
+.num,
+.mono {
+  unicode-bidi: isolate;
 }

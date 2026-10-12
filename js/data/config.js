@@ -13,6 +13,7 @@ export const EFFECT_TYPES = new Set([
   'offline_mult',        // 离线收益 ×value
   'cap_mult',            // 宇宙上限 ×value
   'crystal_mult',        // 穿梭晶体 ×value
+  'cap_tetrate',         // 宇宙上限叠 value 层 10^ 塔（第三阶段，v0.6）
 ]);
 
 // 成就/碎片条件类型（有限枚举，见 js/sim/conditions.js）
@@ -32,6 +33,10 @@ export const CONDITION_TYPES = new Set([
   'dark_energy_ge',      // 暗能量 >= value
   'universe_ge',         // 当前宇宙编号 >= value（v0.5）
   'seeds_ge',            // 奇点种子 >= value（v0.5）
+  'phase3_unlocked',     // 第三阶段已解锁（v0.6）
+  'minigame_score_ge',   // 小游戏历史最佳 >= value（target = 小游戏 id，v0.6）
+  'minigame_played',     // 玩过任意小游戏（v0.6）
+  'quote_all_seen',      // 已浏览全部已解锁语录（v0.6）
 ]);
 
 // 挑战限制类型（有限枚举，见 js/sim/challenges.js）
@@ -39,6 +44,8 @@ export const RESTRICTION_TYPES = new Set([
   'disable_generator',   // 禁用某生成器（target）
   'all_cost_mult',       // 所有生成器成本 ×value
   'rate_div',            // 时间速率 ÷value
+  'rate_base_lock',      // 时间速率锁定为基础速率（禁用一切速率乘子，v0.6）
+  'grant_generator',     // 挑战起始免费授予某生成器 count 个（target/count，v0.6）
   'crystal_mult',        // 晶体产出 ×value（挑战限制）
 ]);
 
@@ -53,6 +60,8 @@ const DEFAULT_PATHS = {
   universes: 'config/universes.json',
   endings: 'config/endings.json',
   audio: 'config/audio.json',
+  minigames: 'config/minigames.json',
+  quotes: 'config/quotes.json',
 };
 
 async function fetchJSON(path) {
@@ -62,7 +71,7 @@ async function fetchJSON(path) {
 }
 
 export async function loadConfig(paths = DEFAULT_PATHS) {
-  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio] = await Promise.all([
+  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames, quotes] = await Promise.all([
     fetchJSON(paths.balance),
     fetchJSON(paths.resources),
     fetchJSON(paths.techs),
@@ -73,9 +82,11 @@ export async function loadConfig(paths = DEFAULT_PATHS) {
     fetchJSON(paths.universes),
     fetchJSON(paths.endings),
     fetchJSON(paths.audio),
+    fetchJSON(paths.minigames),
+    fetchJSON(paths.quotes),
   ]);
-  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio });
-  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio };
+  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames, quotes });
+  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames, quotes };
 }
 
 /** 校验配置合法性：id 唯一、引用存在、requires 无环、effect 类型已注册 */
@@ -242,6 +253,9 @@ export function validateConfig(cfg) {
     if (endingIds.has(e.id)) errors.push(`结局 id 重复: ${e.id}`);
     endingIds.add(e.id);
     if (!e.title) errors.push(`结局 ${e.id} 缺少 title`);
+    if (e.unlockCondition && !CONDITION_TYPES.has(e.unlockCondition.type)) {
+      errors.push(`结局 ${e.id} 的 unlockCondition 类型未注册: ${e.unlockCondition?.type}`);
+    }
   }
   if (cfg.endings && !(cfg.endings.endings ?? []).length) {
     errors.push('endings.json 未定义任何结局');
@@ -258,6 +272,42 @@ export function validateConfig(cfg) {
       if (sfxIds.has(s.id)) errors.push(`音效 id 重复: ${s.id}`);
       sfxIds.add(s.id);
       if (!s.file && !s.synth) errors.push(`音效 ${s.id} 未提供 file 或 synth`);
+    }
+  }
+
+  // 小游戏（v0.6）
+  if (cfg.minigames) {
+    const mgIds = new Set();
+    for (const m of cfg.minigames.minigames ?? []) {
+      if (!m.id) {
+        errors.push('存在缺少 id 的小游戏');
+        continue;
+      }
+      if (mgIds.has(m.id)) errors.push(`小游戏 id 重复: ${m.id}`);
+      mgIds.add(m.id);
+      if (!m.unlockCondition || !CONDITION_TYPES.has(m.unlockCondition.type)) {
+        errors.push(`小游戏 ${m.id} 的 unlockCondition 类型未注册: ${m.unlockCondition?.type}`);
+      }
+      if (m.gain && !EFFECT_TYPES.has(m.gain.type)) {
+        errors.push(`小游戏 ${m.id} 的 gain 类型未注册: ${m.gain.type}`);
+      }
+    }
+  }
+
+  // 彩蛋语录（v0.6）
+  if (cfg.quotes) {
+    const qIds = new Set();
+    for (const q of cfg.quotes.quotes ?? []) {
+      if (!q.id) {
+        errors.push('存在缺少 id 的语录');
+        continue;
+      }
+      if (qIds.has(q.id)) errors.push(`语录 id 重复: ${q.id}`);
+      qIds.add(q.id);
+      if (!q.text) errors.push(`语录 ${q.id} 缺少 text`);
+      if (q.unlockCondition && !CONDITION_TYPES.has(q.unlockCondition.type)) {
+        errors.push(`语录 ${q.id} 的 unlockCondition 类型未注册: ${q.unlockCondition?.type}`);
+      }
     }
   }
 
