@@ -30,10 +30,8 @@
 
 - **多宇宙高宇宙停滞**：`config/universes.json` 的 `difficultyExponent` **0.95 → 0.5**。自适应难度 `universe:prod = capMult / metaProd^exp` 在高宇宙把产出压到低于生成器成本，导致第 7/8 宇宙停滞（下一购买需 1e15 游戏秒）；降低阻尼后第 1–9 宇宙全部可达。诊断与遗留见 [docs/v0.5-高宇宙平衡评估.md](docs/v0.5-高宇宙平衡评估.md)。
 - **`tools/balance-sim.mjs`**：停滞时打印各生成器数量/成本/持有/产出与 `globalMult`/`capMult`/`cap`，便于诊断高宇宙瓶颈。
-
-### 修复（Fixed）
-
 - **成就「博览群书」译文缺失**：`quote_all` 在全部 `content/` 中漏译（回退中文）——已补齐 9 语言的名称与描述。同类检查：新增配置—内容覆盖探针，确认其余内容无缺口（英文原句语录按设计不回退，见 #52）。
+- **版本记录发版后仍显示旧数据**：GitHub Pages 对 `config/versions.json` / `CHANGELOG.md` 返回 `Cache-Control: max-age=600`，浏览器命中缓存会导致甘特图缺少新版本行。版本记录的两个 `fetch` 改为带 `?v=<VERSION>`（`js/ui/app.js`）。
 
 ## [0.5.1] - 2026-10-11
 
