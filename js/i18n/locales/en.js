@@ -42,6 +42,7 @@ export default {
   'tech.phase2LockNotice': 'Phase 2: hold {n} Time Crystals to unlock',
   'tech.phase3': 'Phase 3 · Poincaré Era',
   'tech.phase3LockNotice': 'Phase 3: reach universe {n} to unlock',
+  'tech.phase3Cycle': 'Recurrence charge: {pct}%',
 
   // Expand view
   'expand.panel': 'Devour the Universe',

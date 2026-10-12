@@ -173,6 +173,8 @@ function restoreFromSnapshot(snap) {
     totalTimeCrystals: snap.metaProgress?.totalTimeCrystals,
     prestigeCount: snap.meta?.prestigeCount,
     phase2Unlocked: snap.metaProgress?.phase2Unlocked,
+    phase3Unlocked: snap.metaProgress?.phase3Unlocked,
+    phase3CycleElapsed: snap.metaProgress?.phase3CycleElapsed,
   });
   Upgrades.load(snap.metaProgress?.upgrades);
   Achievements.load(snap.metaProgress?.achievements);
@@ -240,6 +242,8 @@ function buildSnapshot() {
       timeCrystals: prestige.timeCrystals,
       totalTimeCrystals: prestige.totalTimeCrystals,
       phase2Unlocked: prestige.phase2Unlocked,
+      phase3Unlocked: prestige.phase3Unlocked,
+      phase3CycleElapsed: prestige.phase3CycleElapsed,
       universe: singularity.universe,
       singularitySeeds: singularity.singularitySeeds,
       crossUniverseUpgrades: singularity.crossUniverseUpgrades,

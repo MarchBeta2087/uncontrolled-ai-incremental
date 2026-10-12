@@ -11,6 +11,7 @@ import * as Mults from './mults.js';
 import * as Progress from './progress.js';
 import * as Universe from './universe.js';
 import * as Cap from './cap.js';
+import * as Cycle from './cycle.js';
 import { Events } from '../core/events.js';
 import { t } from '../i18n/index.js';
 
@@ -38,6 +39,11 @@ function isPhaseLocked(def) {
   if (def.phase === 2) return !Progress.isPhase2Unlocked();
   if (def.phase === 3) return !Progress.isPhase3Unlocked();
   return false;
+}
+
+/** 该技术是否为「叠上限塔」（受第三阶段循环闸门约束） */
+function hasCapTetrate(def) {
+  return (def.effects ?? []).some((e) => e.type === 'cap_tetrate');
 }
 
 /** 技术实际成本：第二阶段成本随宇宙上限乘子同步缩放；第三阶段按「当前上限 × costFraction」动态定价 */
@@ -69,6 +75,7 @@ export function canBuy(id) {
   }
   const currency = Resources.getResource(tech.def.costCurrency);
   if (currency === null) return false;
+  if (hasCapTetrate(tech.def) && !Cycle.isCycleReady()) return false;
   return Num.gte(currency, getCost(id));
 }
 
@@ -87,6 +94,7 @@ export function buyTech(id) {
   }
   tech.owned = true;
   applyEffects(tech.def.effects ?? [], id);
+  if (hasCapTetrate(tech.def)) Cycle.consumeCycle();
   Events.emit('tech:owned', { id });
   return { ok: true };
 }
@@ -175,6 +183,7 @@ export function resetAll() {
   }
   Resources.clearMultipliers();
   Time.clearRateMultipliers();
+  Cycle.resetCycle();
 }
 
 /** 挑战开始：清空非永久技术及技术乘子；永久技术保留并重放 */

@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 7;
+export const SCHEMA_VERSION = 8;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -55,6 +55,12 @@ const migrations = {
     if (mp.phase3Unlocked === undefined) mp.phase3Unlocked = false;
     return { ...s, schemaVersion: 7, metaProgress: mp };
   },
+  // v7 → v8：新增第三阶段循环充能进度
+  7: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.phase3CycleElapsed === undefined) mp.phase3CycleElapsed = 0;
+    return { ...s, schemaVersion: 8, metaProgress: mp };
+  },
 };
 
 /** 生成初始存档快照（纯 JSON，Num 字段已是 MegotaNum JSON 表示） */
@@ -80,6 +86,7 @@ export function createInitialSnapshot() {
       totalTimeCrystals: Num.toJSON(Num.parse(0)),
       phase2Unlocked: false,
       phase3Unlocked: false,
+      phase3CycleElapsed: 0,
       universe: 1,
       singularitySeeds: Num.toJSON(Num.parse(0)),
       crossUniverseUpgrades: [],

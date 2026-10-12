@@ -42,6 +42,7 @@ export default {
   'tech.phase2LockNotice': '第二阶段：需当前持有 {n} 时间晶体解锁',
   'tech.phase3': '第三阶段 · 庞加莱纪',
   'tech.phase3LockNotice': '第三阶段：需抵达第 {n} 宇宙解锁',
+  'tech.phase3Cycle': '循环充能：{pct}%',
 
   // 扩张视图
   'expand.panel': '宇宙吞噬',

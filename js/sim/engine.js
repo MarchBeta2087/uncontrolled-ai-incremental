@@ -9,6 +9,7 @@ import { Time } from '../core/time.js';
 import { Events } from '../core/events.js';
 import * as Resources from './resources.js';
 import * as Prestige from './prestige.js';
+import * as Cycle from './cycle.js';
 
 const TICK_MS = 100;
 const MAX_DT_REAL = 10; // 主循环单次最大物理秒（防后台切回大跳变；离线结算另行处理）
@@ -50,6 +51,7 @@ function loop() {
   if (dtReal > MAX_DT_REAL) dtReal = MAX_DT_REAL;
 
   const dtGame = Time.tick(dtReal);      // 游戏秒增量（含速率乘子）
+  Cycle.tickCycle(dtReal);               // 第三阶段循环充能（物理秒）
   Resources.tick(dtGame);                // 生产链结算
   Prestige.checkPhase2Unlock();          // 第二阶段解锁检查
   Prestige.checkPhase3Unlock();          // 第三阶段（庞加莱纪）解锁检查
