@@ -20,6 +20,7 @@ import contentEn from './content/en.js';
 import contentJa from './content/ja.js';
 import contentKo from './content/ko.js';
 import contentAr from './content/ar.js';
+import { localizeNumericValue } from '../core/num.js';
 
 const DEFAULT_LOCALE = 'zh-CN';
 const STORAGE_KEY = 'uncontrolled-ai-incremental.locale';
@@ -126,7 +127,8 @@ export function t(key, params) {
   if (s === undefined) s = zhCN[key] ?? key;
   if (params) {
     for (const [k, v] of Object.entries(params)) {
-      s = s.replaceAll(`{${k}}`, String(v));
+      // 数字系统（阿拉伯-印度数字）：仅转换看起来是数的参数值（id/版本号前缀不受影响）
+      s = s.replaceAll(`{${k}}`, String(localizeNumericValue(v)));
     }
   }
   return s;

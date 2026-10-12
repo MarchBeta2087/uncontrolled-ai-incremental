@@ -19,7 +19,7 @@ import * as TimeBoost from '../sim/timeboost.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
-import { BIG_NUMBER_MODES, getBigNumberMode, setBigNumberMode } from './format.js';
+import { BIG_NUMBER_MODES, NUMERAL_STYLES, getBigNumberMode, setBigNumberMode, getNumeralStyle, setNumeralStyle } from './format.js';
 import { playSfx } from '../core/audio.js';
 import { getVolumePref, setVolumePref, getMutedPref, setMutedPref } from './audio.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
@@ -640,6 +640,27 @@ function buildShell() {
   }
   modalBody.append(bnRow);
   modalBody.append(el('p', 'modal-text', t('settings.bigNumberHint')));
+
+  // 数字系统（仅阿拉伯语显示：西阿拉伯数字 / 东阿拉伯-印度数字）
+  if (getLocale().startsWith('ar')) {
+    modalBody.append(el('div', 'modal-section', t('settings.numeralSection')));
+    const numRow = el('div', 'modal-row');
+    const numBtns = {};
+    for (const m of NUMERAL_STYLES) {
+      const numBtn = el('button', 'btn', t('settings.numeral_' + m));
+      numBtn.type = 'button';
+      if (m === getNumeralStyle()) numBtn.classList.add('btn-primary');
+      numBtn.onclick = () => {
+        setNumeralStyle(m);
+        for (const [k, b] of Object.entries(numBtns)) b.classList.toggle('btn-primary', k === m);
+        markDirty();
+      };
+      numBtns[m] = numBtn;
+      numRow.append(numBtn);
+    }
+    modalBody.append(numRow);
+    modalBody.append(el('p', 'modal-text', t('settings.numeralHint')));
+  }
 
   // 音频
   modalBody.append(el('div', 'modal-section', t('settings.audioSection')));

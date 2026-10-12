@@ -33,6 +33,42 @@ const defaults = {
 /** 大数记法偏好可选值（供设置面板枚举） */
 export const DISPLAY_MODES = ['default', 'ee', 'eee'];
 
+// ---- 数字系统（阿拉伯语双数字，v0.6）----
+// 'latn'：西阿拉伯数字 0-9（默认）；'arab'：东阿拉伯-印度数字 ٠-٩。
+// 仅影响显示字符串，不影响内部数值与存档。
+const ARABIC_INDIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+let numeralSystem = 'latn';
+
+/** 数字系统可选值（供设置面板枚举） */
+export const NUMERAL_SYSTEMS = ['latn', 'arab'];
+
+/** 设置数字系统（'latn' | 'arab'） */
+export function setNumeralSystem(mode) {
+  if (!NUMERAL_SYSTEMS.includes(mode)) return false;
+  numeralSystem = mode;
+  return true;
+}
+
+export function getNumeralSystem() {
+  return numeralSystem;
+}
+
+/** 将字符串中的 ASCII 数字 0-9 替换为当前数字系统（阿拉伯-印度数字）；幂等，可安全重复调用 */
+export function localizeDigits(s) {
+  if (numeralSystem !== 'arab') return String(s);
+  return String(s).replace(/[0-9]/g, (d) => ARABIC_INDIC_DIGITS[+d]);
+}
+
+/**
+ * 仅当整串“看起来是一个数”（含科学记数 / ee·eee 前缀，允许千分位与 ×10^ 记号）时才转换，
+ * 避免把 id（如 p2_fold_1）、版本号前缀（v0.5.1）等里的数字也换掉。
+ */
+export function localizeNumericValue(v) {
+  if (numeralSystem !== 'arab') return v;
+  const s = String(v);
+  return /^(?:e{1,3})?[+-]?[0-9][0-9,.\s×^eE+/-]*$/.test(s) ? localizeDigits(s) : s;
+}
+
 /** 千分位普通记数：1234.5 -> "1,234.5" */
 function formatFull(n, decimals) {
   const v = n.toNumber();
@@ -246,21 +282,26 @@ export const Num = {
     }
 
     // ee / eee 记法（#19 / v0.6）：偏好开启且数值达阈值时，覆盖 ban 档为 loglog / logloglog
+    let out;
     if ((displayMode === 'ee' || displayMode === 'eee' || mode === 'ee' || mode === 'eee') && abs.gte(eeThreshold)) {
       const allowEee = displayMode === 'eee' || mode === 'eee';
-      return formatLogLog(n, opts.eeDecimals ?? 4, eeeThreshold, allowEee);
+      out = formatLogLog(n, opts.eeDecimals ?? 4, eeeThreshold, allowEee);
+    } else {
+      switch (mode) {
+        case 'full':
+          out = formatFull(n, decimals);
+          break;
+        case 'scientific':
+          out = formatScientific(n, decimals, opts.scientificStyle);
+          break;
+        case 'ban':
+        default:
+          out = formatBan(n, decimals);
+          break;
+      }
     }
-
-    switch (mode) {
-      case 'full':
-        return formatFull(n, decimals);
-      case 'scientific':
-        return formatScientific(n, decimals, opts.scientificStyle);
-      case 'ban':
-        return formatBan(n, decimals);
-      default:
-        return formatBan(n, decimals);
-    }
+    // 数字系统（阿拉伯-印度数字）在最终输出层统一替换
+    return localizeDigits(out);
   },
 
   // ---- 便捷转换 ----
