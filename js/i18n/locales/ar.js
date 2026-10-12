@@ -216,4 +216,5 @@ export default {
   'reason.saveVersionTooNew': 'إصدار الحفظ v{version} أحدث من المدعوم v{current}، رُفض التحميل',
   'reason.missingMigration': 'دالة الترحيل {key} مفقودة',
   'reason.phase2Locked': 'المرحلة الثانية غير مفتوحة بعد',
+  'reason.phase3Locked': 'المرحلة الثالثة غير مفتوحة بعد',
 };

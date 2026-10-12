@@ -26,6 +26,7 @@ let prestigeExponent = Num.parse(0.5);
 
 // 第二阶段（越过本宇宙）：解锁标志存于 progress 模块
 let phase2UnlockCrystals = Num.parse(100);
+let phase3UnlockUniverse = 9; // 第三阶段（庞加莱纪）：宇宙编号达此值时解锁（balance.json 可覆盖）
 let lastPrestigeCrystals = Num.parse(0); // 上一次穿梭所得晶体（供成就条件 prestige_gain_ge）
 
 export function configurePrestige(cfg = {}) {
@@ -34,6 +35,7 @@ export function configurePrestige(cfg = {}) {
   if (cfg.prestige?.exponent !== undefined) exponent = Num.parse(cfg.prestige.exponent);
   if (cfg.prestige?.prestigeExponent !== undefined) prestigeExponent = Num.parse(cfg.prestige.prestigeExponent);
   if (cfg.phase2?.unlockCrystals !== undefined) phase2UnlockCrystals = Num.parse(cfg.phase2.unlockCrystals);
+  if (cfg.phase3?.unlockUniverse !== undefined) phase3UnlockUniverse = Number(cfg.phase3.unlockUniverse);
 }
 
 export function initPrestige() {
@@ -42,6 +44,7 @@ export function initPrestige() {
   prestigeCount = 0;
   lastPrestigeCrystals = Num.parse(0);
   Progress.setPhase2Unlocked(false);
+  Progress.setPhase3Unlocked(false);
 }
 
 export function getTimeCrystals() {
@@ -62,10 +65,10 @@ export function spendCrystals(amount) {
 export function getPrestigeCount() {
   return prestigeCount;
 }
-/** 动态宇宙上限 = 基准上限 × 所有 cap_mult 之积 */
-/** 动态宇宙上限 = min(基准上限 × 所有 cap_mult 之积, 当前宇宙上限目标) */
+/** 动态宇宙上限 = min(基准上限 × 所有 cap_mult 之积, 当前宇宙上限目标)，再叠 cap_tetrate 塔层 */
 export function getUniverseCap() {
-  return Num.min(Num.mul(baseCap, Mults.getCapMultiplier()), Universe.getCapTarget());
+  const base = Num.min(Num.mul(baseCap, Mults.getCapMultiplier()), Universe.getCapTarget());
+  return Mults.tower(base, Mults.getArrows('cap'));
 }
 
 /** 第二阶段解锁所需的当前持有晶体数 */
@@ -92,6 +95,28 @@ export function unlockPhase2() {
 export function checkPhase2Unlock() {
   if (!Progress.isPhase2Unlocked() && Num.gte(timeCrystals, phase2UnlockCrystals)) {
     Progress.unlockPhase2();
+  }
+}
+
+/** 第三阶段是否已解锁（一次性） */
+export function isPhase3Unlocked() {
+  return Progress.isPhase3Unlocked();
+}
+
+/** 解锁第三阶段；返回是否本次真正解锁 */
+export function unlockPhase3() {
+  return Progress.unlockPhase3();
+}
+
+/** 第三阶段解锁所需宇宙编号 */
+export function getPhase3UnlockUniverse() {
+  return phase3UnlockUniverse;
+}
+
+/** 每 tick 检查第三阶段解锁条件（当前宇宙 ≥ 阈值；跃迁后 universe 仍满足则即时重解锁） */
+export function checkPhase3Unlock() {
+  if (!Progress.isPhase3Unlocked() && Universe.getUniverse() >= phase3UnlockUniverse) {
+    Progress.unlockPhase3();
   }
 }
 
@@ -133,10 +158,11 @@ export function prestige() {
   return { ok: true, crystals, prestigeCount };
 }
 
-/** 宇宙跃迁：清空当前时间晶体与第二阶段解锁（保留累计统计与已购升级） */
+/** 宇宙跃迁：清空当前时间晶体与阶段解锁（保留累计统计与已购升级） */
 export function resetForUniverseJump() {
   timeCrystals = Num.parse(0);
   Progress.setPhase2Unlocked(false);
+  Progress.setPhase3Unlocked(false);
   Events.emit('crystals:changed', { amount: timeCrystals });
 }
 
@@ -147,6 +173,7 @@ export function serialize() {
     totalTimeCrystals: Num.toJSON(totalTimeCrystals),
     prestigeCount,
     phase2Unlocked: Progress.isPhase2Unlocked(),
+    phase3Unlocked: Progress.isPhase3Unlocked(),
   };
 }
 
@@ -158,4 +185,5 @@ export function load(state = {}) {
     : timeCrystals;
   prestigeCount = state.prestigeCount ?? 0;
   Progress.setPhase2Unlocked(!!state.phase2Unlocked);
+  Progress.setPhase3Unlocked(!!state.phase3Unlocked);
 }

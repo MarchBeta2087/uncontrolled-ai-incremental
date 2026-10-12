@@ -9,6 +9,7 @@
 import { Num } from '../core/num.js';
 import { Events } from '../core/events.js';
 import * as Progress from './progress.js';
+import * as Mults from './mults.js';
 import { t } from '../i18n/index.js';
 
 const resources = new Map();       // id -> { amount: Num, def: Object }
@@ -91,10 +92,16 @@ export function getGeneratorMultiplier(genId) {
   return m;
 }
 
+/** 全局产出乘子（含第三阶段箭塔）：tower(globalMult^challengeNerfExp, prodArrows) */
+function effectiveGlobalMult() {
+  const base = Num.pow(getGlobalMultiplier(), challengeNerfExp);
+  return Mults.tower(base, Mults.getArrows('prod'));
+}
+
 /** 某资源的总产出速率（游戏秒），用于 UI 展示 */
 export function getProductionPerSecond(resourceId) {
   let total = Num.parse(0);
-  const globalMult = Num.pow(getGlobalMultiplier(), challengeNerfExp);
+  const globalMult = effectiveGlobalMult();
   for (const [genId, g] of generators) {
     if (g.def.produces !== resourceId) continue;
     const perSec = Num.mul(
@@ -246,7 +253,7 @@ export function buyMaxAll() {
 /** 每 tick 生产结算：产出 = 基础产量 × 数量 × 技术乘子 × 全局乘子，再 × 游戏秒增量 */
 export function tick(dtGameSeconds) {
   const dt = Num.parse(dtGameSeconds);
-  const globalMult = Num.pow(getGlobalMultiplier(), challengeNerfExp);
+  const globalMult = effectiveGlobalMult();
   for (const [genId, g] of generators) {
     const perSec = Num.mul(
       Num.mul(Num.mul(Num.parse(g.def.baseProduction), g.count), getGeneratorMultiplier(genId)),

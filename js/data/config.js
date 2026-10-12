@@ -13,6 +13,8 @@ export const EFFECT_TYPES = new Set([
   'offline_mult',        // 离线收益 ×value
   'cap_mult',            // 宇宙上限 ×value
   'crystal_mult',        // 穿梭晶体 ×value
+  'cap_tetrate',         // 宇宙上限叠 value 层 10^ 塔（第三阶段，v0.6）
+  'all_generator_tetrate',// 全局产出叠 value 层 10^ 塔（第三阶段，v0.6）
 ]);
 
 // 成就/碎片条件类型（有限枚举，见 js/sim/conditions.js）
@@ -32,6 +34,7 @@ export const CONDITION_TYPES = new Set([
   'dark_energy_ge',      // 暗能量 >= value
   'universe_ge',         // 当前宇宙编号 >= value（v0.5）
   'seeds_ge',            // 奇点种子 >= value（v0.5）
+  'phase3_unlocked',     // 第三阶段已解锁（v0.6）
 ]);
 
 // 挑战限制类型（有限枚举，见 js/sim/challenges.js）

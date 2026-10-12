@@ -239,16 +239,83 @@ assert('穿梭后普通技术清除', techMod.isOwned('run_test') === false);
 
 const v1snap = { schemaVersion: 1, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '5', upgrades: [] } };
 const migrated = saveMod.migrate(v1snap);
-assert('v1 → v6 迁移', migrated.schemaVersion === 6 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false && migrated.metaProgress.universe === 1 && migrated.metaProgress.ending === null && migrated.metaProgress.timeBoost !== undefined);
+assert('v1 → v7 迁移', migrated.schemaVersion === 7 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false && migrated.metaProgress.phase3Unlocked === false && migrated.metaProgress.universe === 1 && migrated.metaProgress.ending === null && migrated.metaProgress.timeBoost !== undefined);
 const v2snap = { schemaVersion: 2, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '7', totalTimeCrystals: '9' } };
 const migrated2 = saveMod.migrate(v2snap);
-assert('v2 → v6 迁移', migrated2.schemaVersion === 6 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades) && migrated2.metaProgress.ending === null);
+assert('v2 → v7 迁移', migrated2.schemaVersion === 7 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.phase3Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades) && migrated2.metaProgress.ending === null);
 const v4snap = { schemaVersion: 4, meta: {}, time: {}, run: {}, metaProgress: { universe: 2, singularitySeeds: '1', crossUniverseUpgrades: [] } };
 const migrated4 = saveMod.migrate(v4snap);
-assert('v4 → v5 迁移：ending=null', migrated4.schemaVersion === 6 && migrated4.metaProgress.ending === null);
+assert('v4 → v7 迁移：ending=null', migrated4.schemaVersion === 7 && migrated4.metaProgress.ending === null);
 const v5snap = { schemaVersion: 5, meta: {}, time: {}, run: {}, metaProgress: { universe: 4, singularitySeeds: '3', crossUniverseUpgrades: [], ending: 'constrained' } };
 const migrated5 = saveMod.migrate(v5snap);
-assert('v5 → v6 迁移：timeBoost 默认', migrated5.schemaVersion === 6 && migrated5.metaProgress.timeBoost && migrated5.metaProgress.timeBoost.count === 0);
+assert('v5 → v7 迁移：timeBoost 默认', migrated5.schemaVersion === 7 && migrated5.metaProgress.timeBoost && migrated5.metaProgress.timeBoost.count === 0);
+const v6snap = { schemaVersion: 6, meta: {}, time: {}, run: {}, metaProgress: { universe: 9, timeBoost: { multiplier: Num.toJSON('1'), count: 0 } } };
+const migrated6 = saveMod.migrate(v6snap);
+assert('v6 → v7 迁移：phase3Unlocked 默认 false', migrated6.schemaVersion === 7 && migrated6.metaProgress.phase3Unlocked === false);
+
+console.log('== 第三阶段引擎地基（箭塔 / cap_tetrate / 解锁）==');
+// 箭塔容器
+multsMod.clearArrows();
+assert('初始 cap 箭塔 = 0', multsMod.getArrows('cap') === 0);
+multsMod.setArrow('cap', 'a1', 1);
+multsMod.setArrow('cap', 'a2', 2);
+assert('cap 箭塔累加 = 3', multsMod.getArrows('cap') === 3);
+multsMod.removeArrow('cap', 'a2');
+assert('移除后 cap 箭塔 = 1', multsMod.getArrows('cap') === 1);
+multsMod.clearArrows();
+assert('清空后 cap = 0 且 prod = 0', multsMod.getArrows('cap') === 0 && multsMod.getArrows('prod') === 0);
+
+// tower 基本语义
+assert('tower(x,0)=x', Num.eq(multsMod.tower('1e10', 0), Num.parse('1e10')));
+assert('tower(10,1)=1e10', Num.eq(multsMod.tower(10, 1), Num.parse('1e10')));
+assert('tower(10,2)=1e(1e10)', Num.eq(multsMod.tower(10, 2).log10(), Num.parse('1e10')));
+
+// cap_tetrate 影响上限（用 log10 逐层验证，避开巨型字面量）
+prestigeMod.initPrestige();
+prestigeMod.configurePrestige({ universe: { massEnergyCap: '1e70' }, phase3: { unlockUniverse: 9 } });
+multsMod.clearArrows();
+assert('塔高 0：上限回到 1e70', Num.eq(prestigeMod.getUniverseCap(), Num.parse('1e70')));
+multsMod.setArrow('cap', 't', 1);
+assert('cap 塔 1 层：log10(上限) = 1e70', Num.eq(prestigeMod.getUniverseCap().log10(), Num.parse('1e70')));
+multsMod.setArrow('cap', 't', 2);
+assert('cap 塔 2 层：log10(log10(上限)) = 1e70', Num.eq(prestigeMod.getUniverseCap().log10().log10(), Num.parse('1e70')));
+multsMod.clearArrows();
+
+// 阶段门控 + 效果落地（用临时配置，不依赖第三阶段内容）
+const p3TechCfg = { techs: [
+  { id: 'p3_cap', name: 'c', phase: 3, costCurrency: 'mass_energy', cost: '1', requires: [], effects: [{ type: 'cap_tetrate', value: 1 }] },
+  { id: 'p3_prod', name: 'p', phase: 3, costCurrency: 'mass_energy', cost: '1', requires: [], effects: [{ type: 'all_generator_tetrate', value: 1 }] },
+] };
+techMod.initTechs(p3TechCfg);
+techMod.load([]);
+progressMod.setPhase3Unlocked(false);
+assert('未解锁：第三阶段技术不可购', techMod.canBuy('p3_cap') === false);
+assert('未解锁：购买被拒', techMod.buyTech('p3_cap').ok === false);
+progressMod.setPhase3Unlocked(true);
+resMod.initResources(resourcesCfg);
+resMod.load({ resources: { mass_energy: Num.toJSON('1000') }, generators: {} });
+assert('解锁后：第三阶段技术可购', techMod.canBuy('p3_cap') === true);
+assert('购买 cap_tetrate：塔高 = 1', techMod.buyTech('p3_cap').ok === true && multsMod.getArrows('cap') === 1);
+assert('购买 all_generator_tetrate：prod 塔高 = 1', techMod.buyTech('p3_prod').ok === true && multsMod.getArrows('prod') === 1);
+techMod.reset();
+assert('重置后箭塔清空', multsMod.getArrows('cap') === 0 && multsMod.getArrows('prod') === 0);
+
+// 解锁检查（宇宙 ≥ 9）
+progressMod.setPhase3Unlocked(false);
+universeMod.setUniverse(1);
+prestigeMod.checkPhase3Unlock();
+assert('宇宙 1：第三阶段未解锁', prestigeMod.isPhase3Unlocked() === false);
+universeMod.setUniverse(9);
+prestigeMod.checkPhase3Unlock();
+assert('宇宙 9：第三阶段解锁', prestigeMod.isPhase3Unlocked() === true);
+assert('condition phase3_unlocked（是）', conditionsMod.checkCondition({ type: 'phase3_unlocked' }) === true);
+universeMod.setUniverse(1);
+progressMod.setPhase3Unlocked(false);
+
+// 存档 roundtrip
+prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('0'), prestigeCount: 0, phase2Unlocked: true, phase3Unlocked: true });
+assert('load 恢复 phase3Unlocked', prestigeMod.isPhase3Unlocked() === true);
+
 
 console.log('== 第二阶段成就 / 碎片 / 挑战 ==');
 assert('内容计数：成就 27 / 碎片 12 / 挑战 5', achCfg.achievements.length === 27 && fragCfg.fragments.length === 12 && chCfg.challenges.length === 5);
