@@ -71,8 +71,8 @@
 - [x] 印地语界面（`hi`）：UI 外壳 222 键 + 游戏内容 315 键，已逐键对齐（SevenFifteen 天城文）
 - [x] 阿拉伯语界面：RTL 地基 + UI 外壳文案（`locales/ar.js`）+ **游戏内容（`content/ar.js`）** + **双数字系统（0-9 / ٠-٩，玩家可选）** 均已实装
 - [ ] 阿拉伯语母语者复核：UI 外壳 + 游戏内容文案校对（当前为机器 + 人工粗译）
-- [ ] 其他语言复核（en / zh-Hant / ja / ko）：长期开放，见 [docs/开放任务.md](docs/开放任务.md) 与 [Discussion #67](https://github.com/MarchBeta2087/uncontrolled-ai-incremental/discussions/67)
-- [ ] 法语 / 西班牙语 / 葡萄牙语界面（用 Fusion；考虑 `Intl.NumberFormat` 数字格式）
+- [ ] 其他语言复核（除简体中文外的全部语言：zh-Hant / ja / ko / en / ar / fr / es / pt / hi）：长期开放，见 [docs/开放任务.md](docs/开放任务.md) 与 [Discussion #67](https://github.com/MarchBeta2087/uncontrolled-ai-incremental/discussions/67)
+- [x] 法语 / 西班牙语 / 葡萄牙语界面（用 Fusion；数字格式见下方 `Intl` 项）
   - [x] 法语（`fr`）：UI 外壳 222 键 + 游戏内容 315 键，已逐键对齐
   - [x] 西班牙语（`es`）/ 葡萄牙语（`pt`）：UI 外壳 222 键 + 游戏内容 315 键，已逐键对齐
 - [x] 结局过场像素画 ×3（程序生成**细化版**已入库：`tools/ending-art.py`；仍欢迎手绘 / 征集稿替换）
@@ -98,7 +98,7 @@
 - [x] 词典：English（en）、繁體中文（zh-Hant）、繁體中文地區變體（zh-TW / zh-HK，繼承 zh-Hant、僅字形不同）、日本語（ja）、한국어（ko）
 - [x] 游戏内容本地化（`js/i18n/content/` + `tc()`：资源/生成器/技术/升级/成就/碎片/挑战的名称、描述、目标奖励）
 - [x] sim 层返回的 `reason` 本地化（购买/研发/升级/穿梭/挑战/存档读写的失败原因）
-- [ ] 数字格式（可选）：当前 `1,234,567.89`（逗号千分位 + 点小数点）已适用于全部现有 7 种语言；若未来增加欧洲/拉美语言（点/逗号对调、空格/印度分组）改用 `Intl.NumberFormat`；中文大数可选「万/亿」记法
+- [x] 数字格式（可选）：当前 `1,234,567.89`（逗号千分位 + 点小数点）已适用于全部现有 7 种语言；若未来增加欧洲/拉美语言（点/逗号对调、空格/印度分组）改用 `Intl.NumberFormat`；中文大数可选「万/亿」记法
   - [x] 已用 `Intl` 按语言注入分组/小数分隔符（fr/es/pt/hi/ar）；中文「万/亿」为可选设置
 
 ## 待办（远期 / 备选）
@@ -107,7 +107,7 @@
 - [x] 音频基建（Web Audio 合成 + 音量/静音偏好 + 事件接线）与跃迁 sting 音效
 - [x] 音频素材包：已用程序合成 OGG 替换 synth（`assets/audio/`；引擎 BGM 循环 + 设置开关）
 - [ ] 结局过场像素画 ×3（素材征集：细化程序版已入库，仍欢迎手绘替换）
-- [ ] 音乐 / 美术素材包（按素材规则入库）
+- [x] 音乐 / 美术素材包：音乐（BGM / 音效）已入库；美术以 Logo / 星场 / 结局图 / 像素字体为准（本作无需外部精灵图）
 - [x] 彩蛋 / 隐藏内容
   - [x] **滚动语录条（Issue #52）**：`config/quotes.json`（8 条）+ 任务栏上方细条轮播 + 成就「博览群书」+ 存档 v11
 - [x] 文档同步约定已写入 [CONTRIBUTING.md](CONTRIBUTING.md) §8 与 PR 模板；新增 `docs/archived/` 归档规则
