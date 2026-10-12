@@ -90,6 +90,22 @@ numMod.setNumeralSystem('latn');
 assert('latn：恢复 0-9', Num.format(12345) === '12,345' && Num.format('1e6') === '1.000e6');
 assert('latn：非数字不变', numMod.localizeNumericValue('p2_fold_1') === 'p2_fold_1');
 
+console.log('== 数字格式（Intl 分组 / 万·亿）==');
+numMod.setNumberLocale('en');
+assert('en 千分位 1,234.5', Num.format(1234.5) === '1,234.5');
+numMod.setNumberLocale('fr');
+assert('fr 分组/小数（空格 + 逗号）', Num.format(1234.5).replace(/\u202f|\u00a0/g, ' ') === '1 234,5');
+numMod.setNumberLocale('es');
+assert('es 分组/小数（点 + 逗号）', Num.format(1234.5) === '1.234,5');
+numMod.setNumberLocale('hi');
+assert('hi 印度分组 1,23,456', Num.format(123456) === '1,23,456');
+numMod.setNumberLocale('zh-CN');
+numMod.setCnUnits(true);
+assert('中文万/亿：12345 → 万', Num.format(12345).endsWith('万'));
+assert('中文万/亿：123456789 → 亿', Num.format(123456789).endsWith('亿'));
+numMod.setCnUnits(false);
+numMod.setNumberLocale('en');
+
 console.log('== Num 序列化与格式化 ==');
 assert('roundtrip 1e20', Num.eq(Num.fromJSON(Num.toJSON('1e20')), '1e20'));
 assert('roundtrip 1e70', Num.eq(Num.fromJSON(Num.toJSON('1e70')), '1e70'));

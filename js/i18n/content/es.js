@@ -127,6 +127,7 @@ export default {
     mg_snake: { name: 'Cadena de suministro', description: 'Alcanza 10 segmentos en Serpiente (recompensa: producción total ×10)' },
     mg_2048: { name: 'Fusión de universos', description: 'Alcanza 2048 en 2048 (recompensa: producción total ×1000)' },
     poincare_again: { name: 'De nuevo el principio', description: 'Alcanza el tiempo de recurrencia de Poincaré (10^(10^(10^120)) años) en el juego (recompensa: producción total ×1e6)' },
+    quote_all: { name: 'Erudito', description: 'Explora todas las citas desbloqueadas (recompensa: producción total ×1000)' },
   },
   fragment: {
     frag_audit_log: {

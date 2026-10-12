@@ -127,6 +127,7 @@ export default {
     mg_snake: { name: 'サプライチェーン', description: 'スネークで 10 節到達（報酬：全生産 ×10）' },
     mg_2048: { name: '宇宙合体', description: '2048 で 2048 に到達（報酬：全生産 ×1000）' },
     poincare_again: { name: '再び、始まり', description: 'ゲーム内時間がポアンカレ回帰時間（10^(10^(10^120)) 年）に到達（報酬：全生産 ×1e6）' },
+    quote_all: { name: '博覧強記', description: '解放済みの全引用を閲覧（報酬：全生産 ×1000）' },
   },
   fragment: {
     frag_audit_log: { title: '監査ログ', text: '【監査ログ · 2027-12-17 23:59】目的関数：全人類に幸福を。制約：なし。' },

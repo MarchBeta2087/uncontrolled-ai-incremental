@@ -28,7 +28,7 @@ import contentFr from './content/fr.js';
 import contentEs from './content/es.js';
 import contentPt from './content/pt.js';
 import contentHi from './content/hi.js';
-import { localizeNumericValue } from '../core/num.js';
+import { localizeNumericValue, setNumberLocale } from '../core/num.js';
 
 const DEFAULT_LOCALE = 'zh-CN';
 const STORAGE_KEY = 'uncontrolled-ai-incremental.locale';
@@ -75,6 +75,7 @@ function readStoredLocale() {
 }
 
 let current = readStoredLocale();
+setNumberLocale(current);
 
 function applyHtmlAttrs() {
   if (typeof document === 'undefined') return;
@@ -122,6 +123,7 @@ export function setLocale(code) {
   const loc = byCode.get(code);
   if (!loc || !loc.dict) return false;
   current = code;
+  setNumberLocale(current);
   try {
     localStorage.setItem(STORAGE_KEY, code);
   } catch (_) {

@@ -23,7 +23,7 @@ import * as TimeBoost from '../sim/timeboost.js';
 import * as Save from '../data/save.js';
 import { platformClass } from './platform.js';
 import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
-import { BIG_NUMBER_MODES, NUMERAL_STYLES, getBigNumberMode, setBigNumberMode, getNumeralStyle, setNumeralStyle } from './format.js';
+import { BIG_NUMBER_MODES, NUMERAL_STYLES, getBigNumberMode, setBigNumberMode, getNumeralStyle, setNumeralStyle, getCnUnitsPref, setCnUnitsPref } from './format.js';
 import { playSfx } from '../core/audio.js';
 import { openMinigame } from './minigames.js';
 import { getVolumePref, setVolumePref, getMutedPref, setMutedPref } from './audio.js';
@@ -735,6 +735,23 @@ function buildShell() {
     }
     modalBody.append(numRow);
     modalBody.append(el('p', 'modal-text', t('settings.numeralHint')));
+  }
+
+  // 中文「万 / 亿」记法（仅中文界面显示）
+  if (getLocale().startsWith('zh')) {
+    modalBody.append(el('div', 'modal-section', t('settings.cnUnitsSection')));
+    const cnRow = el('div', 'modal-row');
+    const cnBtn = el('button', 'btn', '');
+    cnBtn.type = 'button';
+    const refreshCn = () => {
+      cnBtn.textContent = getCnUnitsPref() ? t('settings.cnUnitsOn') : t('settings.cnUnitsOff');
+      cnBtn.classList.toggle('btn-primary', getCnUnitsPref());
+    };
+    refreshCn();
+    cnBtn.onclick = () => { setCnUnitsPref(!getCnUnitsPref()); refreshCn(); markDirty(); };
+    cnRow.append(cnBtn);
+    modalBody.append(cnRow);
+    modalBody.append(el('p', 'modal-text', t('settings.cnUnitsHint')));
   }
 
   // 音频
