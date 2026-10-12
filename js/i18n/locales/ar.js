@@ -116,6 +116,10 @@ export default {
   'settings.bigNumber_eee': 'تدوين eee',
   'settings.bigNumberHint':
     'يطوي تدوين ee الأسس الضخمة (≥1e1000000) إلى eeN، مثال: 1e1000000 ← ee6.0000؛ ويطوي تدوين eee مرة أخرى بعد بلوغ اللوغاريتم المزدوج 1e6، مثال: 10^(10^(10^120)) ← eee120.0000.',
+  'settings.numeralSection': 'الأرقام / Numerals',
+  'settings.numeral_latn': '0-9 (أرقام لاتينية)',
+  'settings.numeral_arab': '٠-٩ (أرقام عربية-هندية)',
+  'settings.numeralHint': 'متاح لواجهة العربية: اختر الأرقام اللاتينية (0-9) أو العربية-الهندية (٠-٩). يُحفظ التفضيل محليًا ولا يدخل في الحفظ.',
   'settings.audioSection': 'الصوت / Audio',
   'settings.mute': 'كتم الصوت',
   'settings.unmute': 'إلغاء الكتم',

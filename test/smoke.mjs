@@ -71,6 +71,18 @@ assert('zh-CN 为 LTR', i18nMod.isRTL('zh-CN') === false);
 assert('默认语言为 LTR', i18nMod.isRTL() === false);
 assert('ar 骨架已实装（可选择）', i18nMod.isAvailable('ar') === true);
 
+console.log('== 阿拉伯数字系统（latn / arab）==');
+numMod.setNumeralSystem('arab');
+assert('arab：千分位 12,345 → ١٢,٣٤٥', Num.format(12345) === '١٢,٣٤٥');
+assert('arab：科学记数 1e6 → ١.٠٠٠e٦', Num.format('1e6') === '١.٠٠٠e٦');
+assert('arab：localizeNumericValue 只转数字', numMod.localizeNumericValue('1.000e6') === '١.٠٠٠e٦');
+assert('arab：localizeNumericValue ee 前缀', numMod.localizeNumericValue('ee6.0000') === 'ee٦.٠٠٠٠');
+assert('arab：非数字 id 不转', numMod.localizeNumericValue('p2_fold_1') === 'p2_fold_1');
+assert('arab：t() 参数数字本地化', i18nMod.t('titlebar.week', { n: 3 }) === '周目 ٣');
+numMod.setNumeralSystem('latn');
+assert('latn：恢复 0-9', Num.format(12345) === '12,345' && Num.format('1e6') === '1.000e6');
+assert('latn：非数字不变', numMod.localizeNumericValue('p2_fold_1') === 'p2_fold_1');
+
 console.log('== Num 序列化与格式化 ==');
 assert('roundtrip 1e20', Num.eq(Num.fromJSON(Num.toJSON('1e20')), '1e20'));
 assert('roundtrip 1e70', Num.eq(Num.fromJSON(Num.toJSON('1e70')), '1e70'));
