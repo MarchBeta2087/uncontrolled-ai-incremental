@@ -628,12 +628,13 @@ assert('无 AudioContext 环境播放不抛错', audioThrew === false);
 console.log('== 版本记录数据（v0.6）==');
 const versionsCfg = JSON.parse(fs.readFileSync('config/versions.json', 'utf8'));
 assert('versions.json 非空', Array.isArray(versionsCfg.versions) && versionsCfg.versions.length > 0);
-assert('版本发布时间可解析', versionsCfg.versions.every((v) => v.version && Number.isFinite(Date.parse(v.releasedAt))));
+assert('版本发布时间可解析（未发布条目可缺 releasedAt）', versionsCfg.versions.every((v) => v.version && (v.unreleased || Number.isFinite(Date.parse(v.releasedAt)))));
 assert('每个版本含一句话说明', versionsCfg.versions.every((v) => typeof v.note === 'string' && v.note.length > 0));
 const changelogText = fs.readFileSync('CHANGELOG.md', 'utf8');
 const changelogVersions = [...changelogText.matchAll(/^## \[(\d+\.\d+\.\d+)\]/gm)].map((m) => m[1]);
 const versionSet = new Set(versionsCfg.versions.map((v) => v.version));
 assert('版本数据覆盖 CHANGELOG 全部版本', changelogVersions.every((v) => versionSet.has(v)));
+assert('存在「开发中」未发布条目', versionsCfg.versions.some((v) => v.unreleased && v.changelogKey === 'Unreleased'));
 
 console.log('== 时间倍增（v0.5.1）==');
 prestigeMod.load({ timeCrystals: Num.toJSON('0'), totalTimeCrystals: Num.toJSON('1e10'), prestigeCount: 0, phase2Unlocked: false });

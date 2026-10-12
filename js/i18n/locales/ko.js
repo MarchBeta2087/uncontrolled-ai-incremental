@@ -152,6 +152,8 @@ export default {
   'changelog.beijingTrack': '베이징 UTC+8',
   'changelog.fullLog': '전체 변경 로그(CHANGELOG.md)',
   'changelog.noDetail': '(이 버전의 상세 정보 없음)',
+  'changelog.unreleased': '개발 중',
+  'changelog.unreleasedNote': 'v0.6 「푸앵카레 시대」 개발 중: 3단계, 미니게임, eee 표기, 인용, 종장 개편, 12개 언어, 숫자 형식.',
   'timeboost.section': '시간 배증',
   'timeboost.boost': '시간 배증',
   'timeboost.locked': '우주 ≥3에서 해금',
