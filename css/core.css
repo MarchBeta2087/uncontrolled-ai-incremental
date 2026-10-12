@@ -353,9 +353,9 @@ body.phase2 .phase-lock { display: none; }
 }
 
 /* ---- 版本记录：一行一版本（可上下滚动）+ 底部 UTC / 北京时间双轨时间轴 ---- */
-/* 时间轴按物理时间保持 LTR（不随页面 RTL 镜像），故容器显式 direction: ltr。 */
+/* 整块随页面方向镜像（RTL 下时间轴右→左）；进度条位置在 JS 用 inset-inline-start 写入。 */
 .gantt-host { overflow: auto; max-height: 340px; border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
-.gantt-inner { direction: ltr; min-width: 720px; display: flex; flex-direction: column; gap: 6px; }
+.gantt-inner { min-width: 720px; display: flex; flex-direction: column; gap: 6px; }
 .gantt-rows { display: flex; flex-direction: column; gap: 3px; }
 .gantt-row,
 .gantt-axis-row {

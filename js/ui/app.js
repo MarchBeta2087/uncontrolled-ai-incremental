@@ -825,7 +825,8 @@ function renderGantt(host, versions) {
     row.onclick = () => showVersionDetail(v.version);
     const track = el('div', 'gantt-track');
     const bar = el('div', 'gantt-bar');
-    bar.style.left = `${left}%`;
+    // 逻辑属性：LTR 从左边定位，RTL 自动从右边定位，使时间轴随页面镜像
+    bar.style.setProperty('inset-inline-start', `${left}%`);
     bar.style.width = `${Math.max(1, pct(v.ts) - left)}%`;
     const note = tc('version', v.version, 'note', v.note || '');
     row.title = `v${v.version} · ${fmtUTC(v.ts)} UTC / ${fmtBJ(v.ts)} 北京${note ? ' · ' + note : ''}`;
