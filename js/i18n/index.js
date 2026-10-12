@@ -19,6 +19,7 @@ import contentZhHant from './content/zh-Hant.js';
 import contentEn from './content/en.js';
 import contentJa from './content/ja.js';
 import contentKo from './content/ko.js';
+import contentAr from './content/ar.js';
 
 const DEFAULT_LOCALE = 'zh-CN';
 const STORAGE_KEY = 'uncontrolled-ai-incremental.locale';
@@ -44,6 +45,7 @@ const CONTENT = {
   en: contentEn,
   ja: contentJa,
   ko: contentKo,
+  ar: contentAr,
 };
 
 function readStoredLocale() {
