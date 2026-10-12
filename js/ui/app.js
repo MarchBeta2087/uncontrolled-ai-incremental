@@ -574,7 +574,7 @@ function buildShell() {
   row2.append(importBtn, resetBtn, fileInput);
   modalBody.append(row2);
 
-  // 语言选择（仅 zh-CN 已实装，其余为待办）
+  // 语言选择（已实装语言可选；ar 为 RTL 骨架）
   modalBody.append(el('div', 'modal-section', t('settings.languageSection')));
   const langRow = el('div', 'modal-row');
   for (const loc of getLocales()) {

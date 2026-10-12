@@ -14,6 +14,7 @@ import zhHK from './locales/zh-HK.js';
 import en from './locales/en.js';
 import ja from './locales/ja.js';
 import ko from './locales/ko.js';
+import ar from './locales/ar.js';
 import contentZhHant from './content/zh-Hant.js';
 import contentEn from './content/en.js';
 import contentJa from './content/ja.js';
@@ -31,6 +32,8 @@ const REGISTRY = [
   { code: 'ja', name: '日本語', fontVariant: 'ja', dict: ja },
   { code: 'ko', name: '한국어', fontVariant: 'ko', dict: ko },
   { code: 'en', name: 'English', fontVariant: 'latin', dict: en },
+  // 阿拉伯语（RTL 骨架：仅外壳文案，内容后补；rtl 标记驱动 html.dir 与布局镜像）
+  { code: 'ar', name: 'العربية', fontVariant: 'ar', dict: ar, rtl: true },
 ];
 
 const byCode = new Map(REGISTRY.map((l) => [l.code, l]));
@@ -60,6 +63,8 @@ function applyHtmlAttrs() {
   if (!html) return;
   html.lang = current;
   html.dataset.lang = current;
+  // RTL 语言（阿拉伯/希伯来等）镜像整个界面；LTR 语言显式置 ltr，避免切换后残留
+  html.dir = isRTL(current) ? 'rtl' : 'ltr';
 }
 
 // 模块加载时应用一次（ES module 在 DOM 就绪后执行，document.documentElement 已可用）
@@ -76,6 +81,21 @@ export function getLocales() {
 export function isAvailable(code) {
   const loc = byCode.get(code);
   return !!(loc && loc.dict);
+}
+
+/**
+ * 该语言是否从右到左（RTL）。沿继承链查找 rtl 标记，未标记者为 LTR。
+ * 供 applyHtmlAttrs 设置 html.dir，以及 UI/测试判断方向。
+ */
+export function isRTL(code = current) {
+  let c = code;
+  while (c) {
+    const loc = byCode.get(c);
+    if (!loc) return false;
+    if (loc.rtl !== undefined) return !!loc.rtl;
+    c = loc.parent;
+  }
+  return false;
 }
 
 /** 切换语言；未实装或未知语言返回 false。 */

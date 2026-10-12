@@ -52,6 +52,7 @@ const fragMod = await import('../js/sim/fragments.js');
 const endingsMod = await import('../js/sim/endings.js');
 const timeBoostMod = await import('../js/sim/timeboost.js');
 const audioMod = await import('../js/core/audio.js');
+const i18nMod = await import('../js/i18n/index.js');
 const Num = numMod.Num;
 const setDisplayMode = numMod.setDisplayMode;
 
@@ -62,6 +63,13 @@ try {
 } catch (e) {
   assert(`配置校验: ${e.message}`, false);
 }
+
+console.log('== RTL / i18n 方向 ==');
+assert('ar 为 RTL', i18nMod.isRTL('ar') === true);
+assert('en 为 LTR', i18nMod.isRTL('en') === false);
+assert('zh-CN 为 LTR', i18nMod.isRTL('zh-CN') === false);
+assert('默认语言为 LTR', i18nMod.isRTL() === false);
+assert('ar 骨架已实装（可选择）', i18nMod.isAvailable('ar') === true);
 
 console.log('== Num 序列化与格式化 ==');
 assert('roundtrip 1e20', Num.eq(Num.fromJSON(Num.toJSON('1e20')), '1e20'));
