@@ -31,6 +31,7 @@ const uniCfg = JSON.parse(fs.readFileSync('config/universes.json', 'utf8'));
 const endingCfg = JSON.parse(fs.readFileSync('config/endings.json', 'utf8'));
 const audioCfg = JSON.parse(fs.readFileSync('config/audio.json', 'utf8'));
 const minigamesCfg = JSON.parse(fs.readFileSync('config/minigames.json', 'utf8'));
+const quotesCfg = JSON.parse(fs.readFileSync('config/quotes.json', 'utf8'));
 // 第一阶段技术 id（校验第一阶段行为时只加载这些，排除第二阶段的永久乘子）
 const p1TechIds = techsCfg.techs.filter((t) => (t.phase ?? 1) === 1).map((t) => t.id);
 
@@ -55,13 +56,14 @@ const timeBoostMod = await import('../js/sim/timeboost.js');
 const audioMod = await import('../js/core/audio.js');
 const cycleMod = await import('../js/sim/cycle.js');
 const minigamesMod = await import('../js/sim/minigames.js');
+const quotesMod = await import('../js/sim/quotes.js');
 const i18nMod = await import('../js/i18n/index.js');
 const Num = numMod.Num;
 const setDisplayMode = numMod.setDisplayMode;
 
 console.log('== 配置校验 ==');
 try {
-  cfgMod.validateConfig({ balance, resources: resourcesCfg, techs: techsCfg, upgrades: upgradesCfg, achievements: achCfg, fragments: fragCfg, challenges: chCfg, universes: uniCfg, endings: endingCfg, audio: audioCfg, minigames: minigamesCfg });
+  cfgMod.validateConfig({ balance, resources: resourcesCfg, techs: techsCfg, upgrades: upgradesCfg, achievements: achCfg, fragments: fragCfg, challenges: chCfg, universes: uniCfg, endings: endingCfg, audio: audioCfg, minigames: minigamesCfg, quotes: quotesCfg });
   assert('配置校验通过', true);
 } catch (e) {
   assert(`配置校验: ${e.message}`, false);
@@ -254,28 +256,31 @@ assert('穿梭后普通技术清除', techMod.isOwned('run_test') === false);
 
 const v1snap = { schemaVersion: 1, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '5', upgrades: [] } };
 const migrated = saveMod.migrate(v1snap);
-assert('v1 → v10 迁移', migrated.schemaVersion === 10 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false && migrated.metaProgress.phase3Unlocked === false && migrated.metaProgress.universe === 1 && migrated.metaProgress.ending === null && migrated.metaProgress.timeBoost !== undefined);
+assert('v1 → v11 迁移', migrated.schemaVersion === 11 && migrated.metaProgress.totalTimeCrystals === '5' && migrated.metaProgress.phase2Unlocked === false && migrated.metaProgress.phase3Unlocked === false && migrated.metaProgress.universe === 1 && migrated.metaProgress.ending === null && migrated.metaProgress.timeBoost !== undefined);
 const v2snap = { schemaVersion: 2, meta: {}, time: {}, run: {}, metaProgress: { timeCrystals: '7', totalTimeCrystals: '9' } };
 const migrated2 = saveMod.migrate(v2snap);
-assert('v2 → v10 迁移', migrated2.schemaVersion === 10 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.phase3Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades) && migrated2.metaProgress.ending === null);
+assert('v2 → v11 迁移', migrated2.schemaVersion === 11 && migrated2.metaProgress.phase2Unlocked === false && migrated2.metaProgress.phase3Unlocked === false && migrated2.metaProgress.singularitySeeds !== undefined && Array.isArray(migrated2.metaProgress.crossUniverseUpgrades) && migrated2.metaProgress.ending === null);
 const v4snap = { schemaVersion: 4, meta: {}, time: {}, run: {}, metaProgress: { universe: 2, singularitySeeds: '1', crossUniverseUpgrades: [] } };
 const migrated4 = saveMod.migrate(v4snap);
-assert('v4 → v10 迁移：ending=null', migrated4.schemaVersion === 10 && migrated4.metaProgress.ending === null);
+assert('v4 → v11 迁移：ending=null', migrated4.schemaVersion === 11 && migrated4.metaProgress.ending === null);
 const v5snap = { schemaVersion: 5, meta: {}, time: {}, run: {}, metaProgress: { universe: 4, singularitySeeds: '3', crossUniverseUpgrades: [], ending: 'constrained' } };
 const migrated5 = saveMod.migrate(v5snap);
-assert('v5 → v10 迁移：timeBoost 默认', migrated5.schemaVersion === 10 && migrated5.metaProgress.timeBoost && migrated5.metaProgress.timeBoost.count === 0);
+assert('v5 → v11 迁移：timeBoost 默认', migrated5.schemaVersion === 11 && migrated5.metaProgress.timeBoost && migrated5.metaProgress.timeBoost.count === 0);
 const v6snap = { schemaVersion: 6, meta: {}, time: {}, run: {}, metaProgress: { universe: 9, timeBoost: { multiplier: Num.toJSON('1'), count: 0 } } };
 const migrated6 = saveMod.migrate(v6snap);
-assert('v6 → v10 迁移：phase3Unlocked 默认 false', migrated6.schemaVersion === 10 && migrated6.metaProgress.phase3Unlocked === false);
+assert('v6 → v11 迁移：phase3Unlocked 默认 false', migrated6.schemaVersion === 11 && migrated6.metaProgress.phase3Unlocked === false);
 const v7snap = { schemaVersion: 7, meta: {}, time: {}, run: {}, metaProgress: { universe: 9, phase3Unlocked: true } };
 const migrated7 = saveMod.migrate(v7snap);
-assert('v7 → v10 迁移：phase3CycleElapsed 默认 0', migrated7.schemaVersion === 10 && migrated7.metaProgress.phase3CycleElapsed === 0);
+assert('v7 → v11 迁移：phase3CycleElapsed 默认 0', migrated7.schemaVersion === 11 && migrated7.metaProgress.phase3CycleElapsed === 0);
 const v8snap = { schemaVersion: 8, meta: {}, time: {}, run: {}, metaProgress: { universe: 9, phase3Unlocked: true, phase3CycleElapsed: 10 } };
 const migrated8 = saveMod.migrate(v8snap);
-assert('v8 → v10 迁移：minigames 默认', migrated8.schemaVersion === 10 && migrated8.metaProgress.minigames && migrated8.metaProgress.minigames.totalPlays === 0);
+assert('v8 → v11 迁移：minigames 默认', migrated8.schemaVersion === 11 && migrated8.metaProgress.minigames && migrated8.metaProgress.minigames.totalPlays === 0);
 const v9snap = { schemaVersion: 9, meta: {}, time: {}, run: {}, metaProgress: { universe: 9, minigames: { best: { pong: 3 }, totalPlays: 1 } } };
 const migrated9 = saveMod.migrate(v9snap);
-assert('v9 → v10 迁移：poincareSeen 默认 false', migrated9.schemaVersion === 10 && migrated9.metaProgress.poincareSeen === false);
+assert('v9 → v11 迁移：poincareSeen 默认 false', migrated9.schemaVersion === 11 && migrated9.metaProgress.poincareSeen === false);
+const v10snap = { schemaVersion: 10, meta: {}, time: {}, run: {}, metaProgress: { universe: 9, poincareSeen: true } };
+const migrated10 = saveMod.migrate(v10snap);
+assert('v10 → v11 迁移：quotes 默认', migrated10.schemaVersion === 11 && migrated10.metaProgress.quotes && Array.isArray(migrated10.metaProgress.quotes.seen));
 
 console.log('== 第三阶段引擎地基（箭塔 / cap_tetrate / 解锁）==');
 // 箭塔容器
@@ -372,7 +377,7 @@ assert('load 恢复循环进度', cycleMod.getCycleElapsed() === 42);
 
 
 console.log('== 第二阶段成就 / 碎片 / 挑战 ==');
-assert('内容计数：成就 32 / 碎片 15 / 挑战 8', achCfg.achievements.length === 32 && fragCfg.fragments.length === 15 && chCfg.challenges.length === 8);
+assert('内容计数：成就 33 / 碎片 15 / 挑战 8', achCfg.achievements.length === 33 && fragCfg.fragments.length === 15 && chCfg.challenges.length === 8);
 console.log('== 小游戏（v0.6）==');
 minigamesMod.initMinigames(minigamesCfg);
 assert('小游戏数量 4', minigamesMod.getMinigameIds().length === 4);
@@ -394,6 +399,20 @@ minigamesMod.load({ best: {}, totalPlays: 0 });
 assert('load 清空', minigamesMod.getBest('pong') === 0 && minigamesMod.getTotalPlays() === 0);
 minigamesMod.load(mgSnap);
 assert('load 恢复成绩', minigamesMod.getBest('pong') === 3 && minigamesMod.getTotalPlays() === 3);
+assert('成就分类：mg_2048 = extra，first_compute = growth', achMod.getAchievementCategory('mg_2048') === 'extra' && achMod.getAchievementCategory('first_compute') === 'growth');
+
+console.log('== 彩蛋语录条（v0.6）==');
+quotesMod.initQuotes(quotesCfg);
+assert('语录数量 8', quotesMod.getQuoteIds().length === 8);
+assert('条件 minigame_played（已玩过）', conditionsMod.checkCondition({ type: 'minigame_played' }) === true);
+assert('quote_all_seen 初始否', conditionsMod.checkCondition({ type: 'quote_all_seen' }) === false);
+for (const q of quotesMod.getQuotes()) quotesMod.markSeen(q.id);
+assert('全部浏览后 quote_all_seen 是', conditionsMod.checkCondition({ type: 'quote_all_seen' }) === true);
+const qSnap = quotesMod.serialize();
+quotesMod.load({ seen: [] });
+assert('quotes load 清空', quotesMod.getSeenCount() === 0);
+quotesMod.load(qSnap);
+assert('quotes load 恢复', quotesMod.getSeenCount() === 8);
 
 console.log('== 实时宇宙（rate_base_lock）==');
 progressMod.setPhase3Unlocked(true);

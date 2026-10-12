@@ -69,6 +69,8 @@ export default {
 
   // Records view
   'records.achievements': 'Achievements',
+  'records.ach_growth': 'Growth',
+  'records.ach_extra': 'Extra',
   'records.achievementsCount': 'Achievements ({n}/{total})',
   'records.fragments': 'Memory Fragments',
   'records.fragmentsCount': 'Memory Fragments ({n}/{total})',

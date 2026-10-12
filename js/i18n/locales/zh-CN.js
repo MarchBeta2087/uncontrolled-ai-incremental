@@ -69,6 +69,8 @@ export default {
 
   // 记录视图
   'records.achievements': '成就',
+  'records.ach_growth': '成长成就',
+  'records.ach_extra': '附加成就',
   'records.achievementsCount': '成就（{n}/{total}）',
   'records.fragments': '记忆碎片',
   'records.fragmentsCount': '记忆碎片（{n}/{total}）',

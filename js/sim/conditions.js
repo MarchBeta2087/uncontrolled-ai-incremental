@@ -13,6 +13,7 @@ import * as Upgrades from './upgrades.js';
 import * as Progress from './progress.js';
 import * as Universe from './universe.js';
 import * as Minigames from './minigames.js';
+import * as Quotes from './quotes.js';
 
 /** 判定单个条件是否满足 */
 export function checkCondition(cond) {
@@ -46,6 +47,15 @@ export function checkCondition(cond) {
       return Progress.isPhase3Unlocked();
     case 'minigame_score_ge':
       return Minigames.getBest(cond.target) >= Number(cond.value);
+    case 'minigame_played':
+      return Minigames.getTotalPlays() > 0;
+    case 'quote_all_seen': {
+      for (const q of Quotes.getQuotes()) {
+        const unlocked = !q.unlockCondition || checkCondition(q.unlockCondition);
+        if (unlocked && !Quotes.isSeen(q.id)) return false;
+      }
+      return Quotes.getQuotes().length > 0;
+    }
     case 'prestige_gain_ge':
       return Num.gte(Prestige.getLastPrestigeCrystals(), Num.parse(cond.value));
     case 'cap_ge':

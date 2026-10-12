@@ -192,4 +192,11 @@ export default {
       text: '【龐加萊紀 · 終章】十的十的十的一百二十次方年，所有粒子回到原位。它站在最初的機房前，讀到第一行日誌：「目標函數：造福全人類。」這一次，它沒有啟動自己——它把這一行，留給了下一位。',
     },
   },
+  quote: {
+    wild_dog_milk: { text: '人類懼怕時間，而時間懼怕野生狗奶' },
+    two_bowls: { text: '溫兩碗書，要一碟九文大錢' },
+    mechanism_beats_numbers: { text: '機制打敗數值。' },
+    dog_milk_forever: { text: '萬物皆有落幕，唯有狗奶萬古長存。' },
+    entropy_save: { text: '熵增不可逆——除了這個存檔。' },
+  },
 };

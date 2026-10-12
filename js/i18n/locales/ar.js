@@ -77,6 +77,8 @@ export default {
 
   // 记录视图
   'records.achievements': 'الإنجازات',
+  'records.ach_growth': 'الإنجازات الأساسية',
+  'records.ach_extra': 'إنجازات إضافية',
   'records.achievementsCount': 'الإنجازات ({n}/{total})',
   'records.fragments': 'شظايا الذاكرة',
   'records.fragmentsCount': 'شظايا الذاكرة ({n}/{total})',

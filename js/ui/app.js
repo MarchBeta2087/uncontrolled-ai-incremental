@@ -16,6 +16,7 @@ import * as Universe from '../sim/universe.js';
 import * as Singularity from '../sim/singularity.js';
 import * as Cycle from '../sim/cycle.js';
 import * as Minigames from '../sim/minigames.js';
+import * as Quotes from '../sim/quotes.js';
 import { checkCondition } from '../sim/conditions.js';
 import * as Endings from '../sim/endings.js';
 import * as TimeBoost from '../sim/timeboost.js';
@@ -54,6 +55,7 @@ export function initUI() {
   bindEvents();
   switchView('resources');
   applyUniverseHue();
+  initQuoteTicker();
   markDirty();
 }
 
@@ -393,18 +395,25 @@ function buildShell() {
   const achPanel = el('div', 'panel');
   const achTitle = el('div', 'panel-title', t('records.achievements'));
   achPanel.append(achTitle);
-  const achGrid = el('div', 'ach-grid');
-  for (const aid of Achievements.getAchievementIds()) {
-    const a = Achievements.getAchievement(aid);
-    const card = el('div', 'ach-card');
-    card.dataset.ach = aid;
-    card.append(
-      el('div', 'ach-name', tc('achievement', aid, 'name', a.name)),
-      el('div', 'ach-desc', tc('achievement', aid, 'description', a.description))
-    );
-    achGrid.append(card);
+  const achWrap = el('div', '');
+  for (const cat of ['growth', 'extra']) {
+    const ids = Achievements.getAchievementIds().filter((id) => Achievements.getAchievementCategory(id) === cat);
+    if (!ids.length) continue;
+    achWrap.append(el('div', 'ach-cat', t('records.ach_' + cat)));
+    const grid = el('div', 'ach-grid');
+    for (const aid of ids) {
+      const a = Achievements.getAchievement(aid);
+      const card = el('div', 'ach-card');
+      card.dataset.ach = aid;
+      card.append(
+        el('div', 'ach-name', tc('achievement', aid, 'name', a.name)),
+        el('div', 'ach-desc', tc('achievement', aid, 'description', a.description))
+      );
+      grid.append(card);
+    }
+    achWrap.append(grid);
   }
-  achPanel.append(achGrid);
+  achPanel.append(achWrap);
   const fragPanel = el('div', 'panel');
   const fragTitle = el('div', 'panel-title', t('records.fragments'));
   fragPanel.append(fragTitle);
@@ -418,7 +427,7 @@ function buildShell() {
   fragPanel.append(fragList);
   recordsLayout.append(achPanel, fragPanel);
   viewRecords.append(recordsLayout);
-  refs.achGrid = achGrid;
+  refs.achGrid = achWrap;
   refs.achTitle = achTitle;
   refs.fragList = fragList;
   refs.fragTitle = fragTitle;
@@ -535,6 +544,13 @@ function buildShell() {
   refs.egArtPlaceholder = egArtPlaceholder;
 
   viewContainer.append(viewRes, viewTechs, viewExpand, viewRecords, viewMinigames, viewEndgame);
+
+  // ---- 彩蛋语录条（ticker，任务栏上方独立细条）----
+  const quoteBar = el('div', 'quote-bar');
+  const quoteText = el('span', 'quote-text', '');
+  quoteBar.append(quoteText);
+  refs.quoteBar = quoteBar;
+  refs.quoteText = quoteText;
 
   // ---- 任务栏 ----
   const taskbar = el('div', 'taskbar');
@@ -803,7 +819,7 @@ function buildShell() {
   refs.offlineTime = offlineTime;
   refs.offlineList = offlineList;
 
-  shell.append(titlebar, viewContainer, taskbar, toast, modalOverlay, offlineOverlay);
+  shell.append(titlebar, viewContainer, quoteBar, taskbar, toast, modalOverlay, offlineOverlay);
   app.append(shell);
   refs.views = { resources: viewRes, techs: viewTechs, expand: viewExpand, records: viewRecords, minigames: viewMinigames, endgame: viewEndgame };
 }
@@ -999,6 +1015,62 @@ function showVersionDetail(version) {
       r.classList.toggle('selected', r.dataset.version === version);
     }
   }
+}
+
+// ---- 彩蛋语录条（ticker） ----
+let quoteTimer = 0;
+let quoteIndex = 0;
+
+function unlockedQuotes() {
+  return Quotes.getQuotes().filter((q) => !q.unlockCondition || checkCondition(q.unlockCondition));
+}
+
+function quoteReducedMotion() {
+  try {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  } catch (_) {
+    return false;
+  }
+}
+
+function renderQuote(q) {
+  if (!refs.quoteBar) return;
+  if (!q) {
+    refs.quoteBar.hidden = true;
+    return;
+  }
+  refs.quoteBar.hidden = false;
+  const text = tc('quote', q.id, 'text', q.text) + (q.attribution ? `  — ${q.attribution}` : '');
+  if (refs.quoteText) {
+    refs.quoteText.textContent = text;
+    refs.quoteText.classList.remove('scroll');
+    void refs.quoteText.offsetWidth; // 强制重排以重启动画
+    if (!quoteReducedMotion()) refs.quoteText.classList.add('scroll');
+  }
+  Quotes.markSeen(q.id);
+}
+
+/** 语录轮播：非减弱动效时横向滚动，否则静态轮播（悬停暂停） */
+function initQuoteTicker() {
+  if (!refs.quoteBar) return;
+  if (!unlockedQuotes().length) {
+    refs.quoteBar.hidden = true;
+    return;
+  }
+  refs.quoteBar.hidden = false;
+  clearInterval(quoteTimer);
+  const period = quoteReducedMotion() ? 10000 : 18000;
+  const show = () => {
+    const list = unlockedQuotes();
+    if (!list.length) {
+      refs.quoteBar.hidden = true;
+      return;
+    }
+    renderQuote(list[quoteIndex % list.length]);
+    quoteIndex = (quoteIndex + 1) % list.length;
+  };
+  show();
+  quoteTimer = setInterval(show, period);
 }
 
 function showToast(text) {
