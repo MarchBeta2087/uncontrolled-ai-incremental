@@ -20,6 +20,8 @@ let lastTs = 0;
 let active = null; // 当前游戏实例
 let onKeyHandler = null;
 let padEl = null;
+let gridEl = null;
+let flagBtn = null;
 let cfgEl = null;
 let durInput = null;
 
@@ -124,7 +126,13 @@ function ensureOverlay() {
     b.addEventListener('pointerdown', press);
     grid.append(b);
   }
-  padEl.append(grid);
+  gridEl = grid;
+  flagBtn = document.createElement('button');
+  flagBtn.className = 'btn mg-flag';
+  flagBtn.type = 'button';
+  flagBtn.textContent = t('mg.minesweeper.flagToggle');
+  flagBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); if (active?.onAction) active.onAction(); });
+  padEl.append(grid, flagBtn);
 
   onKeyHandler = (e) => {
     if (!active) return;
@@ -174,7 +182,10 @@ export function openMinigame(id) {
   ensureOverlay();
   titleEl.textContent = t('mg.' + id + '.name');
   hintEl.textContent = t('mg.' + id + '.hint');
-  padEl.style.display = id === 'minesweeper' ? 'none' : 'flex';
+  const isMines = id === 'minesweeper';
+  padEl.style.display = 'flex';
+  gridEl.style.display = isMines ? 'none' : 'grid';
+  flagBtn.style.display = isMines ? 'inline-block' : 'none';
   const pongRange = getPongDurationRange();
   cfgEl.style.display = id === 'pong' ? 'flex' : 'none';
   if (id === 'pong') {
@@ -241,7 +252,7 @@ function createPong(durationSec) {
   let py, ay, ball, ps, as, over, bias, aiNoise, noiseT, timeLeft;
   let duration = durationSec;
   const resetBall = (dir) => {
-    ball = { x: SIZE / 2, y: SIZE / 2, vx: 2.2 * dir, vy: (Math.random() * 2 - 1) * 1.4 };
+    ball = { x: SIZE / 2, y: SIZE / 2, vx: 1.3 * dir, vy: (Math.random() * 2 - 1) * 0.7 };
   };
   return {
     id: 'pong',
@@ -264,22 +275,23 @@ function createPong(durationSec) {
       if (noiseT <= 0) { noiseT = 0.6 + Math.random() * 0.6; aiNoise = (Math.random() * 2 - 1) * 22; }
       const towardAI = ball.vx > 0;
       const desired = towardAI ? ball.y - AH / 2 + aiNoise + bias * 0.5 : SIZE / 2 - AH / 2;
-      ay += Math.max(-1.5, Math.min(1.5, desired - ay));
+      const k = Math.min(2, dt * 60); // 帧率无关
+      ay += Math.max(-1.4, Math.min(1.4, desired - ay)) * k;
       ay = Math.max(0, Math.min(SIZE - AH, ay));
-      ball.x += ball.vx; ball.y += ball.vy;
+      ball.x += ball.vx * k; ball.y += ball.vy * k;
       if (ball.y < 3) { ball.y = 3; ball.vy = Math.abs(ball.vy); }
       if (ball.y > SIZE - 3) { ball.y = SIZE - 3; ball.vy = -Math.abs(ball.vy); }
       if (ball.x < PW + 6 && ball.vx < 0) {
         if (ball.y >= py && ball.y <= py + PH) {
-          ball.vx = Math.abs(ball.vx) * 1.03;
-          ball.vy += (ball.y - (py + PH / 2)) * 0.07;
+          ball.vx = Math.min(2.0, Math.abs(ball.vx) * 1.02);
+          ball.vy = Math.max(-1.3, Math.min(1.3, ball.vy + (ball.y - (py + PH / 2)) * 0.06));
           bias = bias * 0.9 + (ball.y - (ay + AH / 2)) * 0.1; // 学习玩家偏差（弱化：系数减半）
         } else { as++; resetBall(-1); return; }
       }
       if (ball.x > SIZE - AW - 6 && ball.vx > 0) {
         if (ball.y >= ay && ball.y <= ay + AH) {
-          ball.vx = -Math.abs(ball.vx) * 1.03;
-          ball.vy += (ball.y - (ay + AH / 2)) * 0.07;
+          ball.vx = -Math.min(2.0, Math.abs(ball.vx) * 1.02);
+          ball.vy = Math.max(-1.3, Math.min(1.3, ball.vy + (ball.y - (ay + AH / 2)) * 0.06));
         } else { ps++; resetBall(1); }
       }
     },
@@ -296,8 +308,10 @@ function createPong(durationSec) {
 
 // ================= 扫雷 =================
 function createMinesweeper() {
-  const N = 9, MINES = 10, CELL = SIZE / N;
-  let grid, revealed, flagged, over, won, first, flagMode;
+  const N = 9, CELL = SIZE / N;
+  let grid, revealed, flagged, over, won, first, flagMode, level;
+  // 关卡递增雷数（首关 10，每关 +3，上限 60）
+  const minesForLevel = (lv) => Math.min(60, 10 + (lv - 1) * 3);
   const neighbors = (i, j) => {
     const out = [];
     for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) {
@@ -307,9 +321,9 @@ function createMinesweeper() {
     }
     return out;
   };
-  const place = (si, sj) => {
+  const place = (si, sj, mines) => {
     let placed = 0;
-    while (placed < MINES) {
+    while (placed < mines) {
       const i = Math.floor(Math.random() * N), j = Math.floor(Math.random() * N);
       if (grid[i][j] === -1) continue;
       if (Math.abs(i - si) <= 1 && Math.abs(j - sj) <= 1) continue;
@@ -332,28 +346,34 @@ function createMinesweeper() {
     }
     return ok;
   };
+  const newBoard = () => {
+    const mines = minesForLevel(level);
+    grid = Array.from({ length: N }, () => Array(N).fill(0));
+    revealed = Array.from({ length: N }, () => Array(N).fill(false));
+    flagged = Array.from({ length: N }, () => Array(N).fill(false));
+    over = false; won = false; first = true; flagMode = false;
+    place(4, 4, mines);
+  };
   return {
     id: 'minesweeper',
-    init() {
-      grid = Array.from({ length: N }, () => Array(N).fill(0));
-      revealed = Array.from({ length: N }, () => Array(N).fill(false));
-      flagged = Array.from({ length: N }, () => Array(N).fill(false));
-      over = false; won = false; first = true; flagMode = false;
-      place(0, 0);
-    },
-    score() { return won ? 1 : 0; },
+    init() { level = 1; newBoard(); },
+    score() { return Math.max(0, won ? level : level - 1); },
     update() {},
-    onAction() { flagMode = !flagMode; },
+    onAction() {
+      if (over) { if (won) level += 1; newBoard(); return; }
+      flagMode = !flagMode;
+    },
     onPointer(x, y, type) {
-      if (over || type !== 'down') return;
+      if (type !== 'down') return;
+      if (over) { this.onAction(); return; }
       const j = Math.floor(x / CELL), i = Math.floor(y / CELL);
       if (i < 0 || i >= N || j < 0 || j >= N) return;
       if (flagMode) { if (!revealed[i][j]) flagged[i][j] = !flagged[i][j]; return; }
       if (flagged[i][j]) return;
-      if (first) { if (grid[i][j] === -1) { grid = Array.from({ length: N }, () => Array(N).fill(0)); revealed = Array.from({ length: N }, () => Array(N).fill(false)); flagged = Array.from({ length: N }, () => Array(N).fill(false)); place(i, j); } first = false; }
-      if (grid[i][j] === -1) { over = true; won = false; revealed[i][j] = true; finish(0); return; }
+      if (first) { if (grid[i][j] === -1) { const m = minesForLevel(level); grid = Array.from({ length: N }, () => Array(N).fill(0)); revealed = Array.from({ length: N }, () => Array(N).fill(false)); flagged = Array.from({ length: N }, () => Array(N).fill(false)); place(i, j, m); } first = false; }
+      if (grid[i][j] === -1) { over = true; won = false; revealed[i][j] = true; finish(Math.max(0, level - 1)); return; }
       reveal(i, j);
-      if (checkWin()) { over = true; won = true; finish(1); }
+      if (checkWin()) { over = true; won = true; finish(level); }
     },
     draw(c) {
       rect(c, 0, 0, SIZE, SIZE, cssVar('--panel-2'));
@@ -368,7 +388,9 @@ function createMinesweeper() {
           if (grid[i][j] > 0) text(c, String(grid[i][j]), x + CELL / 2, y + CELL / 2, cssVar('--text'));
         }
       }
+      text(c, t('mg.minesweeper.level', { level, mines: minesForLevel(level) }), SIZE / 2, 8, cssVar('--text-dim'));
       if (flagMode) text(c, t('mg.minesweeper.flagOn'), SIZE / 2, SIZE - 8, cssVar('--warning'));
+      if (over) text(c, won ? t('mg.minesweeper.next') : t('mg.minesweeper.retry'), SIZE / 2, SIZE - 22, cssVar('--accent'));
     },
   };
 }
@@ -376,7 +398,7 @@ function createMinesweeper() {
 // ================= 贪吃蛇 =================
 function createSnake() {
   const N = 12, CELL = SIZE / N;
-  let snake, dir, nextDir, food, over, acc, stepMs;
+  let snake, dir, nextDir, food, over, acc, stepMs, swipe;
   const spawnFood = () => {
     const free = [];
     for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
@@ -388,11 +410,20 @@ function createSnake() {
     id: 'snake',
     init() {
       snake = [{ x: 5, y: 6 }, { x: 4, y: 6 }, { x: 3, y: 6 }];
-      dir = { x: 1, y: 0 }; nextDir = dir; over = false; acc = 0; stepMs = 0.14;
+      dir = { x: 1, y: 0 }; nextDir = dir; over = false; acc = 0; stepMs = 0.14; swipe = null;
       spawnFood();
     },
     score() { return Math.max(0, snake.length - 3); },
     onDir(dx, dy) { if (dx || dy) { if (dx === -dir.x && dy === -dir.y) return; nextDir = { x: dx, y: dy }; } },
+    onPointer(x, y, type) {
+      if (type === 'down') { swipe = { x, y }; return; }
+      if (type === 'up' && swipe) {
+        const dx = x - swipe.x, dy = y - swipe.y;
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dx) > Math.abs(dy)) this.onDir(Math.sign(dx), 0);
+        else this.onDir(0, Math.sign(dy));
+      }
+    },
     update(dt) {
       if (over) return;
       acc += dt;
@@ -418,7 +449,7 @@ function createSnake() {
 // ================= 2048 =================
 function create2048() {
   const N = 4, GAP = 4, CELL = (SIZE - GAP * (N + 1)) / N;
-  let board, over, won;
+  let board, over, won, swipe;
   const pos = (i, j) => ({ x: GAP + j * (CELL + GAP), y: GAP + i * (CELL + GAP) });
   const empty = () => { const out = []; for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) if (!board[i][j]) out.push([i, j]); return out; };
   const addTile = () => { const e = empty(); if (!e.length) return; const [i, j] = e[Math.floor(Math.random() * e.length)]; board[i][j] = Math.random() < 0.9 ? 2 : 4; };
@@ -468,11 +499,20 @@ function create2048() {
     id: 'game2048',
     init() {
       board = Array.from({ length: N }, () => Array(N).fill(0));
-      over = false; won = false;
+      over = false; won = false; swipe = null;
       addTile(); addTile();
     },
     score() { return highest(); },
     update() {},
+    onPointer(x, y, type) {
+      if (type === 'down') { swipe = { x, y }; return; }
+      if (type === 'up' && swipe) {
+        const dx = x - swipe.x, dy = y - swipe.y;
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dx) > Math.abs(dy)) this.onDir(Math.sign(dx), 0);
+        else this.onDir(0, Math.sign(dy));
+      }
+    },
     onDir(dx, dy) { if (dx || dy) move(dx, dy); },
     draw(c) {
       rect(c, 0, 0, SIZE, SIZE, cssVar('--panel-2'));
