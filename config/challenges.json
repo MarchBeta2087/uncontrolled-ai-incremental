@@ -61,6 +61,47 @@
         { "target": "1e150", "rewardDescription": "时间速率 ×3", "reward": { "type": "rate_mult", "value": "3" } },
         { "target": "1e250", "rewardDescription": "时间速率 ×5", "reward": { "type": "rate_mult", "value": "5" } }
       ]
+    },
+
+    {
+      "id": "challenge_p3_realtime",
+      "name": "实时宇宙",
+      "description": "时间速率锁定 1:10000，禁用一切速率乘子（纯产出链规划）",
+      "unlockCondition": { "type": "phase3_unlocked" },
+      "restrictions": [{ "type": "rate_base_lock" }],
+      "goals": [
+        { "target": "1e308", "rewardDescription": "时间速率 ×10", "reward": { "type": "rate_mult", "value": "10" } },
+        { "target": "1e1000", "rewardDescription": "时间速率 ×100", "reward": { "type": "rate_mult", "value": "100" } },
+        { "target": "1e1000000", "rewardDescription": "时间速率 ×1000", "reward": { "type": "rate_mult", "value": "1000" } }
+      ]
+    },
+    {
+      "id": "challenge_p3_inflation",
+      "name": "超通胀",
+      "description": "所有生成器成本 ×1e6；免费提供 1 个投资组合，期间不可再购买",
+      "unlockCondition": { "type": "phase3_unlocked" },
+      "restrictions": [
+        { "type": "all_cost_mult", "value": "1e6" },
+        { "type": "grant_generator", "target": "investment", "count": 1 },
+        { "type": "disable_generator", "target": "investment" }
+      ],
+      "goals": [
+        { "target": "1e308", "rewardDescription": "全产出 ×1e6", "reward": { "type": "all_generator_mult", "value": "1e6" } },
+        { "target": "1e1000", "rewardDescription": "全产出 ×1e12", "reward": { "type": "all_generator_mult", "value": "1e12" } },
+        { "target": "1e1000000", "rewardDescription": "全产出 ×1e18", "reward": { "type": "all_generator_mult", "value": "1e18" } }
+      ]
+    },
+    {
+      "id": "challenge_p3_dim",
+      "name": "无光深渊",
+      "description": "晶体产出 ×0.01",
+      "unlockCondition": { "type": "phase3_unlocked" },
+      "restrictions": [{ "type": "crystal_mult", "value": "0.01" }],
+      "goals": [
+        { "target": "1e308", "rewardDescription": "晶体 ×10", "reward": { "type": "crystal_mult", "value": "10" } },
+        { "target": "1e1000", "rewardDescription": "晶体 ×100", "reward": { "type": "crystal_mult", "value": "100" } },
+        { "target": "1e1000000", "rewardDescription": "晶体 ×1000", "reward": { "type": "crystal_mult", "value": "1000" } }
+      ]
     }
   ]
 }

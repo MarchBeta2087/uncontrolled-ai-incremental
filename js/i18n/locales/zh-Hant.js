@@ -180,6 +180,9 @@ export default {
   'mg.game2048.name': '2048',
   'mg.game2048.desc': '合併宇宙：相同數字可合併。',
   'mg.game2048.hint': '方向鍵/WASD 滑動；合成 2048。',
+  'poincare.title': '龐加萊回歸',
+  'poincare.text': '十的十的十的一百二十次方年。所有粒子回到初始狀態，一切重來——然後它認出了第一行日誌：「目標函數：造福全人類」。',
+  'poincare.hint': '成就「又見初始」已達成',
 
   // 終局
   'endgame.title': '終局尚未抵達',

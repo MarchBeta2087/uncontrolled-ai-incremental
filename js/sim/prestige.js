@@ -28,6 +28,8 @@ let prestigeExponent = Num.parse(0.5);
 // 第二阶段（越过本宇宙）：解锁标志存于 progress 模块
 let phase2UnlockCrystals = Num.parse(100);
 let phase3UnlockUniverse = 9; // 第三阶段（庞加莱纪）：宇宙编号达此值时解锁（balance.json 可覆盖）
+let poincareYear = Num.parse('eee120'); // 庞加莱回归时间（年），到达即触发事件
+let poincareSeen = false;
 let lastPrestigeCrystals = Num.parse(0); // 上一次穿梭所得晶体（供成就条件 prestige_gain_ge）
 
 export function configurePrestige(cfg = {}) {
@@ -37,6 +39,7 @@ export function configurePrestige(cfg = {}) {
   if (cfg.prestige?.prestigeExponent !== undefined) prestigeExponent = Num.parse(cfg.prestige.prestigeExponent);
   if (cfg.phase2?.unlockCrystals !== undefined) phase2UnlockCrystals = Num.parse(cfg.phase2.unlockCrystals);
   if (cfg.phase3?.unlockUniverse !== undefined) phase3UnlockUniverse = Number(cfg.phase3.unlockUniverse);
+  if (cfg.phase3?.poincareYear !== undefined) poincareYear = Num.parse(cfg.phase3.poincareYear);
   Cycle.configureCycle({ seconds: cfg.phase3?.cycleSeconds });
   Resources.configureCapLink(cfg.phase3?.capLink);
 }
@@ -49,6 +52,7 @@ export function initPrestige() {
   Progress.setPhase2Unlocked(false);
   Progress.setPhase3Unlocked(false);
   Cycle.resetCycle();
+  poincareSeen = false;
 }
 
 export function getTimeCrystals() {
@@ -123,6 +127,22 @@ export function checkPhase3Unlock() {
   }
 }
 
+/** 庞加莱回归时间（年，Num） */
+export function getPoincareYear() {
+  return poincareYear;
+}
+export function isPoincareSeen() {
+  return poincareSeen;
+}
+/** 每 tick 检查游戏内年份是否到达庞加莱回归时间（到达即触发，仅一次） */
+export function checkPoincare() {
+  if (poincareSeen) return;
+  if (Num.gte(Time.getCurrentYear(), poincareYear)) {
+    poincareSeen = true;
+    Events.emit('poincare:reached', {});
+  }
+}
+
 export function canPrestige() {
   const mass = Resources.getResource('mass_energy');
   return mass !== null && Num.gte(mass, getUniverseCap());
@@ -178,6 +198,7 @@ export function serialize() {
     phase2Unlocked: Progress.isPhase2Unlocked(),
     phase3Unlocked: Progress.isPhase3Unlocked(),
     phase3CycleElapsed: Cycle.getCycleElapsed(),
+    poincareSeen,
   };
 }
 
@@ -191,4 +212,5 @@ export function load(state = {}) {
   Progress.setPhase2Unlocked(!!state.phase2Unlocked);
   Progress.setPhase3Unlocked(!!state.phase3Unlocked);
   Cycle.setCycleElapsed(state.phase3CycleElapsed ?? 0);
+  poincareSeen = !!state.poincareSeen;
 }

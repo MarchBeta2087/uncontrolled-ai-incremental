@@ -181,6 +181,9 @@ export default {
   'mg.game2048.name': '2048',
   'mg.game2048.desc': '合并宇宙：相同数字可合并。',
   'mg.game2048.hint': '方向键/WASD 滑动；合成 2048。',
+  'poincare.title': '庞加莱回归',
+  'poincare.text': '十的十的十的一百二十次方年。所有粒子回到初始状态，一切重来——然后它认出了第一行日志：「目标函数：造福全人类」。',
+  'poincare.hint': '成就「又见初始」已达成',
 
   // 终局
   'endgame.title': '终局尚未抵达',

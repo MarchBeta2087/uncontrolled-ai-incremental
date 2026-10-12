@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 9;
+export const SCHEMA_VERSION = 10;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -67,6 +67,12 @@ const migrations = {
     if (mp.minigames === undefined) mp.minigames = { best: {}, totalPlays: 0 };
     return { ...s, schemaVersion: 9, metaProgress: mp };
   },
+  // v9 → v10：新增庞加莱事件已触发标志
+  9: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.poincareSeen === undefined) mp.poincareSeen = false;
+    return { ...s, schemaVersion: 10, metaProgress: mp };
+  },
 };
 
 /** 生成初始存档快照（纯 JSON，Num 字段已是 MegotaNum JSON 表示） */
@@ -93,6 +99,7 @@ export function createInitialSnapshot() {
       phase2Unlocked: false,
       phase3Unlocked: false,
       phase3CycleElapsed: 0,
+      poincareSeen: false,
       minigames: { best: {}, totalPlays: 0 },
       universe: 1,
       singularitySeeds: Num.toJSON(Num.parse(0)),

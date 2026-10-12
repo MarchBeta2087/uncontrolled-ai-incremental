@@ -181,6 +181,7 @@ function restoreFromSnapshot(snap) {
     phase2Unlocked: snap.metaProgress?.phase2Unlocked,
     phase3Unlocked: snap.metaProgress?.phase3Unlocked,
     phase3CycleElapsed: snap.metaProgress?.phase3CycleElapsed,
+    poincareSeen: snap.metaProgress?.poincareSeen,
   });
   Upgrades.load(snap.metaProgress?.upgrades);
   Achievements.load(snap.metaProgress?.achievements);
@@ -251,6 +252,7 @@ function buildSnapshot() {
       phase2Unlocked: prestige.phase2Unlocked,
       phase3Unlocked: prestige.phase3Unlocked,
       phase3CycleElapsed: prestige.phase3CycleElapsed,
+      poincareSeen: prestige.poincareSeen,
       universe: singularity.universe,
       singularitySeeds: singularity.singularitySeeds,
       crossUniverseUpgrades: singularity.crossUniverseUpgrades,

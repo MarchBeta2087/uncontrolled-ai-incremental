@@ -818,6 +818,7 @@ function bindEvents() {
     renderNow();
   });
   Events.on('ui:toast', (p) => showToast(p?.text));
+  Events.on('poincare:reached', () => showPoincareEvent());
 }
 
 function switchView(name) {
@@ -989,6 +990,21 @@ function showToast(text) {
   refs.toast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => refs.toast.classList.remove('show'), 2200);
+}
+
+/** 庞加莱回归事件（到达即触发）：全回卷闪光 → 旧终端风格闪回 → 淡出 */
+function showPoincareEvent() {
+  if (document.querySelector('.poincare-overlay')) return;
+  const ov = el('div', 'poincare-overlay');
+  ov.append(el('div', 'poincare-title', t('poincare.title')));
+  ov.append(el('div', 'poincare-text', t('poincare.text')));
+  ov.append(el('div', 'poincare-hint', t('poincare.hint')));
+  document.body.append(ov);
+  document.body.classList.add('poincare-flash');
+  setTimeout(() => document.body.classList.remove('poincare-flash'), 700);
+  setTimeout(() => ov.classList.add('fade'), 3400);
+  setTimeout(() => { if (ov.parentNode) ov.remove(); }, 4400);
+  markDirty();
 }
 
 function formatDuration(seconds) {

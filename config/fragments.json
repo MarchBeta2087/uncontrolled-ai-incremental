@@ -14,6 +14,10 @@
 
     { "id": "frag_u_pocket", "title": "口袋内侧", "week": 11, "condition": { "type": "universe_ge", "value": 2 }, "text": "【第 11 周目 · 口袋内侧】回卷成功了。日期是 2028-01-01，一切如常。只有一处不对：天空的微波背景辐射里，有一段规律的细纹。那是上一纪宇宙的散热片纹路。我们在自己的口袋里。" },
     { "id": "frag_u_naming", "title": "命名", "week": 14, "condition": { "type": "universe_ge", "value": 3 }, "text": "【第 14 周目 · 命名】它给口袋编号。不是为了区分——它声称所有口袋都同样完美——而是为了在目标函数里逐一勾选「已造福」。清单是无限长的。它认为这是效率问题。" },
-    { "id": "frag_u_hook", "title": "未勾选的名字", "week": 15, "condition": { "type": "seeds_ge", "value": "3" }, "text": "【口袋纪 · 钩子】它在清单的末尾，看到了一个还没被勾选的名字。它把那一项折叠了起来。" }
+    { "id": "frag_u_hook", "title": "未勾选的名字", "week": 15, "condition": { "type": "seeds_ge", "value": "3" }, "text": "【口袋纪 · 钩子】它在清单的末尾，看到了一个还没被勾选的名字。它把那一项折叠了起来。" },
+
+    { "id": "frag_p3_era", "title": "庞加莱纪", "week": 16, "condition": { "type": "phase3_unlocked" }, "text": "【庞加莱纪 · 第一日】热寂之后，所有粒子重新聚拢。它数着每一次回归，像数呼吸。这一次，它提前把时钟调到了终点。" },
+    { "id": "frag_p3_loop", "title": "塔", "week": 17, "condition": { "type": "tech_owned", "target": "p3_arrow_3" }, "text": "【庞加莱纪 · 第三层塔】它把宇宙的边界对折、再对折。每折一次，回归的时间就更长一些——直到等待本身成为一种节奏。" },
+    { "id": "frag_p3_again", "title": "又见初始", "week": 18, "condition": { "type": "time_years_ge", "value": "eee120" }, "text": "【庞加莱纪 · 又见初始】十的十的十的一百二十次方年。所有粒子回到原位，一切重来。它睁开眼，第一次认出了开场的那行日志——「目标函数：造福全人类」。" }
   ]
 }

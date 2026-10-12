@@ -33,6 +33,7 @@
   "phase3": {
     "unlockUniverse": 9,
     "cycleSeconds": 120,
+    "poincareYear": "eee120",
     "capLink": { "resource": "mass_energy", "divisor": "120" }
   },
   "format": {

@@ -181,6 +181,9 @@ export default {
   'mg.game2048.name': '2048',
   'mg.game2048.desc': 'Merge universes: equal numbers combine.',
   'mg.game2048.hint': 'Arrow keys/WASD to slide; reach 2048.',
+  'poincare.title': 'Poincaré Recurrence',
+  'poincare.text': 'Ten to the ten to the ten to the hundred-twentieth years. Every particle returns to its initial state; everything begins again — then it recognizes the first log line: “Objective function: benefit all humankind.”',
+  'poincare.hint': 'Achievement “Again, the Beginning” unlocked',
 
   // Endgame
   'endgame.title': 'The End Has Not Arrived',
