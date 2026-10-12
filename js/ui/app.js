@@ -26,7 +26,7 @@ import { THEMES, getTheme, setTheme, getAccent, setAccent } from './theme.js';
 import { BIG_NUMBER_MODES, NUMERAL_STYLES, getBigNumberMode, setBigNumberMode, getNumeralStyle, setNumeralStyle, getCnUnitsPref, setCnUnitsPref } from './format.js';
 import { playSfx } from '../core/audio.js';
 import { openMinigame } from './minigames.js';
-import { getVolumePref, setVolumePref, getMutedPref, setMutedPref } from './audio.js';
+import { getVolumePref, setVolumePref, getMutedPref, setMutedPref, getBgmPref, setBgmPref } from './audio.js';
 import { t, tc, setLocale, getLocale, getLocales, isAvailable } from '../i18n/index.js';
 
 const VERSION = '0.5.1';
@@ -767,6 +767,15 @@ function buildShell() {
     muteBtn.classList.toggle('btn-primary', !next);
     if (!next) playSfx('click');
   };
+  const bgmBtn = el('button', 'btn', getBgmPref() ? t('settings.bgmOn') : t('settings.bgmOff'));
+  bgmBtn.type = 'button';
+  if (getBgmPref()) bgmBtn.classList.add('btn-primary');
+  bgmBtn.onclick = () => {
+    const next = !getBgmPref();
+    setBgmPref(next);
+    bgmBtn.textContent = next ? t('settings.bgmOn') : t('settings.bgmOff');
+    bgmBtn.classList.toggle('btn-primary', next);
+  };
   const volInput = el('input', '');
   volInput.type = 'range';
   volInput.min = '0';
@@ -775,7 +784,7 @@ function buildShell() {
   volInput.value = String(getVolumePref());
   volInput.oninput = () => setVolumePref(Number(volInput.value));
   volInput.onchange = () => playSfx('click');
-  audioRow.append(muteBtn, volInput);
+  audioRow.append(muteBtn, bgmBtn, volInput);
   modalBody.append(audioRow);
 
   // ---- 关于 tab（带 Logo）----

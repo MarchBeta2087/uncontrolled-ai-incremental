@@ -32,7 +32,12 @@
 
 素材入库须遵守 [docs/素材与授权规则-v1.3.md](docs/素材与授权规则-v1.3.md)，并在下表逐条登记：
 
-> 当前音效由 **Web Audio 合成**（`config/audio.json` 的 `synth` 字段），尚未引入音频素材；后续引入音频素材时置于 `assets/audio/`，并按本文件与素材规则登记。
+> 音效与 BGM 均为**项目自产（程序合成）**：源脚本 [tools/audio-gen.py](tools/audio-gen.py)（numpy/scipy 合成 → OGG/Vorbis via soundfile）。`config/audio.json` 以 `file` 指向素材；保留 `synth` 作为无素材兜底。生成期依赖见 [tools/requirements.txt](tools/requirements.txt)。
+
+| 文件 | 作者 | 来源 | 许可证 | 获取日期 | 修改说明 |
+|---|---|---|---|---|---|
+| assets/audio/click.ogg / buy.ogg / tech.ogg / prestige.ogg / achievement.ogg / universe.ogg / ending.ogg | MarchBeta2087（项目维护者） | 程序生成（`tools/audio-gen.py`） | CC BY-SA 4.0 | 2026-10-12 | 事件音效（点击 / 购买 / 研发 / 穿跃 / 成就 / 跃迁 / 结局）；44100 Hz OGG/Vorbis 单声道；可修改源脚本随仓库 |
+| assets/audio/bgm.ogg | MarchBeta2087（项目维护者） | 程序生成（`tools/audio-gen.py`） | CC BY-SA 4.0 | 2026-10-12 | 环境循环 BGM（~16s，和弦垫 + 琶音）；44100 Hz OGG/Vorbis 单声道；可修改源脚本随仓库 |
 
 | 文件 | 作者 | 来源 | 许可证 | 获取日期 | 修改说明 |
 |---|---|---|---|---|---|

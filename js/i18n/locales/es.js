@@ -125,6 +125,8 @@ export default {
   'settings.audioSection': 'Audio',
   'settings.mute': 'Silenciar',
   'settings.unmute': 'Reactivar sonido',
+  'settings.bgmOn': 'Música: activada',
+  'settings.bgmOff': 'Música: desactivada',
   'theme.default': 'Predeterminado',
   'theme.solarized': 'Solarized',
   'theme.dracula': 'Dracula',

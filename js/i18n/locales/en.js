@@ -124,6 +124,8 @@ export default {
   'settings.audioSection': 'Audio',
   'settings.mute': 'Mute',
   'settings.unmute': 'Unmute',
+  'settings.bgmOn': 'Music: On',
+  'settings.bgmOff': 'Music: Off',
   'theme.default': 'Default',
   'theme.solarized': 'Solarized',
   'theme.dracula': 'Dracula',

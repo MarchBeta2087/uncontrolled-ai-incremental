@@ -124,6 +124,8 @@ export default {
   'settings.audioSection': '音频 / Audio',
   'settings.mute': '静音',
   'settings.unmute': '取消静音',
+  'settings.bgmOn': '背景音乐：开',
+  'settings.bgmOff': '背景音乐：关',
   'theme.default': '默认',
   'theme.solarized': 'Solarized',
   'theme.dracula': 'Dracula',
