@@ -19,6 +19,7 @@
 - **彩蛋滚动语录条（Issue #52）**：新增 `config/quotes.json`（首批 8 条：程序员梗 / googology / 时间宇宙仿写，含候选 A/B/C）；任务栏上方**独立细条**轮播（CSS 横向滚动，悬停暂停，尊重 `prefers-reduced-motion`）；`quote` 内容本地化（中文社区梗保留原文，其余语言给译注/译文）；新条件类型 `minigame_played`（玩过任意小游戏，用于 PCF 解锁）与 `quote_all_seen`；成就 **「博览群书」**；存档 `schemaVersion 10 → 11`（`quotes.seen`）+ 迁移。
 - **成就分类**：成就分 **「成长成就 / 附加成就」** 两组（`category`，默认成长）；`mg_2048`（宇宙合并）与「博览群书」归入附加；记录视图按组展示。
 - **文档同步约定**：`CONTRIBUTING.md` 新增「文档同步」必做项（功能/配置/数值/流程改动须同步 README / `docs/` / TODO / CHANGELOG）；PR 模板加自检；新增 `docs/archived/` 归档目录与规则（过时文档移入并登记）。
+- **法语界面（fr）**：新增 `js/i18n/locales/fr.js`（UI 外壳 222 键）与 `js/i18n/content/fr.js`（游戏内容 315 键），与基准语言逐键对齐；`css/fonts.css` 新增 `[data-lang="fr"]`（Fusion latin）；`README` 语言列表更新。翻译为机器 + 人工，母语者复核见 [docs/开放任务.md](docs/开放任务.md) 与 Discussion #67。
 
 ### 修复（Fixed）
 

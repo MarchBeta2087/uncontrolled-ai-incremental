@@ -20,7 +20,7 @@
 - **离线收益**：离线结算 + 重开页面弹窗报告
 - **存档**：localStorage + 导出/导入/硬重置
 - **像素字体**：缝合像素字体（[Fusion Pixel Font](https://github.com/TakWolf/fusion-pixel-font)）12px 比例/等宽，覆盖 7 种语言字形；备用字体 [SevenFifteen](https://burpyfresh.itch.io)（CC BY 4.0，兜底天城文/阿拉伯/希腊/西里尔/希伯来/泰文），优先级 **Fusion > SevenFifteen**
-- **多语言**：简体中文 / 繁體中文 / 繁體中文（台灣/香港）/ English / 日本語 / 한국어 界面
+- **多语言**：简体中文 / 繁體中文 / 繁體中文（台灣/香港）/ English / 日本語 / 한국어 / العربية / Français 界面
 - **设置 / 关于 / 版本记录**：设置模态分三栏；关于页展示项目 Logo；版本记录含 **UTC / 北京时间双轨甘特图**；底部功能栏支持横向滚动
 - **音效**：Web Audio 合成音效（点击 / 购买 / 研发 / 穿梭 / 成就 / 跳跃 / 结局），设置面板可静音与调节音量
 - **美术**：项目 Logo（根 `favicon.ico` + 标题栏）、银河中心星场背景（按宇宙 `hue-rotate` 换皮）

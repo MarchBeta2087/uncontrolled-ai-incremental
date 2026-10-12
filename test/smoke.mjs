@@ -75,6 +75,7 @@ assert('en 为 LTR', i18nMod.isRTL('en') === false);
 assert('zh-CN 为 LTR', i18nMod.isRTL('zh-CN') === false);
 assert('默认语言为 LTR', i18nMod.isRTL() === false);
 assert('ar 骨架已实装（可选择）', i18nMod.isAvailable('ar') === true);
+assert('fr 已实装且为 LTR', i18nMod.isAvailable('fr') === true && i18nMod.isRTL('fr') === false);
 
 console.log('== 阿拉伯数字系统（latn / arab）==');
 numMod.setNumeralSystem('arab');
