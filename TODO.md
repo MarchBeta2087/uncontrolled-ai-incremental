@@ -82,7 +82,7 @@
 - [x] **PR B**：第三阶段引擎地基（箭塔容器 + `cap_tetrate` / `all_generator_tetrate` + 阶段解锁 + 存档 v7）
 - [x] **PR C**：第三阶段内容与平衡（cap-link + 技术树 12 项 + balance-sim `--phase3` + `docs/v0.6-平衡模拟.md`）
 - [x] **第三阶段物理 pacing**：时间闸门（`cycleSeconds`，每层 ≈ 2min）+ 存档 v8
-- [ ] **PR D**：小游戏（PONG / 扫雷 / 贪吃蛇 / 2048；配置驱动 + 成就 + 增益结算）
+- [x] **PR D**：小游戏（PONG / 扫雷 / 贪吃蛇 / 2048；Canvas 手写零素材 + 配置驱动 + 成就 + 永久增益 + 存档 v9）
 - [ ] **PR E**：新挑战 + 记忆碎片 + 庞加莱事件（到达即触发）+ 全语言 i18n
 
 ## 待办（多语言 / i18n）

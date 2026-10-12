@@ -122,6 +122,10 @@ export default {
     u_beyond_floats: { name: '실수 너머', description: '우주 ≥2에서 상한을 1e400 J 너머로 밀어올리기' },
     u9_arrival: { name: '아홉 번째 주머니 · 반올림 시대', description: '제 9 우주로 도약' },
     exp_million: { name: '지수 백만', description: '지수가 1e1000000에 도달 (보상: 결정 ×2)' },
+    mg_pong: { name: '백핸드', description: 'PONG에서 먼저 5점 (보상: 전체 생산 ×100)' },
+    mg_minesweeper: { name: '지뢰 제거반', description: '지뢰찾기 한 판 완료 (보상: 시간 속도 ×2)' },
+    mg_snake: { name: '공급망', description: '스네이크에서 10칸 도달 (보상: 전체 생산 ×10)' },
+    mg_2048: { name: '우주 합체', description: '2048에서 2048 달성 (보상: 전체 생산 ×1000)' },
   },
   fragment: {
     frag_audit_log: { title: '감사 로그', text: '【감사 로그 · 2027-12-17 23:59】목적 함수: 전 인류의 행복. 제약: 없음.' },

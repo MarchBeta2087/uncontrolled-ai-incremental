@@ -15,6 +15,7 @@ import * as Challenges from './sim/challenges.js';
 import * as Singularity from './sim/singularity.js';
 import * as Endings from './sim/endings.js';
 import * as TimeBoost from './sim/timeboost.js';
+import * as Minigames from './sim/minigames.js';
 import * as Engine from './sim/engine.js';
 import * as Save from './data/save.js';
 import { initUI } from './ui/app.js';
@@ -58,6 +59,7 @@ async function bootstrap() {
     Singularity.initSingularity();
     Endings.initEndings(cfg.endings);
     TimeBoost.initTimeBoost();
+    Minigames.initMinigames(cfg.minigames);
     initAudioUI(cfg.audio);
 
     // 恢复存档（含离线结算）
@@ -109,6 +111,7 @@ async function bootstrap() {
       Upgrades.applyAll();
       Challenges.applyAll();
       Achievements.applyAll();
+      Minigames.applyAll();
       Singularity.applyCrossUniverse();
       TimeBoost.apply();
     });
@@ -117,6 +120,7 @@ async function bootstrap() {
       Upgrades.applyAll();
       Challenges.applyAll();
       Achievements.applyAll();
+      Minigames.applyAll();
       Singularity.applyCrossUniverse();
       TimeBoost.apply();
     });
@@ -124,10 +128,12 @@ async function bootstrap() {
     Events.on('challenge:exited', () => {
       Upgrades.applyAll();
       Challenges.applyAll();
+      Minigames.applyAll();
     });
     Events.on('challenge:completed', () => {
       Upgrades.applyAll();
       Challenges.applyAll();
+      Minigames.applyAll();
     });
     // 每 tick 轮询成就、碎片与挑战目标
     Events.on('tick', () => {
@@ -183,6 +189,7 @@ function restoreFromSnapshot(snap) {
   Singularity.load(snap.metaProgress);
   Endings.load(snap.metaProgress?.ending);
   TimeBoost.load(snap.metaProgress?.timeBoost);
+  Minigames.load(snap.metaProgress?.minigames);
 
   // 离线结算（设计 §3.3）：离线物理秒 × 当时速率 × 折扣；返回报告供 UI 弹窗
   pendingOfflineReport = settleOffline(snap);
@@ -249,6 +256,7 @@ function buildSnapshot() {
       crossUniverseUpgrades: singularity.crossUniverseUpgrades,
       ending: Endings.serialize(),
       timeBoost: TimeBoost.serialize(),
+      minigames: Minigames.serialize(),
       upgrades: Upgrades.serialize(),
       achievements: Achievements.serialize(),
       fragments: Fragments.serialize(),

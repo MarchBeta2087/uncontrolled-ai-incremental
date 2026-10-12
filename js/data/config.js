@@ -34,6 +34,7 @@ export const CONDITION_TYPES = new Set([
   'universe_ge',         // 当前宇宙编号 >= value（v0.5）
   'seeds_ge',            // 奇点种子 >= value（v0.5）
   'phase3_unlocked',     // 第三阶段已解锁（v0.6）
+  'minigame_score_ge',   // 小游戏历史最佳 >= value（target = 小游戏 id，v0.6）
 ]);
 
 // 挑战限制类型（有限枚举，见 js/sim/challenges.js）
@@ -55,6 +56,7 @@ const DEFAULT_PATHS = {
   universes: 'config/universes.json',
   endings: 'config/endings.json',
   audio: 'config/audio.json',
+  minigames: 'config/minigames.json',
 };
 
 async function fetchJSON(path) {
@@ -64,7 +66,7 @@ async function fetchJSON(path) {
 }
 
 export async function loadConfig(paths = DEFAULT_PATHS) {
-  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio] = await Promise.all([
+  const [balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames] = await Promise.all([
     fetchJSON(paths.balance),
     fetchJSON(paths.resources),
     fetchJSON(paths.techs),
@@ -75,9 +77,10 @@ export async function loadConfig(paths = DEFAULT_PATHS) {
     fetchJSON(paths.universes),
     fetchJSON(paths.endings),
     fetchJSON(paths.audio),
+    fetchJSON(paths.minigames),
   ]);
-  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio });
-  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio };
+  validateConfig({ balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames });
+  return { balance, resources, techs, upgrades, achievements, fragments, challenges, universes, endings, audio, minigames };
 }
 
 /** 校验配置合法性：id 唯一、引用存在、requires 无环、effect 类型已注册 */
@@ -260,6 +263,25 @@ export function validateConfig(cfg) {
       if (sfxIds.has(s.id)) errors.push(`音效 id 重复: ${s.id}`);
       sfxIds.add(s.id);
       if (!s.file && !s.synth) errors.push(`音效 ${s.id} 未提供 file 或 synth`);
+    }
+  }
+
+  // 小游戏（v0.6）
+  if (cfg.minigames) {
+    const mgIds = new Set();
+    for (const m of cfg.minigames.minigames ?? []) {
+      if (!m.id) {
+        errors.push('存在缺少 id 的小游戏');
+        continue;
+      }
+      if (mgIds.has(m.id)) errors.push(`小游戏 id 重复: ${m.id}`);
+      mgIds.add(m.id);
+      if (!m.unlockCondition || !CONDITION_TYPES.has(m.unlockCondition.type)) {
+        errors.push(`小游戏 ${m.id} 的 unlockCondition 类型未注册: ${m.unlockCondition?.type}`);
+      }
+      if (m.gain && !EFFECT_TYPES.has(m.gain.type)) {
+        errors.push(`小游戏 ${m.id} 的 gain 类型未注册: ${m.gain.type}`);
+      }
     }
   }
 

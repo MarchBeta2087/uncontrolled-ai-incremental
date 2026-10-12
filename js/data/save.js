@@ -11,7 +11,7 @@ import { Num } from '../core/num.js';
 import { t } from '../i18n/index.js';
 
 export const SAVE_KEY = 'uncontrolled-ai-incremental.save';
-export const SCHEMA_VERSION = 8;
+export const SCHEMA_VERSION = 9;
 
 /** 迁移函数表：migrations[v] 把 v 版快照迁到 v+1 版（链式执行） */
 const migrations = {
@@ -61,6 +61,12 @@ const migrations = {
     if (mp.phase3CycleElapsed === undefined) mp.phase3CycleElapsed = 0;
     return { ...s, schemaVersion: 8, metaProgress: mp };
   },
+  // v8 → v9：新增小游戏成绩
+  8: (s) => {
+    const mp = { ...(s.metaProgress ?? {}) };
+    if (mp.minigames === undefined) mp.minigames = { best: {}, totalPlays: 0 };
+    return { ...s, schemaVersion: 9, metaProgress: mp };
+  },
 };
 
 /** 生成初始存档快照（纯 JSON，Num 字段已是 MegotaNum JSON 表示） */
@@ -87,6 +93,7 @@ export function createInitialSnapshot() {
       phase2Unlocked: false,
       phase3Unlocked: false,
       phase3CycleElapsed: 0,
+      minigames: { best: {}, totalPlays: 0 },
       universe: 1,
       singularitySeeds: Num.toJSON(Num.parse(0)),
       crossUniverseUpgrades: [],

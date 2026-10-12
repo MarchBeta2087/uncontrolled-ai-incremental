@@ -126,6 +126,10 @@ export default {
     u_beyond_floats: { name: 'ما بعد الأعداد الحقيقية', description: 'ادفع الحد إلى ما يتجاوز 1e400 جول في كون ≥2' },
     u9_arrival: { name: 'الجيب التاسع · حقبة التقريب', description: 'الانتقال إلى الكون 9' },
     exp_million: { name: 'الأس المليوني', description: 'بلوغ أس 1e1000000 (المكافأة: البلورات ×2)' },
+    mg_pong: { name: 'الضربة الخلفية', description: 'سجّل 5 نقاط أولًا في PONG (المكافأة: كل الإنتاج ×100)' },
+    mg_minesweeper: { name: 'خبير الألغام', description: 'أكمل جولة كانسة الألغام (المكافأة: سرعة الوقت ×2)' },
+    mg_snake: { name: 'سلسلة التوريد', description: 'ابلغ 10 مقاطع في الثعبان (المكافأة: كل الإنتاج ×10)' },
+    mg_2048: { name: 'دمج الأكوان', description: 'ابلغ 2048 في 2048 (المكافأة: كل الإنتاج ×1000)' },
   },
   fragment: {
     frag_audit_log: {
