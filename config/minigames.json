@@ -7,6 +7,9 @@
       "unlockCondition": { "type": "resource_ge", "target": "compute", "value": "1" },
       "gain": { "type": "all_generator_mult", "perScore": "0.02", "max": "100" },
       "winScore": 5,
+      "durationSeconds": 60,
+      "durationMin": 30,
+      "durationMax": 3600,
       "achievement": "mg_pong"
     },
     {

@@ -20,9 +20,31 @@ let lastTs = 0;
 let active = null; // 当前游戏实例
 let onKeyHandler = null;
 let padEl = null;
+let cfgEl = null;
+let durInput = null;
 
 function cssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888';
+}
+
+// ---- PONG 限时赛时长（默认 60s，可在 [30, 3600] 调整；存 localStorage） ----
+function getPongDurationRange() {
+  const def = Minigames.getMinigame('pong');
+  const min = Number(def?.durationMin) || 30;
+  const max = Number(def?.durationMax) || 3600;
+  let v = Number(def?.durationSeconds) || 60;
+  try {
+    const s = Number(localStorage.getItem('uai.mg.pongDuration'));
+    if (Number.isFinite(s) && s > 0) v = s;
+  } catch (_) { /* ignore */ }
+  return { min, max, value: Math.max(min, Math.min(max, Math.round(v))) };
+}
+function setPongDuration(v) {
+  const { min, max } = getPongDurationRange();
+  const clamped = Math.max(min, Math.min(max, Math.round(Number(v) || 60)));
+  try { localStorage.setItem('uai.mg.pongDuration', String(clamped)); } catch (_) { /* ignore */ }
+  if (active && active.id === 'pong' && active.setDuration) active.setDuration(clamped);
+  return clamped;
 }
 
 function ensureOverlay() {
@@ -59,10 +81,23 @@ function ensureOverlay() {
   padEl = document.createElement('div');
   padEl.className = 'mg-pad';
 
+  cfgEl = document.createElement('div');
+  cfgEl.className = 'mg-cfg';
+  const durLabel = document.createElement('span');
+  durLabel.textContent = t('mg.pong.duration');
+  durInput = document.createElement('input');
+  durInput.type = 'number';
+  durInput.className = 'mg-dur';
+  durInput.min = '30';
+  durInput.max = '3600';
+  durInput.step = '30';
+  durInput.addEventListener('change', () => { durInput.value = String(setPongDuration(durInput.value)); });
+  cfgEl.append(durLabel, durInput);
+
   hintEl = document.createElement('div');
   hintEl.className = 'mg-hint';
 
-  panel.append(head, scoreEl, bestEl, canvas, padEl, hintEl);
+  panel.append(head, scoreEl, bestEl, canvas, padEl, cfgEl, hintEl);
   overlay.append(panel);
   document.body.append(overlay);
 
@@ -129,7 +164,6 @@ export function closeMinigame() {
   active = null;
   overlay.style.display = 'none';
 }
-
 export function isMinigameOpen() {
   return !!overlay && overlay.style.display !== 'none';
 }
@@ -141,10 +175,18 @@ export function openMinigame(id) {
   titleEl.textContent = t('mg.' + id + '.name');
   hintEl.textContent = t('mg.' + id + '.hint');
   padEl.style.display = id === 'minesweeper' ? 'none' : 'flex';
+  const pongRange = getPongDurationRange();
+  cfgEl.style.display = id === 'pong' ? 'flex' : 'none';
+  if (id === 'pong') {
+    durInput.min = String(pongRange.min);
+    durInput.max = String(pongRange.max);
+    durInput.value = String(pongRange.value);
+  }
 
-  active = createGame(id, def);
+  active = createGame(id, def, { pongDuration: pongRange.value });
   active.init();
   overlay.style.display = 'flex';
+  cancelAnimationFrame(rafId);
   lastTs = performance.now();
   updateHud();
   rafId = requestAnimationFrame(loop);
@@ -152,10 +194,15 @@ export function openMinigame(id) {
 
 function loop(ts) {
   if (!active) return;
-  const dt = Math.min(0.05, (ts - lastTs) / 1000);
+  const dt = Math.min(0.05, Math.max(0, (ts - lastTs) / 1000));
   lastTs = ts;
-  active.update(dt);
-  active.draw(ctx);
+  try {
+    if (typeof active.update === 'function') active.update(dt);
+    if (active && typeof active.draw === 'function') active.draw(ctx);
+  } catch (err) {
+    console.error('[minigame] 帧错误：', err);
+  }
+  if (!active) return;
   updateHud();
   rafId = requestAnimationFrame(loop);
 }
@@ -188,55 +235,61 @@ function text(c, str, x, y, color, align = 'center') {
   c.fillText(str, Math.round(x), Math.round(y));
 }
 
-// ================= PONG =================
-function createPong() {
+// ================= PONG（限时赛） =================
+function createPong(durationSec) {
   const PH = 48, PW = 5, AW = 5, AH = 48;
-  let py, ay, ball, ps, as, over, bias, aiErr;
+  let py, ay, ball, ps, as, over, bias, aiNoise, noiseT, timeLeft;
+  let duration = durationSec;
   const resetBall = (dir) => {
-    ball = { x: SIZE / 2, y: SIZE / 2, vx: 2.4 * dir, vy: (Math.random() * 2 - 1) * 1.6 };
+    ball = { x: SIZE / 2, y: SIZE / 2, vx: 2.2 * dir, vy: (Math.random() * 2 - 1) * 1.4 };
   };
   return {
     id: 'pong',
     init() {
       py = SIZE / 2 - PH / 2;
       ay = SIZE / 2 - AH / 2;
-      ps = 0; as = 0; over = false; bias = 0; aiErr = 0;
+      ps = 0; as = 0; over = false; bias = 0; aiNoise = 0; noiseT = 0; timeLeft = duration;
       resetBall(Math.random() < 0.5 ? -1 : 1);
     },
     score() { return ps; },
-    onDir(dx, dy) { if (!over && dy) py = Math.max(0, Math.min(SIZE - PH, py + dy * 16)); },
+    setDuration(v) { duration = v; timeLeft = v; },
+    onDir(dx, dy) { if (!over && dy) py = Math.max(0, Math.min(SIZE - PH, py + dy * 18)); },
     onPointer(x, y) { if (!over) py = Math.max(0, Math.min(SIZE - PH, y - PH / 2)); },
-    update() {
+    update(dt) {
       if (over) return;
-      // AI：追踪球 + 学习偏差
-      const predict = ball.y + ball.vy * 8 + bias;
-      const target = predict - AH / 2;
-      ay += Math.max(-2.6, Math.min(2.6, target - ay));
+      timeLeft -= dt;
+      if (timeLeft <= 0) { timeLeft = 0; over = true; finish(ps); return; }
+      // 弱化 AI：仅当球朝向自己时缓慢移动，限速 + 周期性噪声（不再逐个追击）
+      noiseT -= dt;
+      if (noiseT <= 0) { noiseT = 0.6 + Math.random() * 0.6; aiNoise = (Math.random() * 2 - 1) * 22; }
+      const towardAI = ball.vx > 0;
+      const desired = towardAI ? ball.y - AH / 2 + aiNoise + bias * 0.5 : SIZE / 2 - AH / 2;
+      ay += Math.max(-1.5, Math.min(1.5, desired - ay));
       ay = Math.max(0, Math.min(SIZE - AH, ay));
       ball.x += ball.vx; ball.y += ball.vy;
       if (ball.y < 3) { ball.y = 3; ball.vy = Math.abs(ball.vy); }
       if (ball.y > SIZE - 3) { ball.y = SIZE - 3; ball.vy = -Math.abs(ball.vy); }
       if (ball.x < PW + 6 && ball.vx < 0) {
         if (ball.y >= py && ball.y <= py + PH) {
-          ball.vx = Math.abs(ball.vx) * 1.04;
-          ball.vy += (ball.y - (py + PH / 2)) * 0.08;
-          bias = bias * 0.85 + (ball.y - (ay + AH / 2)) * 0.15; // 学习玩家打法
+          ball.vx = Math.abs(ball.vx) * 1.03;
+          ball.vy += (ball.y - (py + PH / 2)) * 0.07;
+          bias = bias * 0.9 + (ball.y - (ay + AH / 2)) * 0.1; // 学习玩家偏差（弱化：系数减半）
         } else { as++; resetBall(-1); return; }
       }
       if (ball.x > SIZE - AW - 6 && ball.vx > 0) {
         if (ball.y >= ay && ball.y <= ay + AH) {
-          ball.vx = -Math.abs(ball.vx) * 1.04;
-          ball.vy += (ball.y - (ay + AH / 2)) * 0.08;
+          ball.vx = -Math.abs(ball.vx) * 1.03;
+          ball.vy += (ball.y - (ay + AH / 2)) * 0.07;
         } else { ps++; resetBall(1); }
       }
-      if (ps >= 5 || as >= 5) { over = true; finish(ps); }
     },
     draw(c) {
       rect(c, 0, 0, SIZE, SIZE, cssVar('--panel'));
       rect(c, 4, py, PW, PH, cssVar('--accent'));
       rect(c, SIZE - 4 - AW, ay, AW, AH, cssVar('--text-dim'));
       rect(c, ball.x - 3, ball.y - 3, 6, 6, cssVar('--text'));
-      text(c, `${ps} : ${as}`, SIZE / 2, 12, cssVar('--text-dim'));
+      text(c, `${ps} : ${as}`, SIZE / 2 - 28, 12, cssVar('--text-dim'));
+      text(c, t('mg.pong.time', { s: Math.ceil(timeLeft) }), SIZE / 2 + 36, 12, cssVar('--accent'));
     },
   };
 }
@@ -289,6 +342,7 @@ function createMinesweeper() {
       place(0, 0);
     },
     score() { return won ? 1 : 0; },
+    update() {},
     onAction() { flagMode = !flagMode; },
     onPointer(x, y, type) {
       if (over || type !== 'down') return;
@@ -418,6 +472,7 @@ function create2048() {
       addTile(); addTile();
     },
     score() { return highest(); },
+    update() {},
     onDir(dx, dy) { if (dx || dy) move(dx, dy); },
     draw(c) {
       rect(c, 0, 0, SIZE, SIZE, cssVar('--panel-2'));
@@ -431,9 +486,9 @@ function create2048() {
   };
 }
 
-function createGame(id, def) {
+function createGame(id, def, opts = {}) {
   switch (id) {
-    case 'pong': return createPong();
+    case 'pong': return createPong(opts.pongDuration ?? 60);
     case 'minesweeper': return createMinesweeper();
     case 'snake': return createSnake();
     case 'game2048': return create2048();
